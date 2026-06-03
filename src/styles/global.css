@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "@fontsource/anton/400.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+
+@theme {
+  --font-display: "Anton", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-ink: #111114;
+  --color-surface: #ffffff;
+  --color-muted: #5a5560;
+
+  --color-accent: #b13bd6;
+  --color-event-red: #e11d2a;
+  --color-event-yellow: #f5c518;
+  --color-event-teal: #18b3b0;
+}
+
+:root {
+  /* Felülírható accent: az esemény-oldalak ezt állítják majd */
+  --accent: var(--color-accent);
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
