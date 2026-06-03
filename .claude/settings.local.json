@@ -4,7 +4,9 @@
       "Bash(git init *)",
       "Bash(git add *)",
       "Bash(git -c user.name=Claude -c user.email=noreply@anthropic.com commit -q -m 'docs: add Slam Poetry Magyarország website design spec *)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
     ]
   }
 }
