@@ -1,43 +1,23 @@
-# Astro Starter Kit: Minimal
+# Slam Poetry Magyarország — weboldal
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Astro + Sanity (beágyazott Studio a `/admin` route-on) + Tailwind v4.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Fejlesztés
 
-## 🚀 Project Structure
+1. `npm install`
+2. Másold a `.env.example`-t `.env`-re, töltsd ki a Sanity projectId-t/datasetet.
+3. `npm run dev` → oldal: http://localhost:4321 , Studio: http://localhost:4321/admin
+4. `npm test` — egységtesztek (Vitest)
+5. `npm run build` — statikus build a `dist/`-be
 
-Inside of your Astro project, you'll see the following folders and files:
+## Felépítés
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+- `src/sanity/` — séma (`schemaTypes/`), Studio-struktúra (`structure.ts`), lekérdezések és adat-helperek (`lib/`)
+- `src/layouts/`, `src/components/` — UI keret (BaseLayout, Header, Footer)
+- `src/styles/global.css` — design tokenek (Tailwind v4 `@theme`)
+- `sanity.config.ts` — a beágyazott Sanity Studio konfigurációja
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Dokumentáció
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Spec: `docs/superpowers/specs/2026-06-03-slam-poetry-website-design.md`
+- Implementációs tervek: `docs/superpowers/plans/`
