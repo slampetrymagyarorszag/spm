@@ -1,0 +1,10 @@
+---
+import { PortableText } from 'astro-portabletext';
+interface Props { value: any }
+const { value } = Astro.props;
+---
+{value && (
+  <div class="prose-spm max-w-none">
+    <PortableText value={value} />
+  </div>
+)}

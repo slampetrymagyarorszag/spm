@@ -34,3 +34,11 @@ html {
   text-transform: uppercase;
   letter-spacing: 0.01em;
 }
+
+.prose-spm { line-height: 1.7; }
+.prose-spm h2 { font-family: var(--font-display); text-transform: uppercase; font-size: 1.8rem; margin: 2rem 0 0.75rem; }
+.prose-spm h3 { font-weight: 700; font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+.prose-spm p { margin: 0 0 1rem; }
+.prose-spm a { color: var(--color-accent); text-decoration: underline; }
+.prose-spm blockquote { border-left: 3px solid var(--color-accent); padding-left: 1rem; font-style: italic; margin: 1.5rem 0; }
+.prose-spm img { border-radius: 0.5rem; margin: 1.5rem 0; }
