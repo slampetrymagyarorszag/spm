@@ -1,0 +1,28 @@
+---
+import type { SiteSettings } from "../sanity/lib/api";
+interface Props { settings: SiteSettings; }
+const { settings } = Astro.props;
+const nav = settings.nav?.length ? settings.nav : [
+  { label: "Mi az a slam?", href: "/mi-az-a-slam-poetry" },
+  { label: "Események", href: "/esemenyek" },
+  { label: "Slammerek", href: "/slammerek" },
+  { label: "Hírek", href: "/hirek" },
+  { label: "Médiatár", href: "/mediatar" },
+  { label: "Egyesület", href: "/egyesulet" },
+  { label: "Kapcsolat", href: "/kapcsolat" },
+];
+---
+<header class="sticky top-0 z-50 bg-ink text-surface">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <a href="/" class="font-display text-2xl">
+      {settings.logoUrl
+        ? <img src={settings.logoUrl} alt={settings.title} class="h-9 w-auto" />
+        : settings.title}
+    </a>
+    <ul class="hidden gap-5 md:flex">
+      {nav.map((item) => (
+        <li><a href={item.href} class="text-sm uppercase tracking-wide hover:text-accent">{item.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+</header>

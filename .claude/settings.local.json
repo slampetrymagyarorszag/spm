@@ -6,7 +6,11 @@
       "Bash(git -c user.name=Claude -c user.email=noreply@anthropic.com commit -q -m 'docs: add Slam Poetry Magyarország website design spec *)",
       "WebSearch",
       "mcp__plugin_context7_context7__resolve-library-id",
-      "mcp__plugin_context7_context7__query-docs"
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(git checkout *)",
+      "Bash(npm create *)",
+      "Bash(ls \"C:\\\\Users\\\\Mészáros Péter\\\\AppData\\\\Local\\\\npm-cache\\\\_logs\\\\\" | sort | tail -3)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Mészáros Péter\\\\AppData\\\\Local\\\\npm-cache\\\\_logs\\\\\" | Sort-Object LastWriteTime | Select-Object -Last 1 | ForEach-Object { Get-Content $_.FullName -Tail 40 })"
     ]
   }
 }
