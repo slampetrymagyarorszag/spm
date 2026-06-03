@@ -62,3 +62,12 @@ export async function getEvents(client: Fetcher): Promise<EventListItem[]> {
 export async function getEventBySlug(client: Fetcher, slug: string): Promise<EventDetail | null> {
   return (await client.fetch(EVENT_BY_SLUG_QUERY, { slug })) ?? null;
 }
+
+export type MediaItem = {
+  _id: string; title: string; kind: 'video' | 'image' | 'album';
+  youtubeUrl?: string; image?: any; albumUrl?: string; albumCover?: any; year?: number;
+};
+import { MEDIA_QUERY } from './queries';
+export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
+  return (await client.fetch(MEDIA_QUERY)) ?? [];
+}

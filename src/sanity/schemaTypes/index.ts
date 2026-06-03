@@ -4,5 +4,6 @@ import { post } from './post';
 import { slammer } from './slammer';
 import { event } from './event';
 import { location } from './objects/location';
+import { mediaItem } from './mediaItem';
 
-export const schemaTypes = [siteSettings, blockContent, post, slammer, event, location];
+export const schemaTypes = [siteSettings, blockContent, post, slammer, event, location, mediaItem];

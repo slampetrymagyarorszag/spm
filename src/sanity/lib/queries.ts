@@ -27,3 +27,7 @@ export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug]
   ticketUrl, facebookEventUrl, registrationEnabled, registrationDeadline,
   performers[]->{ _id, name, "slug": slug.current, photo }
 }`;
+
+export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdAt desc){
+  _id, title, kind, youtubeUrl, image, albumUrl, albumCover, year
+}`;
