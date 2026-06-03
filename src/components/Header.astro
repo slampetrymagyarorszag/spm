@@ -16,8 +16,13 @@ const nav = settings.nav?.length ? settings.nav : [
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
     <a href="/" class="font-display text-2xl">
       {settings.logoUrl
-        ? <img src={settings.logoUrl} alt={settings.title} class="h-9 w-auto" />
-        : settings.title}
+        ? <img src={settings.logoUrl} alt={settings.title} class="h-10 w-auto" />
+        : (
+          /* Tartalék: a statikus public/logo.jpg fekete-fehér háttéren — a sötét fejlécen
+             invertáljuk + "screen" keveréssel, így a fehér háttér eltűnik, a logó fehéren látszik.
+             Ha a Studióba feltöltenek egy rendes (átlátszó) logót, az kerül ide kezelés nélkül. */
+          <img src="/logo.jpg" alt={settings.title} class="h-10 w-auto invert mix-blend-screen" />
+        )}
     </a>
     <ul class="hidden gap-5 md:flex">
       {nav.map((item) => (
