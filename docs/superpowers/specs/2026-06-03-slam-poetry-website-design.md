@@ -64,9 +64,14 @@ webhookkal frissül.
   automatikusan dátumból). **Regisztráció:** `registrationEnabled` (be/ki), `registrationEmail`
   (alapérték: `contest@slampoetry.hu`), opcionális egyedi mezők/leírás a jelentkezési formhoz,
   jelentkezési határidő. Ha be van kapcsolva, az esemény-oldalon megjelenik a jelentkezési űrlap.
+  **Facebook:** opcionális `facebookEventUrl` — ha kitöltik, az esemény-oldal beágyazza/rálinkel a
+  FB-eseményre (nem kell a részleteket újragépelni).
 - `slammer` — név, slug, fotó, bio (rich text), videók (URL-ek), eredmények, social linkek.
 - `post` (hír/blog) — cím, slug, dátum, szerző, borító, törzs (rich text), kategória/címkék.
-- `mediaItem` — típus (videó/kép), forrás (YouTube URL / kép), kapcsolódó esemény, év, leírás.
+- `mediaItem` — típus (videó/kép/album), forrás. **Videó:** YouTube videó-ID/URL — a csatorna
+  feltöltései a YouTube Data API-ból **automatikusan szinkronizálódnak** (csak embed, nincs tárolás);
+  kézi felvétel is lehet. **Album:** Facebook-album URL + borítókép (link-alapú galéria, nincs
+  szerveres képtárolás). Mezők: kapcsolódó esemény, év, leírás.
 - `page` (statikus oldalak: „Mi az a slam poetry?", Egyesület) — cím, slug, rich text, beágyazások.
 - `siteSettings` (singleton) — logó, alap accent szín, social linkek, kapcsolati adatok, főmenü.
   **Országos bajnokság CTA:** `championshipCtaEnabled` (be/ki), gomb-felirat (alap:
@@ -86,6 +91,35 @@ webhookkal frissül.
   → a gomb nem jelenik meg.
 - **Spam-védelem:** honeypot mező + egyszerű rate-limit a serverless függvényben; szerver-oldali
   validáció. (Opcionális későbbi bővítés: captcha.)
+
+## Külső integrációk és automatizálás (cél: minimális kézi frissítés)
+
+A nehéz médiát **nem a szerveren tároljuk** — a Facebookról/YouTube-ról húzzuk be, illetve linkeljük.
+
+### YouTube — teljes automatizálás ✅
+
+- **YouTube Data API v3** (ingyenes, kvótás): a csatorna „uploads" playlistjéből lekérjük a videók
+  ID-ját, címét, thumbnailjét, dátumát. **Csak embed**, nincs feltöltés/tárolás.
+- Szinkronizálás **build-időben és/vagy ütemezett serverless függvénnyel** (pl. naponta), az
+  eredmény `mediaItem` videó-rekordokká válik (vagy közvetlen renderelés). Új videó a csatornán →
+  magától megjelenik a médiatárban, kézi munka nélkül.
+
+### Facebook képek/albumok — link-alapú galéria (App Review nélkül) ✅
+
+- A FB **Page Events / Photos API engedélyköteles és korlátozott**, ezért **nem** automatizáljuk
+  (nincs App Review). Helyette a szerkesztő a CMS-be beilleszt egy **album-linket + borítóképet**,
+  a galéria pedig egy „Album megtekintése Facebookon" kártyaként **a FB-albumra mutat**.
+  Nulla szerveres képtárolás. (Később bővíthető automatikus thumbnail-behúzásra, ha vállaljuk az
+  App Review-t.)
+
+### Facebook események — link + beágyazás ⚠️ (az API zárt)
+
+- A Facebook **Page Events edge „restricted" — jelenleg nem kérhető hozzá hozzáférés**, így a
+  FB-eseményeket **nem lehet hivatalosan, automatikusan kiolvasni**.
+- Megoldás: az `event.facebookEventUrl` mezőbe bemásolt FB-esemény-linket az esemény-oldal
+  **beágyazza/rálinkel** — a részleteket (cím, dátum, helyszín) a CMS-ben tartjuk az oldal-natív
+  megjelenítéshez, de nem kell máshol újragépelni. A havi klub / éves bajnokság gyors felvételét a
+  Sanity natív „dokumentum-duplikálás" funkciója is segíti.
 
 ## Brand-identitás (újraépítés, a logó kivételével)
 
@@ -131,6 +165,7 @@ Ez a design system (lent) alapja; a build elején készül el, hogy minden kompo
 - `StickerLabel`, `SmokeBackground` (dekor elemek)
 - `RegistrationForm` (island — eseményhez kapcsolt jelentkezés, serverless endpointra küld)
 - `ChampionshipCtaButton` (siteSettings-vezérelt, feltételesen megjelenő CTA)
+- `YouTubeEmbed` (lazy-load, csak embed), `FacebookEventEmbed`, `FacebookAlbumCard` (link-alapú)
 
 ## Tartalom-migráció a régi oldalról (webcrawling)
 
@@ -164,6 +199,8 @@ Folyamat:
    (Mi az a slam / Egyesület) → Kapcsolat (űrlap).
 2b. **Űrlap-backend:** serverless függvény + email-küldés (Resend/SMTP) a jelentkezésekhez;
    spam-védelem; országos bajnokság CTA logika (siteSettings-vezérelt megjelenés).
+2c. **Külső integrációk:** YouTube Data API szinkron (csak embed); FB album-link galéria és
+   FB esemény-link beágyazás komponensek.
 3. **Főoldal** összerakása a fenti komponensekből.
 4. **Migráció:** a régi oldal crawlingja, leképezés a sémára, import a Sanity-be, kézi átnézés.
 5. **Polish:** animációk, textúrák, SEO/OpenGraph, sitemap, teljesítmény, a11y audit, deploy +
@@ -181,6 +218,9 @@ Folyamat:
 - Egy regisztráció-engedélyezett eseményen az űrlap beküldése emailt kézbesít a
   `contest@slampoetry.hu` címre; honeypot/rate-limit kiszűri a spamet.
 - A `championshipCtaEnabled` ki/be kapcsolása valóban megjeleníti/elrejti a CTA gombot.
+- A YouTube-szinkron lefutása után a csatorna új videói megjelennek a médiatárban (csak embed).
+- Egy `facebookEventUrl`-lel ellátott esemény oldalán a FB-esemény beágyazás/link megjelenik;
+  egy FB-album-link galéria-kártya a FB-albumra navigál.
 - Lighthouse: jó teljesítmény + a11y pontszám mobilon; kontraszt-ellenőrzés a sötét felületeken.
 - Deploy próbapublikálás (Vercel/Netlify), Sanity-webhook kiváltja az újraépítést.
 
@@ -193,3 +233,7 @@ Folyamat:
 - Domain/hosting hozzáférés a deployhoz.
 - Email-küldéshez fiók/kulcs (pl. Resend API key) és a `slampoetry.hu` domain feladó-hitelesítése
   (SPF/DKIM), hogy a jelentkezések kézbesüljenek.
+- YouTube Data API kulcs + a csatorna ID-ja (a videó-szinkronhoz).
+- A FB-oldal album-linkjei és borítóképei a galériához (link-alapú, kézi beillesztés).
+- FB-események: a részleteket a CMS-ben visszük fel + a FB-esemény URL-jét a beágyazáshoz (a FB API
+  zártsága miatt nincs automatikus esemény-szinkron).
