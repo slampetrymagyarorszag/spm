@@ -1,0 +1,19 @@
+---
+import type { SiteSettings } from "../sanity/lib/api";
+interface Props { settings: SiteSettings; }
+const { settings } = Astro.props;
+const s = settings.social ?? {};
+const year = new Date().getFullYear();
+---
+<footer class="bg-ink text-surface">
+  <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 md:flex-row md:items-center md:justify-between">
+    <p class="font-display text-xl">{settings.title}</p>
+    <ul class="flex gap-4 text-sm">
+      {s.facebook && <li><a href={s.facebook} class="hover:text-accent">Facebook</a></li>}
+      {s.youtube && <li><a href={s.youtube} class="hover:text-accent">YouTube</a></li>}
+      {s.instagram && <li><a href={s.instagram} class="hover:text-accent">Instagram</a></li>}
+      {settings.contactEmail && <li><a href={`mailto:${settings.contactEmail}`} class="hover:text-accent">{settings.contactEmail}</a></li>}
+    </ul>
+    <p class="text-xs text-muted">© {year}</p>
+  </div>
+</footer>
