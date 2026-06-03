@@ -11,6 +11,8 @@ export type SiteSettings = {
 
 type Fetcher = { fetch: (query: string) => Promise<any> };
 
-export async function getSiteSettings(client: Fetcher): Promise<SiteSettings> {
-  return (await client.fetch(SITE_SETTINGS_QUERY)) as SiteSettings;
+// Üres dataset esetén nincs siteSettings dokumentum, ezért null is lehet a válasz.
+// A hívók (pl. BaseLayout) kötelesek kezelni a null esetet.
+export async function getSiteSettings(client: Fetcher): Promise<SiteSettings | null> {
+  return (await client.fetch(SITE_SETTINGS_QUERY)) as SiteSettings | null;
 }

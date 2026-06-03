@@ -9,6 +9,10 @@ interface Props { title?: string; description?: string; }
 const { title, description } = Astro.props;
 const settings: SiteSettings = (await getSiteSettings(sanityClient)) ?? { title: "Slam Poetry Magyarország" };
 const pageTitle = title ? `${title} — ${settings.title}` : settings.title;
+// A CMS-ben megadott alap accent szín felülírja a design-token alapértéket (a Tailwind
+// `*-accent` utility-k a --color-accent változót használják). Esemény-oldalak ezt később
+// szintén felülírhatják a saját poszter-színükre.
+const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor}` : undefined;
 ---
 <!doctype html>
 <html lang="hu">
@@ -18,7 +22,7 @@ const pageTitle = title ? `${title} — ${settings.title}` : settings.title;
     <title>{pageTitle}</title>
     {description && <meta name="description" content={description} />}
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col" style={bodyStyle}>
     <Header settings={settings} />
     <main class="flex-1"><slot /></main>
     <Footer settings={settings} />
