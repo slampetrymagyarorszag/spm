@@ -12,10 +12,20 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^5.0.7",
     "@fontsource/anton": "^5.2.7",
     "@fontsource/inter": "^5.2.8",
+    "@sanity/astro": "^3.4.0",
+    "@sanity/client": "^7.22.1",
     "@tailwindcss/vite": "^4.3.0",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
     "astro": "^6.4.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-is": "^19.2.7",
+    "sanity": "^5.30.0",
+    "styled-components": "^6.4.2",
     "tailwindcss": "^4.3.0"
   }
 }
