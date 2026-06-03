@@ -11,3 +11,10 @@ export const POSTS_QUERY = `*[_type == "post" && defined(slug.current)] | order(
 export const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0]{
   _id, title, "slug": slug.current, publishedAt, author, excerpt, cover, tags, body
 }`;
+
+export const SLAMMERS_QUERY = `*[_type == "slammer" && defined(slug.current)] | order(name asc){
+  _id, name, "slug": slug.current, hometown, photo
+}`;
+export const SLAMMER_BY_SLUG_QUERY = `*[_type == "slammer" && slug.current == $slug][0]{
+  _id, name, "slug": slug.current, hometown, photo, bio, achievements, videos, social
+}`;

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RichText from '../../components/RichText.astro';
+import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
+import { urlForImage } from '../../sanity/lib/image';
+import { getSlammers, getSlammerBySlug } from '../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+
+export async function getStaticPaths() {
+  const slammers = await getSlammers(sanityClient);
+  return slammers.map((s) => ({ params: { slug: s.slug } }));
+}
+const { slug } = Astro.params;
+const slammer = await getSlammerBySlug(sanityClient, slug!);
+if (!slammer) return Astro.redirect('/slammerek');
+---
+<BaseLayout title={slammer.name}>
+  <section class="bg-ink text-surface">
+    <div class="mx-auto max-w-6xl px-4 py-16 grid gap-8 md:grid-cols-[2fr_3fr] items-end">
+      <div>
+        {slammer.photo && <img src={urlForImage(slammer.photo).width(700).url()} alt={slammer.name} class="rounded-lg" />}
+      </div>
+      <div>
+        {slammer.hometown && <p class="text-xs uppercase tracking-[0.2em] text-accent">{slammer.hometown}</p>}
+        <h1 class="mt-2 font-display text-5xl md:text-7xl leading-[0.9]">{slammer.name}</h1>
+        {slammer.achievements?.length && (
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {slammer.achievements.map((a) => <li class="rounded-full border border-surface/25 px-3 py-1 text-sm">{a}</li>)}
+          </ul>
+        )}
+      </div>
+    </div>
+  </section>
+  <div class="mx-auto max-w-3xl px-4 py-12">
+    <RichText value={slammer.bio} />
+    {slammer.videos?.length && (
+      <div class="mt-10 grid gap-6">
+        {slammer.videos.map((v) => <YouTubeEmbed url={v} />)}
+      </div>
+    )}
+  </div>
+</BaseLayout>
