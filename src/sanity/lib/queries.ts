@@ -18,3 +18,12 @@ export const SLAMMERS_QUERY = `*[_type == "slammer" && defined(slug.current)] | 
 export const SLAMMER_BY_SLUG_QUERY = `*[_type == "slammer" && slug.current == $slug][0]{
   _id, name, "slug": slug.current, hometown, photo, bio, achievements, videos, social
 }`;
+
+export const EVENTS_QUERY = `*[_type == "event" && defined(slug.current)]{
+  _id, title, "slug": slug.current, startsAt, cover, accentColor, location
+}`;
+export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug][0]{
+  _id, title, "slug": slug.current, startsAt, cover, accentColor, location, description,
+  ticketUrl, facebookEventUrl, registrationEnabled, registrationDeadline,
+  performers[]->{ _id, name, "slug": slug.current, photo }
+}`;

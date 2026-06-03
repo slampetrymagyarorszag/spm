@@ -6,6 +6,7 @@ export const structure: StructureResolver = (S) =>
     .items([
       S.documentTypeListItem('post').title('Hírek'),
       S.documentTypeListItem('slammer').title('Slammerek'),
+      S.documentTypeListItem('event').title('Események'),
       S.divider(),
       S.listItem()
         .title('Oldal beállítások')

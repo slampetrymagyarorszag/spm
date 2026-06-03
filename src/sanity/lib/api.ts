@@ -43,3 +43,22 @@ export async function getSlammers(client: Fetcher): Promise<SlammerListItem[]> {
 export async function getSlammerBySlug(client: Fetcher, slug: string): Promise<Slammer | null> {
   return (await client.fetch(SLAMMER_BY_SLUG_QUERY, { slug })) ?? null;
 }
+
+export type EventListItem = {
+  _id: string; title: string; slug: string; startsAt: string;
+  cover?: any; accentColor?: string; location?: { name?: string; address?: string; mapUrl?: string };
+};
+export type EventDetail = EventListItem & {
+  description?: any; ticketUrl?: string; facebookEventUrl?: string;
+  registrationEnabled?: boolean; registrationDeadline?: string;
+  performers?: { _id: string; name: string; slug: string; photo?: any }[];
+};
+
+import { EVENTS_QUERY, EVENT_BY_SLUG_QUERY } from './queries';
+
+export async function getEvents(client: Fetcher): Promise<EventListItem[]> {
+  return (await client.fetch(EVENTS_QUERY)) ?? [];
+}
+export async function getEventBySlug(client: Fetcher, slug: string): Promise<EventDetail | null> {
+  return (await client.fetch(EVENT_BY_SLUG_QUERY, { slug })) ?? null;
+}
