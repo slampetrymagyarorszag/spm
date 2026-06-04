@@ -1,16 +1,51 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
 import MediaCard from '../../components/MediaCard.astro';
+import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
 import { getMedia } from '../../sanity/lib/api';
+import { fetchChannelUploads } from '../../lib/youtube';
 import { sanityClient } from 'sanity:client';
-const media = await getMedia(sanityClient);
+
+const env = import.meta.env;
+const [media, videos] = await Promise.all([
+  getMedia(sanityClient),
+  fetchChannelUploads({
+    apiKey: env.YOUTUBE_API_KEY ?? process.env.YOUTUBE_API_KEY,
+    channelId: env.YOUTUBE_CHANNEL_ID ?? process.env.YOUTUBE_CHANNEL_ID,
+    handle: env.YOUTUBE_CHANNEL_HANDLE ?? process.env.YOUTUBE_CHANNEL_HANDLE,
+    max: 24,
+  }),
+]);
+const hasAny = media.length > 0 || videos.length > 0;
 ---
 <BaseLayout title="Médiatár">
   <PageHero label="Videók és képek" title="Médiatár" lead="Fellépések, versenyek, archív anyagok." />
   <section class="mx-auto max-w-6xl px-4 py-16">
-    {media.length === 0
-      ? <p class="text-muted">Hamarosan feltöltjük a médiatárat.</p>
-      : <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{media.map((item) => <MediaCard item={item} />)}</div>}
+    {!hasAny && <p class="text-muted">Hamarosan feltöltjük a médiatárat.</p>}
+
+    {videos.length > 0 && (
+      <div class="mb-16">
+        <SectionHeader label="YouTube" title="Legújabb videók" />
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {videos.map((v) => (
+            <figure>
+              <YouTubeEmbed url={v.url} title={v.title} />
+              <figcaption class="mt-2 font-display">{v.title}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {media.length > 0 && (
+      <div>
+        <SectionHeader label="Galéria" title="Albumok és képek" />
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {media.map((item) => <MediaCard item={item} />)}
+        </div>
+      </div>
+    )}
   </section>
 </BaseLayout>
