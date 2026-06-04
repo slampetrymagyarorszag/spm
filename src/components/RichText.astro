@@ -1,10 +1,15 @@
 ---
 import { PortableText } from 'astro-portabletext';
+import PtImage from './portable/PtImage.astro';
+import PtLink from './portable/PtLink.astro';
 interface Props { value: any }
 const { value } = Astro.props;
 ---
 {value && (
   <div class="prose-spm max-w-none">
-    <PortableText value={value} />
+    <PortableText
+      value={value}
+      components={{ type: { image: PtImage }, mark: { link: PtLink } }}
+    />
   </div>
 )}

@@ -23,6 +23,14 @@ export const blockContent = defineType({
         ],
       },
     }),
-    defineArrayMember({ type: 'image', options: { hotspot: true } }),
+    defineArrayMember({
+      type: 'image',
+      title: 'Kép',
+      options: { hotspot: true },
+      fields: [
+        { name: 'alt', type: 'string', title: 'Alt szöveg (akadálymentesség)' },
+        { name: 'caption', type: 'string', title: 'Képaláírás' },
+      ],
+    }),
   ],
 });

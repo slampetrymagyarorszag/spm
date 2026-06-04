@@ -33,10 +33,18 @@ if (!slammer) return Astro.redirect('/slammerek');
   </section>
   <div class="mx-auto max-w-3xl px-4 py-12">
     <RichText value={slammer.bio} />
-    {slammer.videos?.length && (
-      <div class="mt-10 grid gap-6">
-        {slammer.videos.map((v) => <YouTubeEmbed url={v} />)}
-      </div>
-    )}
   </div>
+  {slammer.videos?.length && (
+    <section class="mx-auto max-w-6xl px-4 pb-16">
+      <h2 class="font-display text-2xl mb-4">Videók</h2>
+      <div class="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-color:var(--color-accent)_transparent] [scrollbar-width:thin]">
+        {slammer.videos.map((v) => (
+          <div class="w-[85%] shrink-0 snap-start sm:w-[60%] lg:w-[45%]">
+            <YouTubeEmbed url={v} />
+          </div>
+        ))}
+      </div>
+      <p class="mt-1 text-xs text-muted md:hidden">← görgesd oldalra a további videókért →</p>
+    </section>
+  )}
 </BaseLayout>

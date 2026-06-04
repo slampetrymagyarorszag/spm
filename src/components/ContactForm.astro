@@ -1,0 +1,51 @@
+---
+interface Props { dept?: string; heading?: string }
+const { dept, heading } = Astro.props;
+---
+<form class="js-contact-form grid gap-4" aria-label="Kapcsolati űrlap" data-dept={dept ?? ''}>
+  {heading && <h2 class="font-display text-2xl">{heading}</h2>}
+  <input type="text" name="name" placeholder="Neved" aria-label="Neved" required class="rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
+  <input type="email" name="email" placeholder="Email címed" aria-label="Email címed" required class="rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
+  <textarea name="message" rows="5" placeholder="Üzenet" aria-label="Üzenet" required class="rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent"></textarea>
+  <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+  <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Küldés</button>
+  <p class="js-contact-status text-sm" role="status" aria-live="polite"></p>
+</form>
+<script>
+  document.querySelectorAll('form.js-contact-form').forEach((node) => {
+    const f = node as HTMLFormElement;
+    if (f.dataset.wired) return;
+    f.dataset.wired = '1';
+    const status = f.querySelector('.js-contact-status') as HTMLElement;
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
+      btn.disabled = true;
+      status.textContent = 'Küldés…';
+      status.style.color = '';
+      const payload: Record<string, any> = Object.fromEntries(new FormData(f).entries());
+      if (f.dataset.dept) payload.dept = f.dataset.dept;
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          status.textContent = 'Köszönjük! Üzeneted megérkezett.';
+          status.style.color = 'green';
+          f.reset();
+        } else {
+          status.textContent = json.error ?? 'Hiba történt.';
+          status.style.color = 'crimson';
+        }
+      } catch {
+        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.style.color = 'crimson';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

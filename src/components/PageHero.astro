@@ -1,14 +1,22 @@
 ---
 import ScrollMic from './ScrollMic.astro';
-interface Props { label?: string; title: string; lead?: string; mic?: boolean }
-const { label, title, lead, mic = false } = Astro.props;
+interface Props { label?: string; title: string; lead?: string; mic?: boolean; object?: string; objectAlt?: string }
+const { label, title, lead, mic = false, object, objectAlt = '' } = Astro.props;
 ---
 <section class="relative overflow-hidden bg-ink text-surface">
   {mic && <ScrollMic />}
-  <div class="relative z-10 mx-auto max-w-6xl px-4 py-20 md:py-28">
+  {object && (
+    <img
+      src={object}
+      alt={objectAlt}
+      aria-hidden={objectAlt ? undefined : 'true'}
+      class="pointer-events-none absolute bottom-0 left-0 hidden h-[110%] w-auto object-contain object-bottom opacity-90 mix-blend-screen md:block"
+    />
+  )}
+  <div class={`relative z-10 mx-auto max-w-6xl px-4 py-20 md:py-28 ${object ? 'md:pl-[34%]' : ''}`}>
     {label && (
-      <p class="mb-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent">
-        <span class="h-px w-8 bg-accent"></span>{label}
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">{label}</span>
       </p>
     )}
     <h1 class="font-display text-5xl md:text-8xl leading-[0.9] max-w-3xl">{title}</h1>
