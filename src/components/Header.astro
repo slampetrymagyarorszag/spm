@@ -14,7 +14,7 @@ const nav = settings.nav?.length ? settings.nav : [
 ---
 <header class="sticky top-0 z-50 bg-ink text-surface">
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-    <a href="/" class="font-display text-2xl">
+    <a href="/" class="flex items-center gap-3">
       {settings.logoUrl
         ? <img src={settings.logoUrl} alt={settings.title} class="h-10 w-auto" />
         : (
@@ -23,6 +23,10 @@ const nav = settings.nav?.length ? settings.nav : [
              Ha a Studióba feltöltenek egy rendes (átlátszó) logót, az kerül ide kezelés nélkül. */
           <img src="/logo.jpg" alt={settings.title} class="h-10 w-auto invert mix-blend-screen" />
         )}
+      <span class="font-display text-sm leading-[0.82] sm:text-base">
+        <span class="block">Slam Poetry</span>
+        <span class="block text-accent">Magyarország</span>
+      </span>
     </a>
     <ul class="hidden gap-5 md:flex">
       {nav.map((item) => (

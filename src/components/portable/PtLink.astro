@@ -1,0 +1,12 @@
+---
+const { node } = Astro.props;
+const href = node?.href ?? '#';
+const external = /^https?:/i.test(href);
+---
+<a
+  href={href}
+  class="mx-0.5 inline-flex items-center gap-1 rounded-full bg-accent px-3 py-0.5 align-baseline text-[0.95em] font-semibold !text-ink !no-underline transition hover:opacity-90"
+  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+>
+  <slot />{external && <span aria-hidden="true">↗</span>}
+</a>

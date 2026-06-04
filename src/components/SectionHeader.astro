@@ -4,8 +4,8 @@ const { label, title, align = 'left' } = Astro.props;
 ---
 <header class={`mb-10 ${align === 'center' ? 'text-center' : ''}`}>
   {label && (
-    <p class="mb-2 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-accent">
-      <span class="h-px w-8 bg-accent"></span>{label}
+    <p class="mb-2 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+      <span class="h-px w-8 bg-accent"></span><span class="inline-block">{label}</span>
     </p>
   )}
   <h2 class="font-display text-4xl md:text-6xl leading-[0.95]">{title}</h2>
