@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../../components/RichText.astro';
-import FacebookEventEmbed from '../../components/FacebookEventEmbed.astro';
+import EventNeonCard from '../../components/EventNeonCard.astro';
+import RegistrationForm from '../../components/RegistrationForm.astro';
 import { urlForImage } from '../../sanity/lib/image';
 import { getEvents, getEventBySlug } from '../../sanity/lib/api';
-import RegistrationForm from '../../components/RegistrationForm.astro';
 import { sanityClient } from 'sanity:client';
 export async function getStaticPaths() {
   const events = await getEvents(sanityClient);
@@ -13,31 +13,42 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const ev = await getEventBySlug(sanityClient, slug!);
 if (!ev) return Astro.redirect('/esemenyek');
-const d = new Date(ev.startsAt);
-const dateStr = d.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-const time = d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
 const heroStyle = ev.accentColor ? `--color-accent: ${ev.accentColor}` : undefined;
+const coverUrl = ev.cover ? urlForImage(ev.cover).width(1600).height(720).fit('crop').url() : null;
 ---
 <BaseLayout title={ev.title}>
-  <section class="bg-ink text-surface" style={heroStyle}>
-    <div class="mx-auto max-w-5xl px-4 py-16">
-      <p class="text-xs uppercase tracking-[0.2em] text-accent">{dateStr} · {time}</p>
-      <h1 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9]">{ev.title}</h1>
-      {ev.location?.name && <p class="mt-3 text-surface/75">{ev.location.name}{ev.location.address ? ` — ${ev.location.address}` : ''}</p>}
-      <div class="mt-6 flex flex-wrap gap-3">
-        {ev.ticketUrl && <a href={ev.ticketUrl} class="rounded-lg bg-accent px-5 py-2 font-semibold text-ink">Jegyek</a>}
-        {ev.location?.mapUrl && <a href={ev.location.mapUrl} class="rounded-lg border border-surface/30 px-5 py-2">Térkép</a>}
-      </div>
+  <section class="relative overflow-hidden bg-ink text-surface" style={heroStyle}>
+    {coverUrl && <img src={coverUrl} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover opacity-40" />}
+    {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40"></div>}
+    <div class="relative z-10 mx-auto max-w-5xl px-4 py-20 md:py-28">
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">Esemény</span>
+      </p>
+      <h1 class="max-w-3xl font-display text-5xl leading-[0.9] md:text-7xl">{ev.title}</h1>
     </div>
   </section>
+
   <div class="mx-auto max-w-3xl px-4 py-12">
-    <RichText value={ev.description} />
+    <EventNeonCard
+      startsAt={ev.startsAt}
+      locationName={ev.location?.name}
+      locationAddress={ev.location?.address}
+      mapUrl={ev.location?.mapUrl}
+      facebookEventUrl={ev.facebookEventUrl}
+    />
+
+    {ev.ticketUrl && (
+      <a href={ev.ticketUrl} target="_blank" rel="noopener noreferrer" class="mt-4 inline-block rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90">Jegyek →</a>
+    )}
+
+    {ev.description && <div class="mt-10"><RichText value={ev.description} /></div>}
+
     {ev.registrationEnabled && <RegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />}
-    {ev.facebookEventUrl && <FacebookEventEmbed url={ev.facebookEventUrl} />}
+
     {ev.performers?.length && (
-      <div class="mt-10">
-        <h2 class="font-display text-2xl mb-4">Fellépők</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+      <div class="mt-12">
+        <h2 class="mb-4 font-display text-2xl">Fellépők</h2>
+        <div class="grid grid-cols-2 gap-6 sm:grid-cols-3">
           {ev.performers.map((p) => (
             <a href={`/slammerek/${p.slug}`} class="group">
               <div class="aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
