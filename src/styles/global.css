@@ -42,3 +42,17 @@ html {
 .prose-spm a { color: var(--color-accent); text-decoration: underline; }
 .prose-spm blockquote { border-left: 3px solid var(--color-accent); padding-left: 1rem; font-style: italic; margin: 1.5rem 0; }
 .prose-spm img { border-radius: 0.5rem; margin: 1.5rem 0; }
+
+/* Tépett-matrica akcentus (brand) — enyhén elforgatott magenta címke */
+.sticker {
+  display: inline-block;
+  transform: rotate(-3deg);
+  background: var(--color-accent);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.95rem;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+}

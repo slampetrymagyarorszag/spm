@@ -1,0 +1,19 @@
+---
+import { urlForImage } from '../sanity/lib/image';
+import type { SlammerListItem } from '../sanity/lib/api';
+interface Props { slammer: SlammerListItem }
+const { slammer } = Astro.props;
+---
+<a href={`/slammerek/${slammer.slug}`} class="group block">
+  <div class="aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
+    {slammer.photo && (
+      <img
+        src={urlForImage(slammer.photo).width(400).height(533).url()}
+        alt={slammer.name}
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    )}
+  </div>
+  <h3 class="mt-2 font-display text-lg group-hover:text-accent">{slammer.name}</h3>
+  {slammer.hometown && <p class="text-sm text-muted">{slammer.hometown}</p>}
+</a>
