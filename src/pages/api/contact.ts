@@ -1,10 +1,9 @@
 import type { APIRoute } from 'astro';
 import { validateSubmission } from '../../lib/validation';
 import { sendMail } from '../../lib/mailer';
+import { escapeHtml as esc, sanitizeHeader } from '../../lib/escape';
 
 export const prerender = false;
-
-const esc = (s: string) => s.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]!));
 
 export const POST: APIRoute = async ({ request }) => {
   const data = await request.json().catch(() => ({}));
@@ -20,7 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
     ${data.phone ? `<p><strong>Telefon:</strong> ${esc(data.phone)}</p>` : ''}
     <p><strong>Üzenet:</strong><br>${esc(data.message).replace(/\n/g, '<br>')}</p>`;
   try {
-    await sendMail({ to, subject: 'Kapcsolati üzenet — slampoetry.hu', html, replyTo: data.email });
+    await sendMail({ to, subject: 'Kapcsolati üzenet — slampoetry.hu', html, replyTo: sanitizeHeader(data.email) });
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: 'Az üzenet küldése sikertelen. Próbáld újra később.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });

@@ -1,5 +1,6 @@
 export type SubmissionInput = {
   name?: string; email?: string; message?: string; phone?: string;
+  eventSlug?: string; // esemény-jelentkezésnél: a szerver ebből keresi ki a címzettet
   website?: string; // honeypot — embernek láthatatlan, botok kitöltik
 };
 export type ValidationResult = { ok: true } | { ok: false; error: string };
