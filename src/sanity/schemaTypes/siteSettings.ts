@@ -31,6 +31,16 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({ name: 'contactEmail', title: 'Kapcsolati email', type: 'string' }),
+    defineField({
+      name: 'impressum', title: 'Impresszum', type: 'object',
+      description: 'A lábléc impresszum blokkja.',
+      fields: [
+        defineField({ name: 'orgName', title: 'Egyesület neve', type: 'string', initialValue: 'Slam Poetry Magyarország Egyesület' }),
+        defineField({ name: 'address', title: 'Székhely / cím', type: 'text', rows: 2, description: 'Hol található az egyesület (székhely).' }),
+        defineField({ name: 'taxNumber', title: 'Adószám / nyilvántartási szám (opcionális)', type: 'string' }),
+        defineField({ name: 'annualReportsUrl', title: 'Éves beszámolók linkje', type: 'url', description: 'Link az egyesület éves beszámolóihoz.' }),
+      ],
+    }),
     defineField({ name: 'championshipCtaEnabled', title: 'Országos bajnokság CTA — bekapcsolva', type: 'boolean', initialValue: false }),
     defineField({ name: 'championshipCtaLabel', title: 'CTA felirat', type: 'string', initialValue: 'Jelentkezem az országos bajnokságra' }),
     defineField({ name: 'championshipCtaUrl', title: 'CTA cél (URL vagy /esemenyek/slug)', type: 'string' }),

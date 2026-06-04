@@ -4,6 +4,8 @@ interface Props { settings: SiteSettings; }
 const { settings } = Astro.props;
 const s = settings.social ?? {};
 const year = new Date().getFullYear();
+const imp = settings.impressum ?? {};
+const orgName = imp.orgName || 'Slam Poetry Magyarország Egyesület';
 
 // A megadott alap-linkek; a Studio siteSettings.social felülírhatja őket.
 const socials = [
@@ -51,6 +53,27 @@ const socials = [
       </ul>
     </div>
 
-    <p class="mt-10 text-xs text-muted">© {year} Slam Poetry Magyarország</p>
+    <!-- Impresszum -->
+    <div class="mt-10 grid gap-6 border-t border-white/10 pt-8 text-sm text-surface/70 sm:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">Impresszum</p>
+        <p class="font-display text-surface">{orgName}</p>
+        {imp.address && <p class="mt-1 whitespace-pre-line">{imp.address}</p>}
+        {imp.taxNumber && <p class="mt-1 text-xs text-surface/50">{imp.taxNumber}</p>}
+      </div>
+      <div>
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">Kapcsolat</p>
+        {settings.contactEmail && <a href={`mailto:${settings.contactEmail}`} class="block hover:text-accent">{settings.contactEmail}</a>}
+        <a href="/kapcsolat" class="mt-1 inline-block hover:text-accent">Lépj kapcsolatba velünk →</a>
+      </div>
+      <div>
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">Átláthatóság</p>
+        {imp.annualReportsUrl
+          ? <a href={imp.annualReportsUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-accent">Éves beszámolók ↗</a>
+          : <span class="text-surface/40">Éves beszámolók (hamarosan)</span>}
+      </div>
+    </div>
+
+    <p class="mt-8 text-xs text-muted">© {year} {orgName}</p>
   </div>
 </footer>

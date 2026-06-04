@@ -7,6 +7,7 @@ export type SiteSettings = {
   logoUrl?: string;
   nav?: { label: string; href: string }[];
   social?: { facebook?: string; youtube?: string; instagram?: string };
+  impressum?: { orgName?: string; address?: string; taxNumber?: string; annualReportsUrl?: string };
   championshipCtaEnabled?: boolean;
   championshipCtaLabel?: string;
   championshipCtaUrl?: string;

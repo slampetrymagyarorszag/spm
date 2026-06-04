@@ -54,7 +54,7 @@ export default function EventCalendar({ events }: { events: CalEvent[] }) {
     });
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-md">
+    <div className="rounded-2xl border border-white/10 bg-ink p-5 text-surface">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-display text-2xl">
           {MONTHS[view.m]} <span className="text-accent">{view.y}</span>
