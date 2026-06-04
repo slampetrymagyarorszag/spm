@@ -11,6 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
+    "migrate:dry": "node --env-file=.env scripts/migrate/run.mjs --dry-run",
+    "migrate": "node --env-file=.env scripts/migrate/run.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -36,6 +38,10 @@
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "@sanity/block-tools": "^3.70.0",
+    "@sanity/schema": "^5.30.0",
+    "he": "^1.2.0",
+    "jsdom": "^29.1.1",
     "patch-package": "^8.0.1",
     "vitest": "^4.1.8"
   }
