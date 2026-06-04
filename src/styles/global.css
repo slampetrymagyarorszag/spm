@@ -59,6 +59,26 @@ html {
 }
 .prose-spm img { border-radius: 0.75rem; margin: 1.75rem 0; }
 
+/* Karakterenként animált szöveg (staggered hover) */
+.anim-text { display: inline-block; }
+.anim-char {
+  display: inline-block;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i) * 25ms);
+  will-change: transform;
+}
+.anim-text:hover .anim-char { transform: translateY(-0.16em) scale(1.16); }
+@media (prefers-reduced-motion: reduce) {
+  .anim-char { transition: none; }
+  .anim-text:hover .anim-char { transform: none; }
+}
+
+/* Hero-objektumok lágy beleolvadása a sötétbe (a kép szélei elhalványulnak) */
+.hero-fade {
+  -webkit-mask-image: radial-gradient(72% 68% at 50% 48%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(72% 68% at 50% 48%, #000 52%, transparent 100%);
+}
+
 /* Tépett-matrica akcentus (brand) — enyhén elforgatott magenta címke */
 .sticker {
   display: inline-block;

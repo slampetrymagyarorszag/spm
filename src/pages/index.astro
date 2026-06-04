@@ -3,10 +3,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ScrollMic from "../components/ScrollMic.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import EventCard from "../components/EventCard.astro";
-import SlammerCard from "../components/SlammerCard.astro";
 import PostCard from "../components/PostCard.astro";
+import FeaturedSlammers from "../components/islands/FeaturedSlammers.tsx";
 import { getEvents, getSlammers, getPosts, getSiteSettings } from "../sanity/lib/api";
 import { splitEvents } from "../sanity/lib/events";
+import { urlForImage } from "../sanity/lib/image";
 import { sanityClient } from "sanity:client";
 import ChampionshipCta from "../components/ChampionshipCta.astro";
 
@@ -18,7 +19,15 @@ const [events, slammers, posts, settings] = await Promise.all([
 ]);
 const siteSettings = settings ?? { title: 'Slam Poetry Magyarország' };
 const upcoming = splitEvents(events).upcoming.slice(0, 4);
-const featuredSlammers = slammers.slice(0, 8);
+const featuredSlammers = slammers
+  .filter((s) => s.photo)
+  .slice(0, 7)
+  .map((s) => ({
+    name: s.name,
+    slug: s.slug,
+    hometown: s.hometown,
+    photoUrl: s.photo ? urlForImage(s.photo).width(500).height(720).fit('crop').url() : undefined,
+  }));
 const latestPosts = posts.slice(0, 3);
 ---
 <BaseLayout>
@@ -60,9 +69,7 @@ const latestPosts = posts.slice(0, 3);
       {featuredSlammers.length === 0 ? (
         <p class="text-surface/60">Hamarosan feltöltjük a slammerek profiljait.</p>
       ) : (
-        <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
-          {featuredSlammers.map((s) => <SlammerCard slammer={s} />)}
-        </div>
+        <FeaturedSlammers slammers={featuredSlammers} client:load />
       )}
     </div>
   </section>

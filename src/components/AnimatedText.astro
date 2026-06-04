@@ -1,0 +1,14 @@
+---
+// Karakterenkent animalt szoveg (hoverre staggered emelkedes/skalazas), tiszta CSS-sel.
+// A Text_03 (framer-motion) otlet alapjan, fuggoseg nelkul.
+interface Props { text: string; class?: string }
+const { text, class: className = '' } = Astro.props;
+const SPACE = ' ';
+const NBSP = String.fromCharCode(160);
+const chars = [...text].map((ch) => (ch === SPACE ? NBSP : ch));
+---
+<span class={`anim-text ${className}`} aria-label={text}>
+  {chars.map((ch, i) => (
+    <span class="anim-char" aria-hidden="true" style={`--i:${i}`}>{ch}</span>
+  ))}
+</span>
