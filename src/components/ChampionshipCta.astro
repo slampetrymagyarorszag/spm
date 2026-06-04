@@ -1,0 +1,14 @@
+---
+import type { SiteSettings } from '../sanity/lib/api';
+import { isCtaActive } from '../sanity/lib/cta';
+interface Props { settings: SiteSettings }
+const { settings } = Astro.props;
+const active = isCtaActive(settings);
+const label = settings.championshipCtaLabel ?? 'Jelentkezem az országos bajnokságra';
+const url = settings.championshipCtaUrl ?? '/esemenyek';
+---
+{active && (
+  <a href={url} class="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-ink shadow-lg hover:opacity-90">
+    🎤 {label}
+  </a>
+)}

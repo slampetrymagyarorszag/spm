@@ -7,6 +7,11 @@ export type SiteSettings = {
   logoUrl?: string;
   nav?: { label: string; href: string }[];
   social?: { facebook?: string; youtube?: string; instagram?: string };
+  championshipCtaEnabled?: boolean;
+  championshipCtaLabel?: string;
+  championshipCtaUrl?: string;
+  championshipCtaFrom?: string;
+  championshipCtaTo?: string;
 };
 
 type Fetcher = { fetch: (query: string, params?: Record<string, any>) => Promise<any> };

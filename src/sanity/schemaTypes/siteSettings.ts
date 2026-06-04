@@ -31,6 +31,11 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({ name: 'contactEmail', title: 'Kapcsolati email', type: 'string' }),
+    defineField({ name: 'championshipCtaEnabled', title: 'Országos bajnokság CTA — bekapcsolva', type: 'boolean', initialValue: false }),
+    defineField({ name: 'championshipCtaLabel', title: 'CTA felirat', type: 'string', initialValue: 'Jelentkezem az országos bajnokságra' }),
+    defineField({ name: 'championshipCtaUrl', title: 'CTA cél (URL vagy /esemenyek/slug)', type: 'string' }),
+    defineField({ name: 'championshipCtaFrom', title: 'CTA megjelenés -tól', type: 'datetime' }),
+    defineField({ name: 'championshipCtaTo', title: 'CTA megjelenés -ig', type: 'datetime' }),
   ],
   preview: { prepare: () => ({ title: 'Oldal beállítások' }) },
 });

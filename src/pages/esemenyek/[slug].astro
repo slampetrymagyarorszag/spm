@@ -4,6 +4,7 @@ import RichText from '../../components/RichText.astro';
 import FacebookEventEmbed from '../../components/FacebookEventEmbed.astro';
 import { urlForImage } from '../../sanity/lib/image';
 import { getEvents, getEventBySlug } from '../../sanity/lib/api';
+import RegistrationForm from '../../components/RegistrationForm.astro';
 import { sanityClient } from 'sanity:client';
 export async function getStaticPaths() {
   const events = await getEvents(sanityClient);
@@ -31,12 +32,7 @@ const heroStyle = ev.accentColor ? `--color-accent: ${ev.accentColor}` : undefin
   </section>
   <div class="mx-auto max-w-3xl px-4 py-12">
     <RichText value={ev.description} />
-    {ev.registrationEnabled && (
-      <div class="my-8 rounded-lg border border-accent/40 bg-accent/5 p-5">
-        <h2 class="font-display text-xl">Jelentkezés</h2>
-        <p class="mt-1 text-sm text-muted">A jelentkezés nyitva{ev.registrationDeadline ? ` — határidő: ${new Date(ev.registrationDeadline).toLocaleDateString('hu-HU')}` : ''}. (Az űrlap a következő fejlesztési fázisban élesedik.)</p>
-      </div>
-    )}
+    {ev.registrationEnabled && <RegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />}
     {ev.facebookEventUrl && <FacebookEventEmbed url={ev.facebookEventUrl} />}
     {ev.performers?.length && (
       <div class="mt-10">
