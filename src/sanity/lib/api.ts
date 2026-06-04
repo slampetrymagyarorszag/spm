@@ -29,7 +29,7 @@ export async function getPosts(client: Fetcher): Promise<PostListItem[]> {
   return (await client.fetch(POSTS_QUERY)) ?? [];
 }
 export async function getPostBySlug(client: Fetcher, slug: string): Promise<Post | null> {
-  return (await (client as any).fetch(POST_BY_SLUG_QUERY, { slug })) ?? null;
+  return (await client.fetch(POST_BY_SLUG_QUERY, { slug })) ?? null;
 }
 
 export type SlammerListItem = { _id: string; name: string; slug: string; hometown?: string; photo?: any };

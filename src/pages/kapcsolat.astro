@@ -19,9 +19,9 @@ const s = settings.social ?? {};
       </ul>
     </div>
     <form class="grid gap-4" aria-label="Kapcsolati űrlap">
-      <input class="rounded-lg border border-ink/15 px-4 py-3" type="text" name="name" placeholder="Neved" required />
-      <input class="rounded-lg border border-ink/15 px-4 py-3" type="email" name="email" placeholder="Email címed" required />
-      <textarea class="rounded-lg border border-ink/15 px-4 py-3" name="message" rows="5" placeholder="Üzenet" required></textarea>
+      <input class="rounded-lg border border-ink/15 px-4 py-3" type="text" name="name" placeholder="Neved" aria-label="Neved" required />
+      <input class="rounded-lg border border-ink/15 px-4 py-3" type="email" name="email" placeholder="Email címed" aria-label="Email címed" required />
+      <textarea class="rounded-lg border border-ink/15 px-4 py-3" name="message" rows="5" placeholder="Üzenet" aria-label="Üzenet" required></textarea>
       <button type="button" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink" disabled>Küldés (hamarosan élesedik)</button>
       <p class="text-xs text-muted">Az űrlap beküldése a következő fejlesztési fázisban élesedik.</p>
     </form>

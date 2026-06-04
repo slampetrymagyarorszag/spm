@@ -1,7 +1,7 @@
 ---
 interface Props { url: string }
 const { url } = Astro.props;
-const src = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(url)}&show_text=true&width=500`;
+const src = `https://www.facebook.com/plugins/event.php?href=${encodeURIComponent(url)}&width=500&height=300&small_header=false`;
 ---
 <div class="my-6">
   <a href={url} class="inline-flex items-center gap-2 rounded-lg bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white">Esemény a Facebookon ↗</a>

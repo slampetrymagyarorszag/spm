@@ -2,7 +2,7 @@
 interface Props { url: string; title?: string }
 const { url, title = 'YouTube videó' } = Astro.props;
 function youtubeId(u: string): string | null {
-  const m = u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  const m = u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);
   return m ? m[1] : null;
 }
 const id = youtubeId(url);
