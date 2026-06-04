@@ -37,11 +37,21 @@ function featuredUrl(wp) {
 
 async function uploadCover(client, url) {
   if (!url) return undefined;
-  const res = await fetch(url);
-  if (!res.ok) return undefined;
-  const buf = Buffer.from(await res.arrayBuffer());
-  const asset = await client.assets.upload('image', buf, { filename: url.split('/').pop() });
-  return { _type: 'image', asset: { _type: 'reference', _ref: asset._id } };
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return undefined;
+      const buf = Buffer.from(await res.arrayBuffer());
+      const asset = await client.assets.upload('image', buf, { filename: url.split('/').pop() });
+      return { _type: 'image', asset: { _type: 'reference', _ref: asset._id } };
+    } catch (e) {
+      if (attempt === 3) {
+        console.warn(`  ⚠ kép kihagyva (${url}): ${e.message}`);
+        return undefined;
+      }
+      await new Promise((r) => setTimeout(r, 600 * attempt));
+    }
+  }
 }
 
 async function main() {
@@ -68,13 +78,19 @@ async function main() {
 
   const client = createClient({ projectId, dataset, token, useCdn: false, apiVersion: '2024-01-01' });
   let n = 0;
+  let failed = 0;
   for (const { doc, cover } of [...posts, ...pages]) {
-    const coverImg = doc._type === 'post' ? await uploadCover(client, cover) : undefined;
-    await client.createOrReplace(coverImg ? { ...doc, cover: coverImg } : doc);
-    n++;
-    if (n % 10 === 0) console.log(`  ${n} dokumentum importálva…`);
+    try {
+      const coverImg = doc._type === 'post' ? await uploadCover(client, cover) : undefined;
+      await client.createOrReplace(coverImg ? { ...doc, cover: coverImg } : doc);
+      n++;
+      if (n % 10 === 0) console.log(`  ${n} dokumentum importálva…`);
+    } catch (e) {
+      failed++;
+      console.warn(`  ⚠ sikertelen: ${doc._id} — ${e.message}`);
+    }
   }
-  console.log(`Kész: ${n} dokumentum importálva. Nézd át a Studióban!`);
+  console.log(`Kész: ${n} dokumentum importálva${failed ? `, ${failed} sikertelen` : ''}. Nézd át a Studióban!`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
