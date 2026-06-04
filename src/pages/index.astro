@@ -5,15 +5,18 @@ import SectionHeader from "../components/SectionHeader.astro";
 import EventCard from "../components/EventCard.astro";
 import SlammerCard from "../components/SlammerCard.astro";
 import PostCard from "../components/PostCard.astro";
-import { getEvents, getSlammers, getPosts } from "../sanity/lib/api";
+import { getEvents, getSlammers, getPosts, getSiteSettings } from "../sanity/lib/api";
 import { splitEvents } from "../sanity/lib/events";
 import { sanityClient } from "sanity:client";
+import ChampionshipCta from "../components/ChampionshipCta.astro";
 
-const [events, slammers, posts] = await Promise.all([
+const [events, slammers, posts, settings] = await Promise.all([
   getEvents(sanityClient),
   getSlammers(sanityClient),
   getPosts(sanityClient),
+  getSiteSettings(sanityClient),
 ]);
+const siteSettings = settings ?? { title: 'Slam Poetry Magyarország' };
 const upcoming = splitEvents(events).upcoming.slice(0, 4);
 const featuredSlammers = slammers.slice(0, 8);
 const latestPosts = posts.slice(0, 3);
@@ -29,6 +32,7 @@ const latestPosts = posts.slice(0, 3);
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="/esemenyek" class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">Közelgő események</a>
         <a href="/mi-az-a-slam-poetry" class="rounded-lg border border-surface/30 px-6 py-3 font-semibold hover:border-accent hover:text-accent">Mi az a slam poetry?</a>
+        <ChampionshipCta settings={siteSettings} />
       </div>
     </div>
   </section>

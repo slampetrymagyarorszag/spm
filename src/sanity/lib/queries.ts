@@ -2,7 +2,8 @@ export const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   title, accentColor, contactEmail,
   "logoUrl": logo.asset->url,
   nav[]{ label, href },
-  social
+  social,
+  championshipCtaEnabled, championshipCtaLabel, championshipCtaUrl, championshipCtaFrom, championshipCtaTo
 }`;
 
 export const POSTS_QUERY = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc){
