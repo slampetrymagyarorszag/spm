@@ -18,12 +18,31 @@ const s = settings.social ?? {};
         {s.instagram && <li><a href={s.instagram} class="hover:text-accent">Instagram ↗</a></li>}
       </ul>
     </div>
-    <form class="grid gap-4" aria-label="Kapcsolati űrlap">
-      <input class="rounded-lg border border-ink/15 px-4 py-3" type="text" name="name" placeholder="Neved" aria-label="Neved" required />
-      <input class="rounded-lg border border-ink/15 px-4 py-3" type="email" name="email" placeholder="Email címed" aria-label="Email címed" required />
-      <textarea class="rounded-lg border border-ink/15 px-4 py-3" name="message" rows="5" placeholder="Üzenet" aria-label="Üzenet" required></textarea>
-      <button type="button" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink" disabled>Küldés (hamarosan élesedik)</button>
-      <p class="text-xs text-muted">Az űrlap beküldése a következő fejlesztési fázisban élesedik.</p>
-    </form>
+    <form id="contact-form" class="grid gap-4" aria-label="Kapcsolati űrlap">
+  <input type="text" name="name" placeholder="Neved" aria-label="Neved" required class="rounded-lg border border-ink/15 px-4 py-3" />
+  <input type="email" name="email" placeholder="Email címed" aria-label="Email címed" required class="rounded-lg border border-ink/15 px-4 py-3" />
+  <textarea name="message" rows="5" placeholder="Üzenet" aria-label="Üzenet" required class="rounded-lg border border-ink/15 px-4 py-3"></textarea>
+  <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+  <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink hover:opacity-90">Küldés</button>
+  <p id="contact-status" class="text-sm" role="status" aria-live="polite"></p>
+</form>
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('contact-status');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !status) return;
+    const btn = form.querySelector('button[type=submit]') as HTMLButtonElement;
+    btn.disabled = true; status.textContent = 'Küldés…'; status.style.color = '';
+    const payload = Object.fromEntries(new FormData(form).entries());
+    try {
+      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const json = await res.json();
+      if (res.ok && json.ok) { status.textContent = 'Köszönjük! Üzeneted megérkezett.'; status.style.color = 'green'; form.reset(); }
+      else { status.textContent = json.error ?? 'Hiba történt.'; status.style.color = 'crimson'; }
+    } catch { status.textContent = 'Hálózati hiba. Próbáld újra.'; status.style.color = 'crimson'; }
+    finally { btn.disabled = false; }
+  });
+</script>
   </section>
 </BaseLayout>
