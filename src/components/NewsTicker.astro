@@ -5,37 +5,48 @@ interface Props { posts: PostListItem[] }
 const { posts } = Astro.props;
 // A zökkenőmentes loophoz duplikáljuk az elemeket.
 const items = [...posts, ...posts];
+const fmt = (d: string) =>
+  new Date(d).toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
-<div class="ticker group relative overflow-hidden border-y border-white/10 bg-ink py-5 text-surface">
-  <div class="ticker-track flex w-max gap-5 group-hover:[animation-play-state:paused]">
-    {items.map((post, i) => (
+<div class="ticker group relative overflow-hidden">
+  <!-- lágy szél-elhalványítás kétoldalt -->
+  <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-surface to-transparent"></div>
+  <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-surface to-transparent"></div>
+
+  <div class="ticker-track flex w-max gap-6 px-4 group-hover:[animation-play-state:paused]">
+    {items.map((post, idx) => (
       <a
         href={`/hirek/${post.slug}`}
-        aria-hidden={i >= posts.length ? 'true' : undefined}
-        tabindex={i >= posts.length ? -1 : undefined}
-        class="flex w-80 shrink-0 items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-accent hover:bg-white/10"
+        aria-hidden={idx >= posts.length ? 'true' : undefined}
+        tabindex={idx >= posts.length ? -1 : undefined}
+        class="group/card block w-[88vw] shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-surface shadow-sm transition hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:w-[46vw] lg:w-[30rem]"
       >
-        {post.cover && (
-          <img
-            src={urlForImage(post.cover).width(160).height(120).fit('crop').url()}
-            alt=""
-            class="h-14 w-20 shrink-0 rounded-lg object-cover"
-          />
-        )}
-        <span class="min-w-0">
-          <span class="line-clamp-2 font-display text-sm leading-tight">{post.title}</span>
-        </span>
+        <div class="aspect-[16/9] overflow-hidden bg-ink/5">
+          {post.cover && (
+            <img
+              src={urlForImage(post.cover).width(640).height(360).fit('crop').url()}
+              alt=""
+              class="h-full w-full object-cover transition duration-500 group-hover/card:scale-105"
+            />
+          )}
+        </div>
+        <div class="p-5">
+          <p class="text-xs uppercase tracking-wide text-muted">{fmt(post.publishedAt)}</p>
+          <h3 class="mt-1 line-clamp-2 font-display text-2xl leading-tight transition-colors group-hover/card:text-accent">
+            {post.title}
+          </h3>
+        </div>
       </a>
     ))}
   </div>
 </div>
 <style>
-  /* Balról jobbra futó szalag, hoverre megáll. */
-  @keyframes ticker-rtl {
-    from { transform: translateX(-50%); }
-    to { transform: translateX(0); }
+  /* Jobbról balra, lassan; hoverre megáll, hogy legyen idő elolvasni. */
+  @keyframes ticker-ltr {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
-  .ticker-track { animation: ticker-rtl 45s linear infinite; }
+  .ticker-track { animation: ticker-ltr 90s linear infinite; }
   @media (prefers-reduced-motion: reduce) {
     .ticker-track { animation: none; flex-wrap: wrap; }
   }
