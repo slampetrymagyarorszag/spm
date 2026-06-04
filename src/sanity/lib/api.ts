@@ -71,3 +71,9 @@ import { MEDIA_QUERY } from './queries';
 export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
   return (await client.fetch(MEDIA_QUERY)) ?? [];
 }
+
+export type PageDoc = { title: string; lead?: string; body?: any };
+import { PAGE_BY_SLUG_QUERY } from './queries';
+export async function getPageBySlug(client: Fetcher, slug: string): Promise<PageDoc | null> {
+  return (await client.fetch(PAGE_BY_SLUG_QUERY, { slug })) ?? null;
+}

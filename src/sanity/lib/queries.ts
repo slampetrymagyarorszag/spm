@@ -31,3 +31,5 @@ export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug]
 export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdAt desc){
   _id, title, kind, youtubeUrl, image, albumUrl, albumCover, year
 }`;
+
+export const PAGE_BY_SLUG_QUERY = `*[_type == "page" && slug.current == $slug][0]{ title, lead, body }`;
