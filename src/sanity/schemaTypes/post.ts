@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { slugify } from '../lib/slugify';
 
 export const post = defineType({
   name: 'post',
@@ -6,7 +7,7 @@ export const post = defineType({
   type: 'document',
   fields: [
     defineField({ name: 'title', title: 'Cím', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' }, validation: (r) => r.required() }),
+    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title', slugify }, validation: (r) => r.required() }),
     defineField({ name: 'publishedAt', title: 'Megjelenés', type: 'datetime', validation: (r) => r.required() }),
     defineField({ name: 'author', title: 'Szerző', type: 'string' }),
     defineField({ name: 'cover', title: 'Borítókép', type: 'image', options: { hotspot: true } }),

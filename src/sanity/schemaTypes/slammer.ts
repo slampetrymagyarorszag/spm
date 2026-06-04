@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { slugify } from '../lib/slugify';
 
 export const slammer = defineType({
   name: 'slammer',
@@ -6,7 +7,7 @@ export const slammer = defineType({
   type: 'document',
   fields: [
     defineField({ name: 'name', title: 'Név', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'name' }, validation: (r) => r.required() }),
+    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'name', slugify }, validation: (r) => r.required() }),
     defineField({ name: 'photo', title: 'Fotó', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'hometown', title: 'Város', type: 'string' }),
     defineField({ name: 'bio', title: 'Bemutatkozás', type: 'blockContent' }),
