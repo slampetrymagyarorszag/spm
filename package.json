@@ -13,6 +13,8 @@
     "test": "vitest run",
     "migrate:dry": "node --env-file=.env scripts/migrate/run.mjs --dry-run",
     "migrate": "node --env-file=.env scripts/migrate/run.mjs",
+    "migrate:slammers:dry": "node --env-file=.env scripts/migrate/run.mjs --slammers --dry-run",
+    "migrate:slammers": "node --env-file=.env scripts/migrate/run.mjs --slammers",
     "postinstall": "patch-package"
   },
   "dependencies": {

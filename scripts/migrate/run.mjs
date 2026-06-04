@@ -1,11 +1,14 @@
 import { createClient } from '@sanity/client';
 import { writeFileSync } from 'node:fs';
-import { mapPost, mapPage } from './transform.mjs';
+import { mapPost, mapPage, mapSlammer } from './transform.mjs';
 
 const WP = 'https://slampoetry.hu/wp-json/wp/v2';
 // Szerkesztői kategóriák (Sajtó=11, Interjúk=8). Bővíthető a CATEGORIES env-vel (vesszős).
 const CATEGORIES = (process.env.MIGRATE_CATEGORIES ?? '11,8').split(',').map((s) => s.trim()).filter(Boolean);
 const DRY = process.argv.includes('--dry-run');
+// Slammer-mód: a slammer-profilok a "slammerek" szülő-oldal (id=14) gyermek-page-ei.
+const SLAMMERS = process.argv.includes('--slammers');
+const SLAMMER_PARENT = process.env.MIGRATE_SLAMMER_PARENT ?? '14';
 // Csak a valódi statikus oldalakat importáljuk (a 201 WP-page nagy része slammer-profil
 // és EB2018-aloldal — azokat kihagyjuk). Bővíthető a MIGRATE_PAGES env-vel (vesszős slug-lista).
 const PAGES_WHITELIST = new Set(
@@ -54,10 +57,46 @@ async function uploadCover(client, url) {
   }
 }
 
+async function runSlammers({ projectId, dataset, token }) {
+  const raw = await fetchAll('pages', { parent: SLAMMER_PARENT });
+  const slammers = raw
+    .filter((p) => !SKIP_TITLE.test(p.title?.rendered ?? ''))
+    .map((p) => ({ doc: mapSlammer(p), photo: featuredUrl(p) }));
+  console.log(`Slammerek (parent ${SLAMMER_PARENT}): ${slammers.length}`);
+
+  if (DRY || !token) {
+    if (!token) console.log('Nincs SANITY_WRITE_TOKEN → dry-run mód.');
+    writeFileSync('migration-slammers.json', JSON.stringify(slammers.map((x) => ({ ...x.doc, _photo: x.photo })), null, 2));
+    console.log('Dry-run: migration-slammers.json kiírva (nincs Sanity-írás, nincs kép-feltöltés).');
+    return;
+  }
+
+  const client = createClient({ projectId, dataset, token, useCdn: false, apiVersion: '2024-01-01' });
+  let n = 0;
+  let failed = 0;
+  for (const { doc, photo } of slammers) {
+    try {
+      const img = await uploadCover(client, photo);
+      await client.createOrReplace(img ? { ...doc, photo: img } : doc);
+      n++;
+      if (n % 10 === 0) console.log(`  ${n} slammer importálva…`);
+    } catch (e) {
+      failed++;
+      console.warn(`  ⚠ sikertelen: ${doc._id} — ${e.message}`);
+    }
+  }
+  console.log(`Kész: ${n} slammer importálva${failed ? `, ${failed} sikertelen` : ''}. Nézd át a Studióban!`);
+}
+
 async function main() {
   const projectId = process.env.PUBLIC_SANITY_PROJECT_ID;
   const dataset = process.env.PUBLIC_SANITY_DATASET ?? 'production';
   const token = process.env.SANITY_WRITE_TOKEN;
+
+  if (SLAMMERS) {
+    await runSlammers({ projectId, dataset, token });
+    return;
+  }
 
   const postsRaw = await fetchAll('posts', { categories: CATEGORIES.join(',') });
   const pagesRaw = await fetchAll('pages');

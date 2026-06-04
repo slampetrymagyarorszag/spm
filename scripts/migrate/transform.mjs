@@ -51,3 +51,24 @@ export function mapPage(wp) {
     body: htmlToPortableText(wp.content?.rendered ?? ''),
   };
 }
+
+// YouTube videó-URL-ek kinyerése a tartalom HTML-jéből (iframe src / link / youtu.be).
+export function extractYouTubeUrls(html = '') {
+  const ids = new Set();
+  const re = /(?:youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/g;
+  let m;
+  while ((m = re.exec(String(html))) !== null) ids.add(m[1]);
+  return [...ids].map((id) => `https://www.youtube.com/watch?v=${id}`);
+}
+
+export function mapSlammer(wp) {
+  const videos = extractYouTubeUrls(wp.content?.rendered ?? '');
+  return {
+    _id: `wp-slammer-${wp.id}`,
+    _type: 'slammer',
+    name: decodeEntities(wp.title?.rendered ?? ''),
+    slug: { _type: 'slug', current: wp.slug },
+    bio: htmlToPortableText(wp.content?.rendered ?? ''),
+    ...(videos.length ? { videos } : {}),
+  };
+}

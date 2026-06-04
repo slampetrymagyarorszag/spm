@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { decodeEntities, stripHtml, htmlToPortableText, mapPost, mapPage } from '../scripts/migrate/transform.mjs';
+import { decodeEntities, stripHtml, htmlToPortableText, mapPost, mapPage, extractYouTubeUrls, mapSlammer } from '../scripts/migrate/transform.mjs';
 
 describe('decodeEntities', () => {
   it('HTML entitásokat dekódol', () => {
@@ -57,5 +57,36 @@ describe('mapPage', () => {
     expect(doc.title).toBe('Egyesület');
     expect(doc.slug).toEqual({ _type: 'slug', current: 'egyesulet' });
     expect(Array.isArray(doc.body)).toBe(true);
+  });
+});
+
+describe('extractYouTubeUrls', () => {
+  it('kinyeri az iframe és link videó-ID-kat, deduplikál', () => {
+    const html = '<p>Bio</p><iframe src="https://www.youtube.com/embed/abc12345678"></iframe> <a href="https://youtu.be/abc12345678">x</a> <iframe src="https://www.youtube-nocookie.com/embed/XYZ98765432"></iframe>';
+    expect(extractYouTubeUrls(html)).toEqual([
+      'https://www.youtube.com/watch?v=abc12345678',
+      'https://www.youtube.com/watch?v=XYZ98765432',
+    ]);
+  });
+  it('üres bemenetre üres tömb', () => {
+    expect(extractYouTubeUrls('')).toEqual([]);
+  });
+});
+
+describe('mapSlammer', () => {
+  it('a WP oldalt Sanity slammer dokumentummá képezi', () => {
+    const wp = {
+      id: 2905,
+      slug: 'csernai-mihaly-misi',
+      title: { rendered: 'Csernai Mih&aacute;ly Misi' },
+      content: { rendered: '<p>Bemutatkoz&aacute;s sz&ouml;veg.</p><iframe src="https://www.youtube.com/embed/abc12345678"></iframe>' },
+    };
+    const doc = mapSlammer(wp);
+    expect(doc._id).toBe('wp-slammer-2905');
+    expect(doc._type).toBe('slammer');
+    expect(doc.name).toBe('Csernai Mihály Misi');
+    expect(doc.slug).toEqual({ _type: 'slug', current: 'csernai-mihaly-misi' });
+    expect(Array.isArray(doc.bio)).toBe(true);
+    expect(doc.videos).toEqual(['https://www.youtube.com/watch?v=abc12345678']);
   });
 });
