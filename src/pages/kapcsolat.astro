@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { getSiteSettings } from '../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const settings = (await getSiteSettings(sanityClient)) ?? { title: 'Slam Poetry Magyarország' };
+const s = settings.social ?? {};
+---
+<BaseLayout title="Kapcsolat">
+  <PageHero label="Írj nekünk" title="Kapcsolat" />
+  <section class="mx-auto max-w-4xl px-4 py-16 grid gap-10 md:grid-cols-2">
+    <div>
+      <h2 class="font-display text-2xl">Elérhetőség</h2>
+      {settings.contactEmail && <p class="mt-3"><a href={`mailto:${settings.contactEmail}`} class="text-accent underline">{settings.contactEmail}</a></p>}
+      <ul class="mt-4 space-y-1 text-sm">
+        {s.facebook && <li><a href={s.facebook} class="hover:text-accent">Facebook ↗</a></li>}
+        {s.youtube && <li><a href={s.youtube} class="hover:text-accent">YouTube ↗</a></li>}
+        {s.instagram && <li><a href={s.instagram} class="hover:text-accent">Instagram ↗</a></li>}
+      </ul>
+    </div>
+    <form class="grid gap-4" aria-label="Kapcsolati űrlap">
+      <input class="rounded-lg border border-ink/15 px-4 py-3" type="text" name="name" placeholder="Neved" required />
+      <input class="rounded-lg border border-ink/15 px-4 py-3" type="email" name="email" placeholder="Email címed" required />
+      <textarea class="rounded-lg border border-ink/15 px-4 py-3" name="message" rows="5" placeholder="Üzenet" required></textarea>
+      <button type="button" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink" disabled>Küldés (hamarosan élesedik)</button>
+      <p class="text-xs text-muted">Az űrlap beküldése a következő fejlesztési fázisban élesedik.</p>
+    </form>
+  </section>
+</BaseLayout>
