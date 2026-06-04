@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ScrollMic from "../components/ScrollMic.astro";
 ---
 <BaseLayout>
-  <section class="bg-ink text-surface">
-    <div class="mx-auto max-w-6xl px-4 py-24">
-      <h1 class="font-display text-5xl md:text-7xl">Slam Poetry Magyarország</h1>
-      <p class="mt-4 max-w-xl text-lg text-surface/80">Hamarosan: a magyar slam poetry színtér élő központja.</p>
+  <section class="relative overflow-hidden bg-ink text-surface">
+    <ScrollMic />
+    <div class="relative z-10 mx-auto max-w-6xl px-4 py-24 md:py-32">
+      <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">Slam Poetry Magyarország</h1>
+      <p class="mt-5 max-w-xl text-lg text-surface/80">A magyar slam poetry színtér élő központja.</p>
     </div>
   </section>
   <section class="mx-auto max-w-6xl px-4 py-16">
