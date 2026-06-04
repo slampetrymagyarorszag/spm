@@ -1,0 +1,25 @@
+---
+// Görgetést követő 3D mikrofon. A sötét hátteret mix-blend-screen tünteti el.
+---
+<div class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block" aria-hidden="true">
+  <img
+    id="scroll-mic"
+    src="/mic-3d.png"
+    alt=""
+    class="sticky top-0 ml-auto h-screen w-auto object-contain opacity-90 mix-blend-screen will-change-transform"
+    style="transform: translateY(0) rotate(0deg);"
+  />
+</div>
+<script>
+  const mic = document.getElementById('scroll-mic') as HTMLImageElement | null;
+  if (mic && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const rot = Math.min(y / 40, 18);
+      const lift = Math.min(y / 12, 80);
+      mic.style.transform = `translateY(${-lift}px) rotate(${rot}deg)`;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>

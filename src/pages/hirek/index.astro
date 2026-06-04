@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPosts } from '../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const posts = await getPosts(sanityClient);
+---
+<BaseLayout title="Hírek">
+  <PageHero label="Friss" title="Hírek" lead="Versenyeredmények, bejelentések, közösségi hírek." />
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    {posts.length === 0 ? (
+      <p class="text-muted">Hamarosan érkeznek az első hírek.</p>
+    ) : (
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    )}
+  </section>
+</BaseLayout>

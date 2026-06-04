@@ -1,0 +1,15 @@
+---
+import { urlForImage } from '../sanity/lib/image';
+import type { PostListItem } from '../sanity/lib/api';
+interface Props { post: PostListItem }
+const { post } = Astro.props;
+const date = new Date(post.publishedAt).toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<a href={`/hirek/${post.slug}`} class="group block">
+  <div class="aspect-[16/10] overflow-hidden rounded-lg bg-ink/5">
+    {post.cover && <img src={urlForImage(post.cover).width(640).height(400).url()} alt={post.title} class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />}
+  </div>
+  <p class="mt-3 text-xs uppercase tracking-wide text-muted">{date}</p>
+  <h3 class="mt-1 font-display text-xl leading-tight group-hover:text-accent">{post.title}</h3>
+  {post.excerpt && <p class="mt-1 text-sm text-muted line-clamp-2">{post.excerpt}</p>}
+</a>

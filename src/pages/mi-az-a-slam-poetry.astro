@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import RichText from '../components/RichText.astro';
+import { getPageBySlug } from '../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const page = await getPageBySlug(sanityClient, 'mi-az-a-slam-poetry');
+---
+<BaseLayout title={page?.title ?? 'Mi az a slam poetry?'}>
+  <PageHero label="Bevezető" title={page?.title ?? 'Mi az a slam poetry?'} lead={page?.lead} mic={true} />
+  <div class="mx-auto max-w-3xl px-4 py-12">
+    {page?.body ? <RichText value={page.body} /> : <p class="text-muted">Ez az oldal hamarosan elkészül. (Hozz létre egy „Oldal" dokumentumot „mi-az-a-slam-poetry" slug-gal a Studióban.)</p>}
+  </div>
+</BaseLayout>

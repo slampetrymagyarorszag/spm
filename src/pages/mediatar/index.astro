@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import MediaCard from '../../components/MediaCard.astro';
+import { getMedia } from '../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const media = await getMedia(sanityClient);
+---
+<BaseLayout title="Médiatár">
+  <PageHero label="Videók és képek" title="Médiatár" lead="Fellépések, versenyek, archív anyagok." />
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    {media.length === 0
+      ? <p class="text-muted">Hamarosan feltöltjük a médiatárat.</p>
+      : <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{media.map((item) => <MediaCard item={item} />)}</div>}
+  </section>
+</BaseLayout>
