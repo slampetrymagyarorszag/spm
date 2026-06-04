@@ -1,25 +1,94 @@
 ---
-// Görgetést követő 3D mikrofon. A sötét hátteret mix-blend-screen tünteti el.
+// Görgetést követő, 360°-ban pörgő 3D mikrofon (frame-szekvencia scroll-scrub).
+// A képkockák a /mic-frames/ mappában, a darabszám a /mic-frames/manifest.json-ban.
+// A mikrofon FIXEN a jobb oldalon ül; a megjelenített kocka a TELJES oldal görgetési
+// haladásához kötött (alul = 360°). Csak a sötét szekciók (data-mic-dark) fölött látszik.
+// A fekete hátteret mix-blend-screen tünteti el. prefers-reduced-motion esetén statikus.
 ---
-<div class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block" aria-hidden="true">
-  <img
-    id="scroll-mic"
-    src="/mic-3d.png"
-    alt=""
-    class="sticky top-0 ml-auto h-screen w-auto object-contain opacity-90 mix-blend-screen will-change-transform"
-    style="transform: translateY(0) rotate(0deg);"
-  />
-</div>
-<script>
-  const mic = document.getElementById('scroll-mic') as HTMLImageElement | null;
-  if (mic && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const onScroll = () => {
-      const y = window.scrollY;
-      const rot = Math.min(y / 40, 18);
-      const lift = Math.min(y / 12, 80);
-      mic.style.transform = `translateY(${-lift}px) rotate(${rot}deg)`;
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+<img id="scroll-mic" class="scroll-mic" alt="" aria-hidden="true" />
+<style>
+  .scroll-mic {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 46vw;
+    max-width: 660px;
+    object-fit: contain;
+    object-position: right center;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    z-index: 5;
   }
+  @media (max-width: 768px) {
+    .scroll-mic { display: none; }
+  }
+</style>
+<script>
+  (async () => {
+    const el = document.getElementById('scroll-mic') as HTMLImageElement | null;
+    if (!el) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let count = 0;
+    let ext = 'jpg';
+    try {
+      const m = await (await fetch('/mic-frames/manifest.json')).json();
+      count = m.count;
+      ext = m.ext ?? 'jpg';
+    } catch {
+      return;
+    }
+    if (!count) return;
+
+    const pad = (n: number) => String(n).padStart(3, '0');
+    const srcFor = (i: number) => `/mic-frames/frame_${pad(i + 1)}.${ext}`;
+
+    // Képkockák előtöltése a gyors váltáshoz.
+    const imgs: HTMLImageElement[] = [];
+    for (let i = 0; i < count; i++) {
+      const im = new Image();
+      im.src = srcFor(i);
+      imgs.push(im);
+    }
+    el.src = srcFor(0);
+
+    const darks = Array.from(document.querySelectorAll('[data-mic-dark]'));
+
+    function frameForScroll(): number {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+      return Math.round(p * (count - 1));
+    }
+
+    function darkVisible(): boolean {
+      const vh = window.innerHeight;
+      return darks.some((d) => {
+        const r = d.getBoundingClientRect();
+        return r.top < vh * 0.85 && r.bottom > vh * 0.15;
+      });
+    }
+
+    let raf = 0;
+    let lastIdx = -1;
+    function update() {
+      raf = 0;
+      const idx = reduce ? 0 : frameForScroll();
+      if (idx !== lastIdx) {
+        const im = imgs[idx];
+        if (im) el.src = im.src;
+        lastIdx = idx;
+      }
+      el.style.opacity = darkVisible() ? '1' : '0';
+    }
+    function onScroll() {
+      if (!raf) raf = requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  })();
 </script>
