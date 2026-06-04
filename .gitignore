@@ -33,3 +33,4 @@ pnpm-debug.log*
 
 # migration output (verification artifact)
 migration-output.json
+migration-slammers.json
