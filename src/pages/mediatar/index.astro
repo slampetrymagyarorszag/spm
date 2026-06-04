@@ -21,7 +21,7 @@ const [media, videos] = await Promise.all([
 const hasAny = media.length > 0 || videos.length > 0;
 ---
 <BaseLayout title="Médiatár">
-  <PageHero label="Videók és képek" title="Médiatár" lead="Fellépések, versenyek, archív anyagok." />
+  <PageHero label="Videók és képek" title="Médiatár" lead="Fellépések, versenyek, archív anyagok." object="/hero-clapper.png" objectAlt="" />
   <section class="mx-auto max-w-6xl px-4 py-16">
     {!hasAny && <p class="text-muted">Hamarosan feltöltjük a médiatárat.</p>}
 

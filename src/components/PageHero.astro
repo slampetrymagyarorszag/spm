@@ -1,5 +1,6 @@
 ---
 import ScrollMic from './ScrollMic.astro';
+import AnimatedText from './AnimatedText.astro';
 interface Props { label?: string; title: string; lead?: string; mic?: boolean; object?: string; objectAlt?: string }
 const { label, title, lead, mic = false, object, objectAlt = '' } = Astro.props;
 ---
@@ -19,7 +20,7 @@ const { label, title, lead, mic = false, object, objectAlt = '' } = Astro.props;
         <span class="h-px w-8 bg-accent"></span><span class="inline-block">{label}</span>
       </p>
     )}
-    <h1 class="font-display text-5xl md:text-8xl leading-[0.9] max-w-3xl">{title}</h1>
+    <h1 class="font-display text-5xl md:text-8xl leading-[0.9] max-w-3xl"><AnimatedText text={title} /></h1>
     {lead && <p class="mt-5 max-w-xl text-lg text-surface/75">{lead}</p>}
   </div>
 </section>
