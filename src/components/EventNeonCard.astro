@@ -1,0 +1,59 @@
+---
+// Interaktív, füstös/neonos esemény-kártya: a kinyerhető infókat (időpont, helyszín) +
+// a Facebook-linket mutatja, mozgó 3D/SVG hangulattal. A CMS-ből opcionálisan jön cover/leírás.
+interface Props { startsAt: string; locationName?: string; locationAddress?: string; mapUrl?: string; facebookEventUrl?: string }
+const { startsAt, locationName, locationAddress, mapUrl, facebookEventUrl } = Astro.props;
+const d = new Date(startsAt);
+const day = d.getDate();
+const monthShort = d.toLocaleDateString('hu-HU', { month: 'short' }).replace('.', '');
+const weekday = d.toLocaleDateString('hu-HU', { weekday: 'long' });
+const dateLong = d.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+const time = d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
+const venue = [locationName, locationAddress].filter(Boolean).join(' · ');
+---
+<div class="event-neon group relative overflow-hidden rounded-2xl border border-accent/40 bg-ink p-6 text-surface md:p-8">
+  <!-- füst rétegek -->
+  <div class="pointer-events-none absolute -left-16 -top-20 h-72 w-72 rounded-full bg-accent/25 blur-[90px]"></div>
+  <div class="pointer-events-none absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-fuchsia-600/20 blur-[100px]"></div>
+
+  <!-- mozgó neon gyűrűk (SVG) -->
+  <svg class="neon-rings pointer-events-none absolute -right-10 -top-10 h-56 w-56 opacity-70" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+    <circle class="ring ring1" cx="100" cy="100" r="80" stroke="var(--color-accent)" stroke-width="1.5" />
+    <circle class="ring ring2" cx="100" cy="100" r="58" stroke="var(--color-accent)" stroke-width="1" />
+    <circle class="ring ring3" cx="100" cy="100" r="36" stroke="#e879f9" stroke-width="1" />
+  </svg>
+
+  <div class="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <div class="flex items-center gap-5">
+      <!-- nagy dátum-blokk neon kerettel -->
+      <div class="neon-date flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-xl border border-accent/60">
+        <span class="font-display text-4xl leading-none">{day}</span>
+        <span class="text-xs uppercase tracking-widest text-accent">{monthShort}</span>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-accent">{weekday}</p>
+        <p class="neon-text font-display text-2xl leading-tight md:text-3xl">{dateLong}</p>
+        <p class="mt-1 text-surface/80">{time}{venue ? ` · ${venue}` : ''}</p>
+      </div>
+    </div>
+
+    {facebookEventUrl && (
+      <a
+        href={facebookEventUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="neon-cta inline-flex items-center justify-center gap-2 rounded-xl border border-accent px-6 py-3 font-display text-lg uppercase tracking-wide text-surface transition hover:bg-accent hover:text-ink"
+      >
+        Megnézem a Facebookon
+        <span aria-hidden="true">↗</span>
+      </a>
+    )}
+  </div>
+
+  {(venue && mapUrl) && (
+    <a href={mapUrl} target="_blank" rel="noopener noreferrer" class="relative z-10 mt-4 inline-flex items-center gap-1 text-sm text-accent hover:underline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
+      Térkép
+    </a>
+  )}
+</div>
