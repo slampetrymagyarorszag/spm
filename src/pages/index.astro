@@ -1,16 +1,80 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ScrollMic from "../components/ScrollMic.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import EventCard from "../components/EventCard.astro";
+import SlammerCard from "../components/SlammerCard.astro";
+import PostCard from "../components/PostCard.astro";
+import { getEvents, getSlammers, getPosts } from "../sanity/lib/api";
+import { splitEvents } from "../sanity/lib/events";
+import { sanityClient } from "sanity:client";
+
+const [events, slammers, posts] = await Promise.all([
+  getEvents(sanityClient),
+  getSlammers(sanityClient),
+  getPosts(sanityClient),
+]);
+const upcoming = splitEvents(events).upcoming.slice(0, 4);
+const featuredSlammers = slammers.slice(0, 8);
+const latestPosts = posts.slice(0, 3);
 ---
 <BaseLayout>
+  <!-- Hero -->
   <section class="relative overflow-hidden bg-ink text-surface">
     <ScrollMic />
-    <div class="relative z-10 mx-auto max-w-6xl px-4 py-24 md:py-32">
+    <div class="relative z-10 mx-auto max-w-6xl px-4 py-28 md:py-36">
+      <span class="sticker mb-6">Élő közösség 2006 óta</span>
       <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">Slam Poetry Magyarország</h1>
-      <p class="mt-5 max-w-xl text-lg text-surface/80">A magyar slam poetry színtér élő központja.</p>
+      <p class="mt-5 max-w-xl text-lg text-surface/80">A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/esemenyek" class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">Közelgő események</a>
+        <a href="/mi-az-a-slam-poetry" class="rounded-lg border border-surface/30 px-6 py-3 font-semibold hover:border-accent hover:text-accent">Mi az a slam poetry?</a>
+      </div>
     </div>
   </section>
-  <section class="mx-auto max-w-6xl px-4 py-16">
-    <p class="text-muted">Tartalmi szekciók helye (világos háttér).</p>
+
+  <!-- Közelgő események -->
+  <section class="mx-auto max-w-5xl px-4 py-16 md:py-20">
+    <div class="flex items-end justify-between">
+      <SectionHeader label="Naptár" title="Közelgő események" />
+      <a href="/esemenyek" class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">Összes esemény →</a>
+    </div>
+    {upcoming.length === 0 ? (
+      <p class="text-muted">Hamarosan meghirdetjük a következő eseményeket.</p>
+    ) : (
+      <div>{upcoming.map((e) => <EventCard event={e} />)}</div>
+    )}
+  </section>
+
+  <!-- Slammerek -->
+  <section class="bg-ink text-surface">
+    <div class="mx-auto max-w-6xl px-4 py-16 md:py-20">
+      <div class="flex items-end justify-between">
+        <SectionHeader label="A színtér arcai" title="Slammerek" />
+        <a href="/slammerek" class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">Összes slammer →</a>
+      </div>
+      {featuredSlammers.length === 0 ? (
+        <p class="text-surface/60">Hamarosan feltöltjük a slammerek profiljait.</p>
+      ) : (
+        <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+          {featuredSlammers.map((s) => <SlammerCard slammer={s} />)}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Friss hírek -->
+  <section class="mx-auto max-w-6xl px-4 py-16 md:py-20">
+    <div class="flex items-end justify-between">
+      <SectionHeader label="Friss" title="Hírek" />
+      <a href="/hirek" class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">Összes hír →</a>
+    </div>
+    {latestPosts.length === 0 ? (
+      <p class="text-muted">Hamarosan érkeznek az első hírek.</p>
+    ) : (
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {latestPosts.map((post) => <PostCard post={post} />)}
+      </div>
+    )}
   </section>
 </BaseLayout>
