@@ -1,9 +1,10 @@
 import { defineField, defineType } from 'sanity';
+import { slugify } from '../lib/slugify';
 export const event = defineType({
   name: 'event', title: 'Esemény', type: 'document',
   fields: [
     defineField({ name: 'title', title: 'Cím', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' }, validation: (r) => r.required() }),
+    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title', slugify }, validation: (r) => r.required() }),
     defineField({ name: 'startsAt', title: 'Kezdés', type: 'datetime', validation: (r) => r.required() }),
     defineField({ name: 'cover', title: 'Borítókép', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'accentColor', title: 'Esemény accent szín (hex)', type: 'string' }),
