@@ -10,6 +10,8 @@ export const slammer = defineType({
     defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'name', slugify }, validation: (r) => r.required() }),
     defineField({ name: 'photo', title: 'Fotó', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'hometown', title: 'Város', type: 'string' }),
+    defineField({ name: 'featured', title: 'Kiemelt a főoldalon', type: 'boolean', initialValue: false, description: 'Bekapcsolva megjelenik a főoldal kiemelt slammer-galériájában (max 10).' }),
+    defineField({ name: 'featuredOrder', title: 'Kiemelés sorrendje', type: 'number', description: 'Kisebb szám = előrébb. Üresen hagyva név szerint rendeződik.' }),
     defineField({ name: 'bio', title: 'Bemutatkozás', type: 'blockContent' }),
     defineField({ name: 'achievements', title: 'Eredmények', type: 'array', of: [{ type: 'string' }] }),
     defineField({ name: 'videos', title: 'Videók (YouTube URL)', type: 'array', of: [{ type: 'url' }] }),

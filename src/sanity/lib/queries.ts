@@ -19,6 +19,9 @@ export const SLAMMERS_QUERY = `*[_type == "slammer" && defined(slug.current)] | 
 export const SLAMMER_BY_SLUG_QUERY = `*[_type == "slammer" && slug.current == $slug][0]{
   _id, name, "slug": slug.current, hometown, photo, bio, achievements, videos, social
 }`;
+export const SLAMMERS_FEATURED_QUERY = `*[_type == "slammer" && featured == true && defined(slug.current)] | order(featuredOrder asc, name asc){
+  _id, name, "slug": slug.current, hometown, photo
+}`;
 
 export const EVENTS_QUERY = `*[_type == "event" && defined(slug.current)]{
   _id, title, "slug": slug.current, startsAt, cover, accentColor, location

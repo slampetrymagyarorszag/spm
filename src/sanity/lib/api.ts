@@ -40,10 +40,13 @@ export async function getPostBySlug(client: Fetcher, slug: string): Promise<Post
 export type SlammerListItem = { _id: string; name: string; slug: string; hometown?: string; photo?: any };
 export type Slammer = SlammerListItem & { bio?: any; achievements?: string[]; videos?: string[]; social?: { facebook?: string; instagram?: string } };
 
-import { SLAMMERS_QUERY, SLAMMER_BY_SLUG_QUERY } from './queries';
+import { SLAMMERS_QUERY, SLAMMER_BY_SLUG_QUERY, SLAMMERS_FEATURED_QUERY } from './queries';
 
 export async function getSlammers(client: Fetcher): Promise<SlammerListItem[]> {
   return (await client.fetch(SLAMMERS_QUERY)) ?? [];
+}
+export async function getFeaturedSlammers(client: Fetcher): Promise<SlammerListItem[]> {
+  return (await client.fetch(SLAMMERS_FEATURED_QUERY)) ?? [];
 }
 export async function getSlammerBySlug(client: Fetcher, slug: string): Promise<Slammer | null> {
   return (await client.fetch(SLAMMER_BY_SLUG_QUERY, { slug })) ?? null;

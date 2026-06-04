@@ -3,32 +3,35 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ScrollMic from "../components/ScrollMic.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import EventCard from "../components/EventCard.astro";
-import PostCard from "../components/PostCard.astro";
+import NewsTicker from "../components/NewsTicker.astro";
 import FeaturedSlammers from "../components/islands/FeaturedSlammers.tsx";
-import { getEvents, getSlammers, getPosts, getSiteSettings } from "../sanity/lib/api";
+import { getEvents, getSlammers, getFeaturedSlammers, getPosts, getSiteSettings } from "../sanity/lib/api";
 import { splitEvents } from "../sanity/lib/events";
 import { urlForImage } from "../sanity/lib/image";
 import { sanityClient } from "sanity:client";
 import ChampionshipCta from "../components/ChampionshipCta.astro";
 
-const [events, slammers, posts, settings] = await Promise.all([
+const [events, slammers, featured, posts, settings] = await Promise.all([
   getEvents(sanityClient),
   getSlammers(sanityClient),
+  getFeaturedSlammers(sanityClient),
   getPosts(sanityClient),
   getSiteSettings(sanityClient),
 ]);
 const siteSettings = settings ?? { title: 'Slam Poetry Magyarország' };
 const upcoming = splitEvents(events).upcoming.slice(0, 4);
-const featuredSlammers = slammers
+// Kiemelt slammerek a CMS-ből (max 10); ha nincs kiemelt, az első néhány (név szerint).
+const slammerSource = featured.length ? featured : slammers;
+const featuredSlammers = slammerSource
   .filter((s) => s.photo)
-  .slice(0, 7)
+  .slice(0, 10)
   .map((s) => ({
     name: s.name,
     slug: s.slug,
     hometown: s.hometown,
     photoUrl: s.photo ? urlForImage(s.photo).width(500).height(720).fit('crop').url() : undefined,
   }));
-const latestPosts = posts.slice(0, 3);
+const latestPosts = posts.slice(0, 12);
 ---
 <BaseLayout>
   <ScrollMic />
@@ -74,18 +77,16 @@ const latestPosts = posts.slice(0, 3);
     </div>
   </section>
 
-  <!-- Friss hírek -->
-  <section class="mx-auto max-w-6xl px-4 py-16 md:py-20">
-    <div class="flex items-end justify-between">
+  <!-- Friss hírek — folyamatosan futó szalag -->
+  <section class="py-16 md:py-20">
+    <div class="mx-auto mb-8 flex max-w-6xl items-end justify-between px-4">
       <SectionHeader label="Friss" title="Hírek" />
       <a href="/hirek" class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">Összes hír →</a>
     </div>
     {latestPosts.length === 0 ? (
-      <p class="text-muted">Hamarosan érkeznek az első hírek.</p>
+      <p class="mx-auto max-w-6xl px-4 text-muted">Hamarosan érkeznek az első hírek.</p>
     ) : (
-      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-        {latestPosts.map((post) => <PostCard post={post} />)}
-      </div>
+      <NewsTicker posts={latestPosts} />
     )}
   </section>
 </BaseLayout>

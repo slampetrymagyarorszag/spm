@@ -1,0 +1,42 @@
+---
+import { urlForImage } from '../sanity/lib/image';
+import type { PostListItem } from '../sanity/lib/api';
+interface Props { posts: PostListItem[] }
+const { posts } = Astro.props;
+// A zökkenőmentes loophoz duplikáljuk az elemeket.
+const items = [...posts, ...posts];
+---
+<div class="ticker group relative overflow-hidden border-y border-white/10 bg-ink py-5 text-surface">
+  <div class="ticker-track flex w-max gap-5 group-hover:[animation-play-state:paused]">
+    {items.map((post, i) => (
+      <a
+        href={`/hirek/${post.slug}`}
+        aria-hidden={i >= posts.length ? 'true' : undefined}
+        tabindex={i >= posts.length ? -1 : undefined}
+        class="flex w-80 shrink-0 items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-accent hover:bg-white/10"
+      >
+        {post.cover && (
+          <img
+            src={urlForImage(post.cover).width(160).height(120).fit('crop').url()}
+            alt=""
+            class="h-14 w-20 shrink-0 rounded-lg object-cover"
+          />
+        )}
+        <span class="min-w-0">
+          <span class="line-clamp-2 font-display text-sm leading-tight">{post.title}</span>
+        </span>
+      </a>
+    ))}
+  </div>
+</div>
+<style>
+  /* Balról jobbra futó szalag, hoverre megáll. */
+  @keyframes ticker-rtl {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+  .ticker-track { animation: ticker-rtl 45s linear infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track { animation: none; flex-wrap: wrap; }
+  }
+</style>
