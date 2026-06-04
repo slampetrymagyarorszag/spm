@@ -11,6 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
+    "migrate:dry": "node --env-file=.env scripts/migrate/run.mjs --dry-run",
+    "migrate": "node --env-file=.env scripts/migrate/run.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {

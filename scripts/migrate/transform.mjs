@@ -1,4 +1,5 @@
-import { decode } from 'he';
+import he from 'he';
+const { decode } = he;
 import { Schema } from '@sanity/schema';
 import { htmlToBlocks } from '@sanity/block-tools';
 import { JSDOM } from 'jsdom';
