@@ -6,6 +6,12 @@ const WP = 'https://slampoetry.hu/wp-json/wp/v2';
 // Szerkesztői kategóriák (Sajtó=11, Interjúk=8). Bővíthető a CATEGORIES env-vel (vesszős).
 const CATEGORIES = (process.env.MIGRATE_CATEGORIES ?? '11,8').split(',').map((s) => s.trim()).filter(Boolean);
 const DRY = process.argv.includes('--dry-run');
+// Csak a valódi statikus oldalakat importáljuk (a 201 WP-page nagy része slammer-profil
+// és EB2018-aloldal — azokat kihagyjuk). Bővíthető a MIGRATE_PAGES env-vel (vesszős slug-lista).
+const PAGES_WHITELIST = new Set(
+  (process.env.MIGRATE_PAGES ?? 'egyesulet,mi-az-a-slam-poetry,szabalyok,kapcsolat,partnerek-es-tamogatok')
+    .split(',').map((s) => s.trim()).filter(Boolean)
+);
 // Placeholder/zaj kiszűrése cím alapján.
 const SKIP_TITLE = /fejleszt[eé]s alatt|under development|test\b/i;
 
@@ -47,7 +53,9 @@ async function main() {
   const pagesRaw = await fetchAll('pages');
 
   const posts = postsRaw.filter((p) => !SKIP_TITLE.test(p.title?.rendered ?? '')).map((p) => ({ doc: mapPost(p), cover: featuredUrl(p) }));
-  const pages = pagesRaw.filter((p) => !SKIP_TITLE.test(p.title?.rendered ?? '')).map((p) => ({ doc: mapPage(p), cover: null }));
+  const pages = pagesRaw
+    .filter((p) => PAGES_WHITELIST.has(p.slug) && !SKIP_TITLE.test(p.title?.rendered ?? ''))
+    .map((p) => ({ doc: mapPage(p), cover: null }));
 
   console.log(`Cikkek (kategória ${CATEGORIES.join(',')}): ${posts.length} | Oldalak: ${pages.length}`);
 

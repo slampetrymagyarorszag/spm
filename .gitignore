@@ -30,3 +30,6 @@ pnpm-debug.log*
 # playwright/screenshot artifacts
 .playwright-mcp/
 .vercel
+
+# migration output (verification artifact)
+migration-output.json
