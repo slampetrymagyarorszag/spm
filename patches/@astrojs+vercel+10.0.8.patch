@@ -1,0 +1,23 @@
+diff --git a/node_modules/@astrojs/vercel/dist/index.js b/node_modules/@astrojs/vercel/dist/index.js
+index 7f88cb8..f0325c3 100644
+--- a/node_modules/@astrojs/vercel/dist/index.js
++++ b/node_modules/@astrojs/vercel/dist/index.js
+@@ -1,4 +1,17 @@
+-import { cpSync, existsSync, mkdirSync, readFileSync } from "node:fs";
++import { existsSync, mkdirSync, readFileSync, readdirSync, copyFileSync, statSync } from "node:fs";
++import { join as _joinPath } from "node:path";
++import { fileURLToPath as _fileURLToPath } from "node:url";
++function cpSync(src, dest, opts) {
++  const srcPath = src instanceof URL ? _fileURLToPath(src) : String(src);
++  const destPath = dest instanceof URL ? _fileURLToPath(dest) : String(dest);
++  mkdirSync(destPath, { recursive: true });
++  for (const entry of readdirSync(srcPath, { withFileTypes: true })) {
++    const s = _joinPath(srcPath, entry.name);
++    const d = _joinPath(destPath, entry.name);
++    if (entry.isDirectory()) { cpSync(s, d, opts); }
++    else { copyFileSync(s, d); }
++  }
++}
+ import { pathToFileURL } from "node:url";
+ import { emptyDir, removeDir, writeJson } from "@astrojs/internal-helpers/fs";
+ import {
