@@ -10,7 +10,7 @@ const { label, title, lead, mic = false, object, objectAlt = '' } = Astro.props;
       src={object}
       alt={objectAlt}
       aria-hidden={objectAlt ? undefined : 'true'}
-      class="pointer-events-none absolute bottom-0 left-0 hidden h-[110%] w-auto object-contain object-bottom opacity-90 mix-blend-screen md:block"
+      class="hero-fade pointer-events-none absolute bottom-0 left-0 hidden h-[110%] w-auto object-contain object-bottom opacity-90 mix-blend-screen md:block"
     />
   )}
   <div class={`relative z-10 mx-auto max-w-6xl px-4 py-20 md:py-28 ${object ? 'md:pl-[34%]' : ''}`}>
