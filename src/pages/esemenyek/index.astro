@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import EventCard from '../../components/EventCard.astro';
+import EventTipForm from '../../components/EventTipForm.astro';
 import EventCalendar from '../../components/islands/EventCalendar.tsx';
 import { getEvents } from '../../sanity/lib/api';
 import { splitEvents } from '../../sanity/lib/events';
@@ -42,4 +43,7 @@ const calEvents = events.map((e) => ({ title: e.title, slug: e.slug, startsAt: e
       </div>
     </section>
   )}
+
+  <!-- Esemény-tipp beküldő űrlap (mindig látszik) -->
+  <EventTipForm />
 </BaseLayout>

@@ -1,0 +1,90 @@
+---
+// Esemény-tipp űrlap: a látogató jelez egy slam eseményt, ami nincs a naptárban.
+// Kötelező: rendezvény neve, rövid leírás, Facebook esemény link. Email opcionális.
+import AnimatedText from './AnimatedText.astro';
+---
+<section class="relative overflow-hidden bg-ink text-surface">
+  <!-- hangulati fény -->
+  <div class="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-accent/20 blur-[120px]"></div>
+  <div class="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-accent/10 blur-[120px]"></div>
+
+  <div class="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2 md:items-center md:py-20">
+    <div>
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">Hiányzik egy esemény?</span>
+      </p>
+      <h2 class="font-display text-4xl leading-[0.95] md:text-5xl">
+        <AnimatedText text="Van egy slam eseményed?" />
+      </h2>
+      <p class="mt-4 max-w-md text-lg text-surface/75">
+        Láttál olyat, ami nincs fent a naptárban? Küldd el nekünk — átnézzük, és felvesszük a többi közé.
+      </p>
+    </div>
+
+    <form class="js-tip-form grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur md:p-7" aria-label="Esemény-tipp űrlap">
+      <div>
+        <label for="tip-name" class="mb-1 block text-sm text-surface/70">Rendezvény neve <span class="text-accent">*</span></label>
+        <input id="tip-name" type="text" name="eventName" required placeholder="pl. Slam Poetry Budapest — januári forduló"
+          class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+      <div>
+        <label for="tip-desc" class="mb-1 block text-sm text-surface/70">Mini leírás <span class="text-accent">*</span></label>
+        <textarea id="tip-desc" name="description" rows="3" required placeholder="Pár mondat: hol, mikor, miről szól?"
+          class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent"></textarea>
+      </div>
+      <div>
+        <label for="tip-fb" class="mb-1 block text-sm text-surface/70">Facebook esemény link <span class="text-accent">*</span></label>
+        <input id="tip-fb" type="url" name="facebookUrl" required placeholder="https://www.facebook.com/events/…"
+          class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+      <div>
+        <label for="tip-email" class="mb-1 block text-sm text-surface/70">Email <span class="text-surface/40">(opcionális, ha visszajeleznénk)</span></label>
+        <input id="tip-email" type="email" name="email" placeholder="te@example.hu"
+          class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+
+      <!-- honeypot -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+      <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Beküldöm az eseményt</button>
+      <p class="js-tip-status text-sm" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+<script>
+  document.querySelectorAll('form.js-tip-form').forEach((node) => {
+    const f = node as HTMLFormElement;
+    if (f.dataset.wired) return;
+    f.dataset.wired = '1';
+    const status = f.querySelector('.js-tip-status') as HTMLElement;
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
+      btn.disabled = true;
+      status.textContent = 'Küldés…';
+      status.style.color = '';
+      const payload: Record<string, any> = Object.fromEntries(new FormData(f).entries());
+      try {
+        const res = await fetch('/api/event-tip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          status.textContent = 'Köszönjük a tippet! Hamarosan átnézzük.';
+          status.style.color = '#7CFFB2';
+          f.reset();
+        } else {
+          status.textContent = json.error ?? 'Hiba történt.';
+          status.style.color = '#ff8da1';
+        }
+      } catch {
+        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.style.color = '#ff8da1';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
