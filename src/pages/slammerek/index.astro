@@ -4,6 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import SlammerSearch from '../../components/islands/SlammerSearch.tsx';
 import SlammerApplicationForm from '../../components/SlammerApplicationForm.astro';
 import SlamClubs from '../../components/SlamClubs.astro';
+import HungaryMap from '../../components/HungaryMap.astro';
 import SlamClubForm from '../../components/SlamClubForm.astro';
 import { getSlammers, getApprovedSlammerApplications, getSlamClubs } from '../../sanity/lib/api';
 import { urlForImage } from '../../sanity/lib/image';
@@ -87,7 +88,14 @@ function youtubeId(u?: string): string | null {
         <h2 class="mb-2 font-display text-3xl md:text-4xl">Slam klubok országszerte</h2>
         <p class="mb-8 max-w-xl text-surface/70">Kattints egy városra, és átviszünk a klub oldalára. Hiányzik a tiétek? Küldd be lentebb!</p>
         <SlamClubs clubs={clubs} />
-        <div class="mt-10 max-w-2xl">
+
+        <!-- Valódi kattintható Magyarország-térkép -->
+        <div class="mt-12">
+          <p class="mb-4 text-center text-xs uppercase tracking-[0.2em] text-surface/50">Kattints a térképen egy városra</p>
+          <HungaryMap clubs={clubs} />
+        </div>
+
+        <div class="mt-12 max-w-2xl">
           <SlamClubForm />
         </div>
       </div>
