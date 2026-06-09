@@ -21,12 +21,26 @@ export type SiteSettings = {
     opensAt?: string;
     closesAt?: string;
   };
+  emails?: EmailSettings;
   championshipCtaEnabled?: boolean;
   championshipCtaLabel?: string;
   championshipCtaUrl?: string;
   championshipCtaFrom?: string;
   championshipCtaTo?: string;
 };
+
+export type EmailSettings = {
+  generalEmail?: string;
+  pressEmail?: string;
+  applicationsEmail?: string;
+  notifyEmail?: string;
+  notifyOnSubmissions?: boolean;
+};
+
+// Csak a form-címzettek (szerver-oldali endpointokhoz, kis lekérdezés).
+export async function getEmailSettings(client: Fetcher): Promise<EmailSettings> {
+  return (await client.fetch(`*[_type == "siteSettings"][0].emails`)) ?? {};
+}
 
 type Fetcher = { fetch: (query: string, params?: Record<string, any>) => Promise<any> };
 

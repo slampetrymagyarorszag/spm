@@ -1,5 +1,9 @@
 import type { APIRoute } from 'astro';
+import { sanityClient } from 'sanity:client';
 import { validateSlammerApplication } from '../../lib/validation';
+import { getEmailSettings } from '../../sanity/lib/api';
+import { sendMail } from '../../lib/mailer';
+import { escapeHtml as esc } from '../../lib/escape';
 import { writeClient } from '../../sanity/lib/writeClient';
 
 export const prerender = false;
@@ -66,6 +70,21 @@ export const POST: APIRoute = async ({ request }) => {
       submittedAt: new Date().toISOString(),
       approved: false,
     });
+
+    // Best-effort értesítő a kezelőnek (ha be van állítva). Hiba esetén nem buktatjuk a beküldést.
+    try {
+      const emails = await getEmailSettings(sanityClient);
+      if (emails.notifyOnSubmissions && emails.notifyEmail) {
+        await sendMail({
+          to: emails.notifyEmail,
+          subject: 'Új slammer-jelentkezés érkezett — elbírálásra',
+          html: `<h2>Új slammer-jelentkezés</h2>
+            <p><strong>Művésznév:</strong> ${esc(fields.stageName)}</p>
+            <p><strong>Név:</strong> ${esc(fields.realName)}</p>
+            <p>Nézd át és hagyd jóvá a Studióban: <em>📥 Beküldött slammerek → Elbírálásra vár</em>.</p>`,
+        });
+      }
+    } catch { /* az értesítő nem kötelező */ }
 
     return json({ ok: true }, 200);
   } catch (e) {

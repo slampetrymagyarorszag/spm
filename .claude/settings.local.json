@@ -10,7 +10,11 @@
       "Bash(git checkout *)",
       "Bash(npm create *)",
       "Bash(ls \"C:\\\\Users\\\\Mészáros Péter\\\\AppData\\\\Local\\\\npm-cache\\\\_logs\\\\\" | sort | tail -3)",
-      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Mészáros Péter\\\\AppData\\\\Local\\\\npm-cache\\\\_logs\\\\\" | Sort-Object LastWriteTime | Select-Object -Last 1 | ForEach-Object { Get-Content $_.FullName -Tail 40 })"
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Mészáros Péter\\\\AppData\\\\Local\\\\npm-cache\\\\_logs\\\\\" | Sort-Object LastWriteTime | Select-Object -Last 1 | ForEach-Object { Get-Content $_.FullName -Tail 40 })",
+      "Bash(npx vitest *)",
+      "Bash(npm run *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Read(//c/Users/MSZROS~1/AppData/Local/Temp/**)"
     ]
   }
 }

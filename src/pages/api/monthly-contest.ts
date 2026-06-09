@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { sanityClient } from 'sanity:client';
+import { getEmailSettings } from '../../sanity/lib/api';
 import { validateMonthlyContest } from '../../lib/validation';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc, sanitizeHeader } from '../../lib/escape';
@@ -33,7 +34,8 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'A jelentkezési időszak lezárult.' }, 400);
   }
 
-  const to = import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'contest@slampoetry.hu';
+  const emails = await getEmailSettings(sanityClient);
+  const to = emails.applicationsEmail ?? import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'contest@slampoetry.hu';
   const monthLabel = mc.monthLabel || 'Havi klub';
   const typeLabel = data.entryType === 'openmic' ? 'Open mic' : 'Verseny';
 

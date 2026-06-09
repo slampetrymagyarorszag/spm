@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { sanityClient } from 'sanity:client';
+import { getEmailSettings } from '../../sanity/lib/api';
 import { validateSubmission, validateChampionship } from '../../lib/validation';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc, sanitizeHeader } from '../../lib/escape';
@@ -22,7 +23,8 @@ export const POST: APIRoute = async ({ request }) => {
 
   // A címzettet és az esemény címét a szerver olvassa ki (a kliens nem adhatja meg).
   const slug = typeof data.eventSlug === 'string' ? data.eventSlug : '';
-  const fallback = import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'contest@slampoetry.hu';
+  const emails = await getEmailSettings(sanityClient);
+  const fallback = emails.applicationsEmail ?? import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'contest@slampoetry.hu';
   const ev = slug
     ? await sanityClient.fetch(
         `*[_type == "event" && slug.current == $slug][0]{ title, registrationEnabled, championshipRegistration, registrationEmail }`,

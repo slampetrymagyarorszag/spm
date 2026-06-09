@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
+import { sanityClient } from 'sanity:client';
 import { validateSubmission } from '../../lib/validation';
+import { getEmailSettings } from '../../sanity/lib/api';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc, sanitizeHeader } from '../../lib/escape';
 
@@ -12,11 +14,14 @@ export const POST: APIRoute = async ({ request }) => {
     const status = result.error === 'spam' ? 200 : 400; // spam: csendben elnyel
     return new Response(JSON.stringify({ ok: result.error === 'spam' }), { status, headers: { 'Content-Type': 'application/json' } });
   }
-  // A címzettet a SZERVER dönti el egy fix leképezésből (a kliens csak egy 'dept' kulcsot ad,
-  // sosem tetszőleges email-címet) — így nem lehet az űrlapot spam-relayként használni.
-  const RECIPIENTS: Record<string, string> = { media: 'media@slampoetry.hu' };
-  const fallback = import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'contest@slampoetry.hu';
-  const to = (typeof data.dept === 'string' && RECIPIENTS[data.dept]) || fallback;
+  // A címzettet a SZERVER dönti el (a kliens csak egy 'dept' kulcsot ad, sosem tetszőleges
+  // email-címet) — így nem lehet az űrlapot spam-relayként használni. A konkrét címeket a
+  // Sanity „Email-címzettek" blokkból olvassuk; üres esetén alapértékek.
+  const emails = await getEmailSettings(sanityClient);
+  const envFallback = import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'info@slampoetry.hu';
+  const general = emails.generalEmail || envFallback;
+  const press = emails.pressEmail || 'media@slampoetry.hu';
+  const to = data.dept === 'media' ? press : general;
   const html = `<h2>Új üzenet a weboldalról</h2>
     <p><strong>Név:</strong> ${esc(data.name)}</p>
     <p><strong>Email:</strong> ${esc(data.email)}</p>

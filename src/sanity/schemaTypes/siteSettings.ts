@@ -30,7 +30,19 @@ export const siteSettings = defineType({
         defineField({ name: 'instagram', title: 'Instagram', type: 'url' }),
       ],
     }),
-    defineField({ name: 'contactEmail', title: 'Kapcsolati email', type: 'string' }),
+    defineField({ name: 'contactEmail', title: 'Kapcsolati email (megjelenítéshez)', type: 'string', description: 'Ez a cím látszik a Kapcsolat oldalon és a láblécben. (A form-ok címzettjeit lent, az „Email-címzettek" blokkban állítod.)' }),
+    defineField({
+      name: 'emails', title: 'Email-címzettek (form-ok)', type: 'object',
+      description: 'Melyik űrlap melyik címre érkezzen. Üresen hagyott mezőnél az alapérték érvényes.',
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: 'generalEmail', title: 'Általános kapcsolat → info', type: 'string', initialValue: 'info@slampoetry.hu', description: 'A „Kapcsolat" oldal űrlapja ide érkezik.' }),
+        defineField({ name: 'pressEmail', title: 'Sajtó / egyesület → media', type: 'string', initialValue: 'media@slampoetry.hu', description: 'Az Egyesület oldal „Lépj kapcsolatba" űrlapja ide érkezik.' }),
+        defineField({ name: 'applicationsEmail', title: 'Jelentkezések → contest', type: 'string', initialValue: 'contest@slampoetry.hu', description: 'Esemény-jelentkezés, országos bajnokság és havi klub jelentkezés ide érkezik (ha az adott eseménynél nincs külön cím megadva).' }),
+        defineField({ name: 'notifyEmail', title: 'Értesítési cím — új beküldésről', type: 'string', description: 'Ha kitöltöd, erre a címre megy egy értesítő, amikor új slammer-jelentkezés vagy esemény-tipp érkezik (elbírálásra). Pl. annak a kollégának a címe, aki kezeli ezeket.' }),
+        defineField({ name: 'notifyOnSubmissions', title: 'Értesítő bekapcsolva', type: 'boolean', initialValue: false }),
+      ],
+    }),
     defineField({
       name: 'home', title: 'Főoldal — hero', type: 'object',
       description: 'A főoldal tetején lévő nagy bevezető blokk szövegei. Üresen hagyva az alapértékek jelennek meg.',
