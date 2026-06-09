@@ -25,9 +25,11 @@ const upcoming = splitEvents(events).upcoming.slice(0, 4);
 // név szerint feltöltve — így a galéria mindig tele van, de a kiemeltek vezetnek.
 const featuredIds = new Set(featured.map((s) => s._id));
 const slammerSource = [...featured, ...slammers.filter((s) => !featuredIds.has(s._id))];
+// Minden kiemelt slammer férjen el (ha 10-nél több van), de ne legyen abszurd sok panel.
+const galleryLimit = Math.min(Math.max(featured.length, 10), 14);
 const featuredSlammers = slammerSource
   .filter((s) => s.photo)
-  .slice(0, 10)
+  .slice(0, galleryLimit)
   .map((s) => ({
     name: s.name,
     slug: s.slug,
