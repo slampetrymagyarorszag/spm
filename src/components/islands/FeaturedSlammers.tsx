@@ -36,8 +36,9 @@ export default function FeaturedSlammers({ slammers }: { slammers: FeaturedItem[
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out"
                 style={{
-                  // Alapból fekete-fehér, hoverre/fókuszra teljes szín.
-                  filter: isActive ? 'grayscale(0%) brightness(1)' : 'grayscale(100%) brightness(0.7)',
+                  // A fotók eleve fekete-fehérek, ezért a fényerő a működő eszköz:
+                  // a nem-aktív tompább, az aktív felragyog.
+                  filter: isActive ? 'brightness(1.1) contrast(1.05)' : 'brightness(0.55)',
                   transform: isActive ? 'scale(1)' : 'scale(1.05)',
                 }}
               />

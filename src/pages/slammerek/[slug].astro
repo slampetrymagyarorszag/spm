@@ -18,9 +18,9 @@ const metaDescription = [slammer.hometown, 'slammer — Slam Poetry Magyarorszá
 ---
 <BaseLayout title={slammer.name} description={metaDescription} image={photoUrl} ogType="article">
   <section class="relative overflow-hidden bg-ink text-surface">
-    <!-- füstös, ambient színpad-háttér -->
-    <img src="/slammer-ambient.jpg" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40" />
-    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30"></div>
+    <!-- füstös, ambient színpad-háttér (feljebb tolva, erősebb) -->
+    <img src="/slammer-ambient.jpg" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full object-cover object-top opacity-65" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10"></div>
     <div class="relative z-10 mx-auto max-w-6xl px-4 py-16 grid gap-8 md:grid-cols-[2fr_3fr] items-end">
       <div>
         {slammer.photo && <img src={urlForImage(slammer.photo).width(700).url()} alt={slammer.name} class="rounded-lg shadow-2xl" />}
