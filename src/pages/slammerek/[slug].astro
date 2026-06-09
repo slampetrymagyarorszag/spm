@@ -13,8 +13,10 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const slammer = await getSlammerBySlug(sanityClient, slug!);
 if (!slammer) return Astro.redirect('/slammerek');
+const photoUrl = slammer.photo ? urlForImage(slammer.photo).width(1200).height(630).fit('crop').url() : undefined;
+const metaDescription = [slammer.hometown, 'slammer — Slam Poetry Magyarország'].filter(Boolean).join(' · ');
 ---
-<BaseLayout title={slammer.name}>
+<BaseLayout title={slammer.name} description={metaDescription} image={photoUrl} ogType="article">
   <section class="bg-ink text-surface">
     <div class="mx-auto max-w-6xl px-4 py-16 grid gap-8 md:grid-cols-[2fr_3fr] items-end">
       <div>

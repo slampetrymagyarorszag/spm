@@ -25,6 +25,7 @@ A változókat a **Vercel dashboard → a projekt → Settings → Environment V
 |---|---|
 | `PUBLIC_SANITY_PROJECT_ID` | `8x0yi65e` |
 | `PUBLIC_SANITY_DATASET` | `production` |
+| `PUBLIC_SITE_URL` | a végleges nyilvános URL (pl. `https://slampoetry.hu`). Ez adja a canonical/OG/sitemap abszolút linkeket. Ha nincs megadva, az alap `https://slampoetry.hu`. Vercel preview-domainen állítsd a preview URL-re. |
 | `YOUTUBE_API_KEY` | a YouTube Data API kulcsod |
 | `YOUTUBE_CHANNEL_ID` | `UCg2q-EVjQML15iQNK3L4B0Q` |
 | `CONTACT_EMAIL` | `contest@slampoetry.hu` (opcionális, ez az alap) |
