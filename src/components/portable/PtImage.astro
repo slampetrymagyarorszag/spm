@@ -5,7 +5,7 @@ const url = node?.asset ? urlForImage(node).width(1200).fit('max').url() : null;
 ---
 {url && (
   <figure class="my-8 not-prose">
-    <img src={url} alt={node.alt ?? ''} class="w-full rounded-xl" loading="lazy" />
+    <img src={url} alt={node.alt ?? ''} class="mx-auto max-h-[640px] w-auto max-w-full rounded-xl" loading="lazy" decoding="async" />
     {node.caption && <figcaption class="mt-2 text-center text-sm text-muted">{node.caption}</figcaption>}
   </figure>
 )}
