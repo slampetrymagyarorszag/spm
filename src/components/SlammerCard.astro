@@ -5,7 +5,7 @@ interface Props { slammer: SlammerListItem }
 const { slammer } = Astro.props;
 ---
 <a href={`/slammerek/${slammer.slug}`} class="group block">
-  <div class="aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
+  <div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
     {slammer.photo && (
       <img
         src={urlForImage(slammer.photo).width(400).height(533).url()}
@@ -17,6 +17,8 @@ const { slammer } = Astro.props;
         class="h-full w-full object-cover brightness-90 transition duration-500 group-hover:scale-105 group-hover:brightness-110"
       />
     )}
+    <!-- brand-türkiz duotone festés hoverre -->
+    <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" style="background:#14b8a6;mix-blend-mode:color"></div>
   </div>
   <h3 class="mt-2 font-display text-lg group-hover:text-accent">{slammer.name}</h3>
   {slammer.hometown && <p class="text-sm text-muted">{slammer.hometown}</p>}

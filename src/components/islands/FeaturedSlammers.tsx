@@ -38,11 +38,16 @@ export default function FeaturedSlammers({ slammers }: { slammers: FeaturedItem[
                 style={{
                   // A fotók eleve fekete-fehérek, ezért a fényerő a működő eszköz:
                   // a nem-aktív tompább, az aktív felragyog.
-                  filter: isActive ? 'brightness(1.1) contrast(1.05)' : 'brightness(0.55)',
+                  filter: isActive ? 'brightness(1.15) contrast(1.05)' : 'brightness(0.5)',
                   transform: isActive ? 'scale(1)' : 'scale(1.05)',
                 }}
               />
             )}
+            {/* brand-színű duotone festés hoverre (mix-blend: color) — türkiz, könnyen átírható */}
+            <div
+              className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+              style={{ background: '#14b8a6', mixBlendMode: 'color', opacity: isActive ? 0.6 : 0 }}
+            />
             {/* sötét gradiens overlay az olvashatóságért */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#111114] via-[#111114]/30 to-transparent"></div>
 
