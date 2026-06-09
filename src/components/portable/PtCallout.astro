@@ -1,0 +1,21 @@
+---
+const { node } = Astro.props;
+const tone = (node?.tone as string) ?? 'accent';
+const text = node?.text as string | undefined;
+const attribution = node?.attribution as string | undefined;
+
+const toneClass: Record<string, string> = {
+  accent: 'border-accent/60 bg-accent/5',
+  quote: 'border-ink/15 bg-ink/[0.03]',
+  info: 'border-blue-400/50 bg-blue-50',
+};
+const cls = toneClass[tone] ?? toneClass.accent;
+---
+{text && (
+  <aside class={`not-prose my-8 rounded-xl border-l-4 px-5 py-4 ${cls}`}>
+    {tone === 'quote'
+      ? <blockquote class="font-display text-xl leading-snug text-ink md:text-2xl">{text}</blockquote>
+      : <p class="text-base leading-relaxed text-ink">{text}</p>}
+    {attribution && <p class="mt-2 text-sm text-muted">— {attribution}</p>}
+  </aside>
+)}

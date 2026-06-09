@@ -2,6 +2,10 @@
 import { PortableText } from 'astro-portabletext';
 import PtImage from './portable/PtImage.astro';
 import PtLink from './portable/PtLink.astro';
+import PtYouTube from './portable/PtYouTube.astro';
+import PtCallout from './portable/PtCallout.astro';
+import PtButton from './portable/PtButton.astro';
+import PtDivider from './portable/PtDivider.astro';
 interface Props { value: any }
 const { value } = Astro.props;
 ---
@@ -9,7 +13,16 @@ const { value } = Astro.props;
   <div class="prose-spm max-w-none">
     <PortableText
       value={value}
-      components={{ type: { image: PtImage }, mark: { link: PtLink } }}
+      components={{
+        type: {
+          image: PtImage,
+          youtube: PtYouTube,
+          callout: PtCallout,
+          button: PtButton,
+          divider: PtDivider,
+        },
+        mark: { link: PtLink },
+      }}
     />
   </div>
 )}

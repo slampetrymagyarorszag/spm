@@ -32,6 +32,20 @@ export const siteSettings = defineType({
     }),
     defineField({ name: 'contactEmail', title: 'Kapcsolati email', type: 'string' }),
     defineField({
+      name: 'home', title: 'Főoldal — hero', type: 'object',
+      description: 'A főoldal tetején lévő nagy bevezető blokk szövegei. Üresen hagyva az alapértékek jelennek meg.',
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: 'heroSticker', title: 'Matrica-felirat', type: 'string', initialValue: 'Élő közösség 2006 óta' }),
+        defineField({ name: 'heroTitle', title: 'Fő cím', type: 'string', initialValue: 'Slam Poetry Magyarország' }),
+        defineField({ name: 'heroLead', title: 'Alcím / bevezető', type: 'text', rows: 2, initialValue: 'A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.' }),
+        defineField({ name: 'primaryCtaLabel', title: 'Elsődleges gomb felirata', type: 'string', initialValue: 'Közelgő események' }),
+        defineField({ name: 'primaryCtaHref', title: 'Elsődleges gomb linkje', type: 'string', initialValue: '/esemenyek' }),
+        defineField({ name: 'secondaryCtaLabel', title: 'Másodlagos gomb felirata', type: 'string', initialValue: 'Mi az a slam poetry?' }),
+        defineField({ name: 'secondaryCtaHref', title: 'Másodlagos gomb linkje', type: 'string', initialValue: '/mi-az-a-slam-poetry' }),
+      ],
+    }),
+    defineField({
       name: 'impressum', title: 'Impresszum', type: 'object',
       description: 'A lábléc impresszum blokkja.',
       fields: [

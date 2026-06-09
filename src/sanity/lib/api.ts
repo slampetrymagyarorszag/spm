@@ -8,6 +8,11 @@ export type SiteSettings = {
   nav?: { label: string; href: string }[];
   social?: { facebook?: string; youtube?: string; instagram?: string };
   impressum?: { orgName?: string; address?: string; taxNumber?: string; annualReportsUrl?: string };
+  home?: {
+    heroSticker?: string; heroTitle?: string; heroLead?: string;
+    primaryCtaLabel?: string; primaryCtaHref?: string;
+    secondaryCtaLabel?: string; secondaryCtaHref?: string;
+  };
   championshipCtaEnabled?: boolean;
   championshipCtaLabel?: string;
   championshipCtaUrl?: string;
@@ -27,7 +32,8 @@ export type PostListItem = {
   _id: string; title: string; slug: string; publishedAt: string;
   author?: string; excerpt?: string; cover?: any;
 };
-export type Post = PostListItem & { tags?: string[]; body?: any };
+export type Seo = { metaTitle?: string; metaDescription?: string; shareImage?: any };
+export type Post = PostListItem & { tags?: string[]; body?: any; seo?: Seo };
 
 import { POSTS_QUERY, POST_BY_SLUG_QUERY } from './queries';
 
@@ -81,7 +87,7 @@ export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
   return (await client.fetch(MEDIA_QUERY)) ?? [];
 }
 
-export type PageDoc = { title: string; lead?: string; body?: any };
+export type PageDoc = { title: string; lead?: string; body?: any; seo?: Seo };
 import { PAGE_BY_SLUG_QUERY } from './queries';
 export async function getPageBySlug(client: Fetcher, slug: string): Promise<PageDoc | null> {
   return (await client.fetch(PAGE_BY_SLUG_QUERY, { slug })) ?? null;

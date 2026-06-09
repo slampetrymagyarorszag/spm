@@ -1,0 +1,11 @@
+---
+import YouTubeEmbed from '../YouTubeEmbed.astro';
+const { node } = Astro.props;
+const url = node?.url as string | undefined;
+---
+{url && (
+  <figure class="my-8 not-prose">
+    <YouTubeEmbed url={url} title={node?.caption ?? 'YouTube videó'} />
+    {node?.caption && <figcaption class="mt-2 text-center text-sm text-muted">{node.caption}</figcaption>}
+  </figure>
+)}

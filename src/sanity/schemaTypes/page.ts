@@ -7,6 +7,7 @@ export const page = defineType({
     defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title', slugify }, validation: (r) => r.required() }),
     defineField({ name: 'lead', title: 'Bevezető', type: 'text', rows: 2 }),
     defineField({ name: 'body', title: 'Tartalom', type: 'blockContent' }),
+    defineField({ name: 'seo', title: 'SEO / megosztás', type: 'seo' }),
   ],
   preview: { select: { title: 'title', subtitle: 'slug.current' } },
 });

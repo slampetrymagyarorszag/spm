@@ -8,7 +8,11 @@ export const slammer = defineType({
   fields: [
     defineField({ name: 'name', title: 'Név', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'name', slugify }, validation: (r) => r.required() }),
-    defineField({ name: 'photo', title: 'Fotó', type: 'image', options: { hotspot: true } }),
+    defineField({
+      name: 'photo', title: 'Fotó', type: 'image',
+      options: { hotspot: true, metadata: ['blurhash', 'lqip', 'palette'] },
+      fields: [{ name: 'alt', type: 'string', title: 'Alt szöveg (akadálymentesség)' }],
+    }),
     defineField({ name: 'hometown', title: 'Város', type: 'string' }),
     defineField({ name: 'featured', title: 'Kiemelt a főoldalon', type: 'boolean', initialValue: false, description: 'Bekapcsolva megjelenik a főoldal kiemelt slammer-galériájában (max 10).' }),
     defineField({ name: 'featuredOrder', title: 'Kiemelés sorrendje', type: 'number', description: 'Kisebb szám = előrébb. Üresen hagyva név szerint rendeződik.' }),

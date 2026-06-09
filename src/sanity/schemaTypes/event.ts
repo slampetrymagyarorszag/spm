@@ -24,7 +24,7 @@ export const event = defineType({
     defineField({ name: 'slug', title: 'Webcím (slug)', type: 'slug', group: 'main', options: { source: 'title', slugify }, validation: (r) => r.required() }),
 
     // — Opcionális részletek (a FB-beágyazás amúgy is mutatja ezeket) —
-    defineField({ name: 'cover', title: 'Borítókép', type: 'image', group: 'details', options: { hotspot: true }, description: 'Opcionális. Ha üresen hagyod, a FB-beágyazás viszi a borítót.' }),
+    defineField({ name: 'cover', title: 'Borítókép', type: 'image', group: 'details', options: { hotspot: true, metadata: ['blurhash', 'lqip', 'palette'] }, fields: [{ name: 'alt', type: 'string', title: 'Alt szöveg' }], description: 'Opcionális. Ha üresen hagyod, a FB-beágyazás viszi a borítót.' }),
     defineField({ name: 'location', title: 'Helyszín', type: 'location', group: 'details' }),
     defineField({ name: 'description', title: 'Leírás', type: 'blockContent', group: 'details', description: 'Opcionális saját leírás. A FB-beágyazás amúgy is mutatja a FB-leírást.' }),
     defineField({ name: 'performers', title: 'Fellépők', type: 'array', group: 'details', of: [{ type: 'reference', to: [{ type: 'slammer' }] }] }),

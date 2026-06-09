@@ -48,6 +48,16 @@ const siteJsonLd = {
   name: 'Slam Poetry Magyarország',
   url: Astro.site?.href ?? 'https://slampoetry.hu',
 };
+
+// Szerkeszthető hero-szövegek (siteSettings.home), alapértékekkel.
+const home = siteSettings.home ?? {};
+const heroSticker = home.heroSticker || 'Élő közösség 2006 óta';
+const heroTitle = home.heroTitle || 'Slam Poetry Magyarország';
+const heroLead = home.heroLead || 'A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.';
+const primaryCtaLabel = home.primaryCtaLabel || 'Közelgő események';
+const primaryCtaHref = home.primaryCtaHref || '/esemenyek';
+const secondaryCtaLabel = home.secondaryCtaLabel || 'Mi az a slam poetry?';
+const secondaryCtaHref = home.secondaryCtaHref || '/mi-az-a-slam-poetry';
 ---
 <BaseLayout>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify([orgJsonLd, siteJsonLd])} />
@@ -55,12 +65,12 @@ const siteJsonLd = {
   <!-- Hero -->
   <section data-mic-dark class="relative overflow-hidden bg-ink text-surface">
     <div class="relative z-10 mx-auto max-w-6xl px-4 py-28 md:py-36">
-      <span class="sticker mb-6">Élő közösség 2006 óta</span>
-      <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">Slam Poetry Magyarország</h1>
-      <p class="mt-5 max-w-xl text-lg text-surface/80">A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.</p>
+      <span class="sticker mb-6">{heroSticker}</span>
+      <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">{heroTitle}</h1>
+      <p class="mt-5 max-w-xl text-lg text-surface/80">{heroLead}</p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <a href="/esemenyek" class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">Közelgő események</a>
-        <a href="/mi-az-a-slam-poetry" class="rounded-lg border border-surface/30 px-6 py-3 font-semibold hover:border-accent hover:text-accent">Mi az a slam poetry?</a>
+        <a href={primaryCtaHref} class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">{primaryCtaLabel}</a>
+        <a href={secondaryCtaHref} class="rounded-lg border border-surface/30 px-6 py-3 font-semibold hover:border-accent hover:text-accent">{secondaryCtaLabel}</a>
         <ChampionshipCta settings={siteSettings} />
       </div>
     </div>

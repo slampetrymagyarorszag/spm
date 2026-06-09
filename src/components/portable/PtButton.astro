@@ -1,0 +1,22 @@
+---
+const { node } = Astro.props;
+const label = node?.label as string | undefined;
+const href = (node?.href as string) ?? '#';
+const style = (node?.style as string) ?? 'solid';
+const external = /^https?:/i.test(href);
+const cls =
+  style === 'outline'
+    ? 'border border-ink/25 text-ink hover:border-accent hover:text-accent'
+    : 'bg-accent text-ink hover:opacity-90';
+---
+{label && (
+  <p class="not-prose my-6">
+    <a
+      href={href}
+      class={`inline-flex items-center gap-1 rounded-lg px-6 py-3 font-semibold !no-underline transition ${cls}`}
+      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    >
+      {label}{external && <span aria-hidden="true">↗</span>}
+    </a>
+  </p>
+)}

@@ -2,15 +2,17 @@ export const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   title, accentColor, contactEmail,
   "logoUrl": logo.asset->url,
   nav[]{ label, href },
-  social, impressum,
+  social, impressum, home,
   championshipCtaEnabled, championshipCtaLabel, championshipCtaUrl, championshipCtaFrom, championshipCtaTo
 }`;
 
-export const POSTS_QUERY = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc){
+// Csak a már megjelent (nem jövőbeli dátumú) hírek — időzített megjelenés.
+export const POSTS_QUERY = `*[_type == "post" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc){
   _id, title, "slug": slug.current, publishedAt, author, excerpt, cover
 }`;
 export const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0]{
-  _id, title, "slug": slug.current, publishedAt, author, excerpt, cover, tags, body
+  _id, title, "slug": slug.current, publishedAt, author, excerpt, cover, tags, body,
+  seo{ metaTitle, metaDescription, shareImage }
 }`;
 
 export const SLAMMERS_QUERY = `*[_type == "slammer" && defined(slug.current)] | order(name asc){
@@ -36,4 +38,6 @@ export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdA
   _id, title, kind, youtubeUrl, image, albumUrl, albumCover, year
 }`;
 
-export const PAGE_BY_SLUG_QUERY = `*[_type == "page" && slug.current == $slug][0]{ title, lead, body }`;
+export const PAGE_BY_SLUG_QUERY = `*[_type == "page" && slug.current == $slug][0]{
+  title, lead, body, seo{ metaTitle, metaDescription, shareImage }
+}`;
