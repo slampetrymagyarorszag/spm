@@ -13,6 +13,14 @@ export type SiteSettings = {
     primaryCtaLabel?: string; primaryCtaHref?: string;
     secondaryCtaLabel?: string; secondaryCtaHref?: string;
   };
+  monthlyContest?: {
+    enabled?: boolean;
+    monthLabel?: string;
+    buttonLabel?: string;
+    intro?: string;
+    opensAt?: string;
+    closesAt?: string;
+  };
   championshipCtaEnabled?: boolean;
   championshipCtaLabel?: string;
   championshipCtaUrl?: string;

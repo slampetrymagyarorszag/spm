@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship } from '../src/lib/validation';
+import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest } from '../src/lib/validation';
 
 describe('validateSubmission', () => {
   const ok = { name: 'Teszt Elek', email: 'teszt@example.com', message: 'Szeretnék jelentkezni.' };
@@ -38,4 +38,14 @@ describe('validateChampionship', () => {
   it('rossz email → hiba', () => { expect(validateChampionship({ ...ok, email: 'rossz' }).ok).toBe(false); });
   it('hiányzó művésznév → hiba', () => { expect(validateChampionship({ ...ok, stageName: '' }).ok).toBe(false); });
   it('hiányzó consent → hiba', () => { expect(validateChampionship({ ...ok, consent: undefined }).ok).toBe(false); });
+});
+
+describe('validateMonthlyContest', () => {
+  const ok = { name: 'Tóth Rita', email: 'rita@example.hu', entryType: 'verseny' };
+  it('érvényes (verseny) jelentkezést elfogad', () => { expect(validateMonthlyContest(ok)).toEqual({ ok: true }); });
+  it('érvényes (open mic) jelentkezést elfogad', () => { expect(validateMonthlyContest({ ...ok, entryType: 'openmic' })).toEqual({ ok: true }); });
+  it('honeypot → spam', () => { expect(validateMonthlyContest({ ...ok, website: 'x' })).toEqual({ ok: false, error: 'spam' }); });
+  it('hiányzó név → hiba', () => { expect(validateMonthlyContest({ ...ok, name: '' }).ok).toBe(false); });
+  it('rossz email → hiba', () => { expect(validateMonthlyContest({ ...ok, email: 'rossz' }).ok).toBe(false); });
+  it('ismeretlen típus → hiba', () => { expect(validateMonthlyContest({ ...ok, entryType: 'egyeb' }).ok).toBe(false); });
 });

@@ -46,6 +46,19 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
+      name: 'monthlyContest', title: 'Havi klub — jelentkezés gomb', type: 'object',
+      description: 'A főoldali hero melletti „Jelentkezem a havi versenyre" gomb (Slam Poetry Budapest havi klub). Kapcsold be, add meg, melyik havi klubról van szó, és állítsd be, mikor nyíljon/záruljon a jelentkezés. Ha vége, egyszerűen kapcsold ki — a következő hónapnál csak átírod a hónapot és a dátumokat.',
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: 'enabled', title: 'Bekapcsolva', type: 'boolean', initialValue: false }),
+        defineField({ name: 'monthLabel', title: 'Melyik havi klub', type: 'string', description: 'Pl. „2026. júniusi klub". Ez kerül a beérkező emailbe, hogy melyik hónapra jött a jelentkezés.' }),
+        defineField({ name: 'buttonLabel', title: 'Gomb felirata', type: 'string', initialValue: 'Jelentkezem a havi versenyre' }),
+        defineField({ name: 'intro', title: 'Rövid szöveg a felugró ablakban (opcionális)', type: 'text', rows: 2 }),
+        defineField({ name: 'opensAt', title: 'Nyitás — mikor jelenjen meg a gomb', type: 'datetime', description: 'Üresen hagyva azonnal látszik (ha bekapcsolt).' }),
+        defineField({ name: 'closesAt', title: 'Zárás — mikor tűnjön el', type: 'datetime', description: 'Üresen hagyva nincs automatikus zárás.' }),
+      ],
+    }),
+    defineField({
       name: 'impressum', title: 'Impresszum', type: 'object',
       description: 'A lábléc impresszum blokkja.',
       fields: [

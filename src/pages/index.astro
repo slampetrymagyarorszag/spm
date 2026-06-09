@@ -10,6 +10,7 @@ import { splitEvents } from "../sanity/lib/events";
 import { urlForImage } from "../sanity/lib/image";
 import { sanityClient } from "sanity:client";
 import ChampionshipCta from "../components/ChampionshipCta.astro";
+import MonthlyContestButton from "../components/MonthlyContestButton.astro";
 
 const [events, slammers, featured, posts, settings] = await Promise.all([
   getEvents(sanityClient),
@@ -72,6 +73,7 @@ const secondaryCtaHref = home.secondaryCtaHref || '/mi-az-a-slam-poetry';
         <a href={primaryCtaHref} class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">{primaryCtaLabel}</a>
         <a href={secondaryCtaHref} class="rounded-lg border border-surface/30 px-6 py-3 font-semibold hover:border-accent hover:text-accent">{secondaryCtaLabel}</a>
         <ChampionshipCta settings={siteSettings} />
+        <MonthlyContestButton settings={siteSettings} />
       </div>
     </div>
   </section>

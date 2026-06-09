@@ -1,0 +1,134 @@
+---
+// „Jelentkezem a havi versenyre" gomb a hero mellé + felugró űrlap.
+// A láthatóságot (nyitás/zárás) kliensoldalon, pontos időhöz igazítva kezeljük.
+import type { SiteSettings } from '../sanity/lib/api';
+interface Props { settings: SiteSettings }
+const { settings } = Astro.props;
+const mc = settings.monthlyContest;
+const show = !!mc?.enabled;
+const buttonLabel = mc?.buttonLabel || 'Jelentkezem a havi versenyre';
+const monthLabel = mc?.monthLabel || '';
+const intro = mc?.intro || '';
+---
+{show && (
+  <div
+    class="monthly-contest"
+    data-opens={mc?.opensAt ?? ''}
+    data-closes={mc?.closesAt ?? ''}
+    style="display:contents"
+  >
+    <button
+      type="button"
+      class="mc-open hidden rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90"
+    >
+      {buttonLabel}
+    </button>
+
+    <!-- Felugró űrlap -->
+    <div class="mc-modal fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Havi klub jelentkezés">
+      <div class="mc-backdrop absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      <div class="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-ink text-surface shadow-2xl">
+        <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/25 blur-[90px]"></div>
+        <div class="relative p-6 md:p-7">
+          <button type="button" class="mc-close absolute right-4 top-4 text-surface/60 hover:text-surface" aria-label="Bezárás">✕</button>
+          <p class="mb-1 text-xs uppercase tracking-[0.2em] text-accent">{monthLabel || 'Havi klub'}</p>
+          <h2 class="font-display text-3xl leading-[0.95]">Jelentkezem a havi versenyre</h2>
+          {intro && <p class="mt-2 text-sm text-surface/75">{intro}</p>}
+
+          <form class="mc-form mt-5 grid gap-3" aria-label="Havi klub jelentkezési űrlap">
+            <div>
+              <label for="mc-name" class="mb-1 block text-sm text-surface/70">Neved / művészneved <span class="text-accent">*</span></label>
+              <input id="mc-name" type="text" name="name" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+            </div>
+            <div>
+              <label for="mc-email" class="mb-1 block text-sm text-surface/70">Email <span class="text-accent">*</span></label>
+              <input id="mc-email" type="email" name="email" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+            </div>
+            <fieldset class="mt-1">
+              <legend class="mb-2 text-sm text-surface/70">Mire jelentkezel? <span class="text-accent">*</span></legend>
+              <div class="flex gap-3">
+                <label class="flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent/10">
+                  <input type="radio" name="entryType" value="verseny" required class="accent-[var(--color-accent)]" /> Verseny
+                </label>
+                <label class="flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent/10">
+                  <input type="radio" name="entryType" value="openmic" class="accent-[var(--color-accent)]" /> Open mic
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- honeypot -->
+            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+            <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Jelentkezés elküldése</button>
+            <p class="mc-status text-sm" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+<script>
+  document.querySelectorAll('.monthly-contest').forEach((rootNode) => {
+    const root = rootNode as HTMLElement;
+    if (root.dataset.wired) return;
+    root.dataset.wired = '1';
+
+    const openBtn = root.querySelector('.mc-open') as HTMLButtonElement;
+    const modal = root.querySelector('.mc-modal') as HTMLElement;
+    const form = root.querySelector('.mc-form') as HTMLFormElement;
+    const status = root.querySelector('.mc-status') as HTMLElement;
+    const opensAt = root.dataset.opens ? Date.parse(root.dataset.opens) : null;
+    const closesAt = root.dataset.closes ? Date.parse(root.dataset.closes) : null;
+
+    // Pontos nyitás/zárás kliensoldalon — nem kell újraépíteni az oldalt.
+    function inWindow() {
+      const now = Date.now();
+      if (opensAt && now < opensAt) return false;
+      if (closesAt && now > closesAt) return false;
+      return true;
+    }
+    function refresh() {
+      openBtn.classList.toggle('hidden', !inWindow());
+      if (!inWindow()) closeModal();
+    }
+    refresh();
+    setInterval(refresh, 30000);
+
+    function openModal() { modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden'; }
+    function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = ''; }
+
+    openBtn.addEventListener('click', openModal);
+    root.querySelector('.mc-close')?.addEventListener('click', closeModal);
+    root.querySelector('.mc-backdrop')?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type=submit]') as HTMLButtonElement;
+      btn.disabled = true; status.textContent = 'Küldés…'; status.style.color = '';
+      const payload: Record<string, any> = Object.fromEntries(new FormData(form).entries());
+      try {
+        const res = await fetch('/api/monthly-contest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          status.textContent = 'Köszönjük a jelentkezést!';
+          status.style.color = '#7CFFB2';
+          form.reset();
+          setTimeout(closeModal, 1500);
+        } else {
+          status.textContent = json.error ?? 'Hiba történt.';
+          status.style.color = '#ff8da1';
+        }
+      } catch {
+        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.style.color = '#ff8da1';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

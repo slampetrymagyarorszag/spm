@@ -79,6 +79,22 @@ export function validateChampionship(input: ChampionshipInput): ValidationResult
   return { ok: true };
 }
 
+// Havi klub jelentkezés: név/művésznév, email, és típus (verseny / open mic).
+export type MonthlyContestInput = {
+  name?: string;
+  email?: string;
+  entryType?: string; // 'verseny' | 'openmic'
+  website?: string;
+};
+
+export function validateMonthlyContest(input: MonthlyContestInput): ValidationResult {
+  if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
+  if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A neved / művészneved megadása kötelező.' };
+  if (!input.email || !EMAIL_RE.test(input.email)) return { ok: false, error: 'Érvényes email cím szükséges.' };
+  if (input.entryType !== 'verseny' && input.entryType !== 'openmic') return { ok: false, error: 'Válaszd ki, versenyre vagy open mic-ra jelentkezel.' };
+  return { ok: true };
+}
+
 // A jelölőnégyzet sokféleképp érkezhet (true, "true", "on", "1") — egységesítjük.
 export function isConsented(v: unknown): boolean {
   return v === true || v === 'true' || v === 'on' || v === '1' || v === 1;
