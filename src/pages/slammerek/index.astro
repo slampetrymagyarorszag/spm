@@ -91,11 +91,11 @@ function youtubeId(u?: string): string | null {
 
         <!-- Valódi kattintható Magyarország-térkép -->
         <div class="mt-12">
-          <p class="mb-4 text-center text-xs uppercase tracking-[0.2em] text-surface/50">Kattints a térképen egy városra</p>
-          <HungaryMap clubs={clubs} />
+          <p class="mb-4 text-center text-xs uppercase tracking-[0.2em] text-surface/50">Kattints a térképen egy városra — klubok és az onnan való slammerek</p>
+          <HungaryMap clubs={clubs} slammers={slammers} />
         </div>
 
-        <div class="mt-12 max-w-2xl">
+        <div id="club-form" class="mt-12 max-w-2xl scroll-mt-24">
           <SlamClubForm />
         </div>
       </div>

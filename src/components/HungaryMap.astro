@@ -1,13 +1,12 @@
 ---
-// Valódi, kattintható Magyarország-térkép. A klub-pöttyök a város koordinátái
-// alapján kerülnek a helyükre (ugyanazzal a vetítéssel, amivel az SVG készült).
+// Valódi, kattintható Magyarország-térkép. Minden ismert város kattintható:
+// ha van klub → linkek; ha vannak onnan való slammerek → profil-linkek;
+// ha nincs klub → „küldd be" gomb, ami előtölti a város nevét a formba.
 import { HU_MAP, projectHU } from '../data/hungaryMap';
-import type { SlamClub } from '../sanity/lib/api';
-interface Props { clubs: SlamClub[] }
-const { clubs } = Astro.props;
+import type { SlamClub, SlammerListItem } from '../sanity/lib/api';
+interface Props { clubs: SlamClub[]; slammers?: SlammerListItem[] }
+const { clubs, slammers = [] } = Astro.props;
 
-// Magyar városok koordinátái (lng, lat). Új klubnál, ha a városa itt szerepel,
-// automatikusan pöttyöt kap a térképen. (Bővíthető.)
 const CITY: Record<string, [number, number]> = {
   budapest: [19.0402, 47.4979], szeged: [20.1414, 46.253], 'pécs': [18.2323, 46.0727],
   debrecen: [21.6273, 47.5316], miskolc: [20.7784, 48.1035], 'győr': [17.6504, 47.6875],
@@ -16,26 +15,23 @@ const CITY: Record<string, [number, number]> = {
   sopron: [16.5845, 47.6817], 'kaposvár': [17.7968, 46.3594], zalaegerszeg: [16.8416, 46.8417],
   'békéscsaba': [21.0877, 46.6736], szolnok: [20.1986, 47.1747], 'tatabánya': [18.4045, 47.5692],
   'dunaújváros': [18.9355, 46.9619], esztergom: [18.7406, 47.7928], 'salgótarján': [19.8, 48.0935],
-  szekszard: [18.7064, 46.347], 'szekszárd': [18.7064, 46.347], nagykanizsa: [16.9897, 46.459],
-  'hódmezővásárhely': [20.3286, 46.4181], 'gödöllő': [19.355, 47.6], kaposvar: [17.7968, 46.3594],
+  'szekszárd': [18.7064, 46.347], nagykanizsa: [16.9897, 46.459], 'hódmezővásárhely': [20.3286, 46.4181],
+  'gödöllő': [19.355, 47.6], 'pápa': [17.4665, 47.3296], gyula: [21.2833, 46.65], baja: [18.9542, 46.1817],
 };
-const norm = (s: string) => s.trim().toLowerCase();
+const norm = (s: string) => (s || '').trim().toLowerCase();
 
-// Klubok csoportosítása városonként (egy pötty / város; egy városban több klub is lehet).
-const groups = new Map<string, { city: string; coords: [number, number]; clubs: SlamClub[] }>();
-for (const c of clubs) {
-  const key = norm(c.city);
-  const coords = CITY[key];
-  if (!coords) continue;
-  if (!groups.has(key)) groups.set(key, { city: c.city, coords, clubs: [] });
-  groups.get(key)!.clubs.push(c);
-}
-const pins = [...groups.values()].map((g) => {
-  const p = projectHU(g.coords[0], g.coords[1]);
-  return { ...g, left: (p.x / HU_MAP.width) * 100, top: (p.y / HU_MAP.height) * 100 };
-});
-const placed = pins.reduce((n, p) => n + p.clubs.length, 0);
-const notPlaced = clubs.length - placed;
+const pins = Object.entries(CITY).map(([key, coords]) => {
+  const cityClubs = clubs.filter((c) => norm(c.city) === key);
+  const citySlammers = slammers.filter((s) => norm(s.hometown || '') === key);
+  const display = cityClubs[0]?.city || citySlammers[0]?.hometown || (key.charAt(0).toUpperCase() + key.slice(1));
+  const p = projectHU(coords[0], coords[1]);
+  return {
+    key, city: display,
+    left: (p.x / HU_MAP.width) * 100, top: (p.y / HU_MAP.height) * 100,
+    clubs: cityClubs, slammers: citySlammers,
+    state: cityClubs.length ? 'club' : citySlammers.length ? 'people' : 'empty',
+  };
+}).filter((p) => p.state !== 'empty' || true); // minden város kattintható
 ---
 <div class="hu-map relative mx-auto w-full max-w-4xl" style={`aspect-ratio:${HU_MAP.width}/${HU_MAP.height}`}>
   <svg viewBox={HU_MAP.viewBox} preserveAspectRatio="xMidYMid meet" class="absolute inset-0 h-full w-full" role="img" aria-label="Magyarország térkép a slam klubokkal">
@@ -43,63 +39,60 @@ const notPlaced = clubs.length - placed;
   </svg>
 
   {pins.map((pin) => (
-    <div class="map-pin absolute -translate-x-1/2 -translate-y-1/2" style={`left:${pin.left}%;top:${pin.top}%`}>
-      <button type="button" class="pin-dot" aria-label={`${pin.city} — slam klub`}></button>
+    <div class={`map-pin ${pin.state} absolute -translate-x-1/2 -translate-y-1/2`} style={`left:${pin.left}%;top:${pin.top}%`} data-city={pin.city}>
+      <button type="button" class="pin-dot" aria-label={`${pin.city}`}></button>
       <span class="pin-city">{pin.city}</span>
       <div class="pin-pop">
-        {pin.clubs.map((c) => (
-          <a href={c.facebookUrl} target="_blank" rel="noopener noreferrer" class="pin-link">
-            {c.name || c.city} <span aria-hidden="true">↗</span>
-          </a>
-        ))}
+        <p class="pin-pop-title">{pin.city}</p>
+        {pin.clubs.length > 0 && (
+          <div class="pin-sec">
+            {pin.clubs.map((c) => (
+              <a href={c.facebookUrl} target="_blank" rel="noopener noreferrer" class="pin-link"><span>🎤 {c.name || 'Slam klub'}</span><span aria-hidden="true">↗</span></a>
+            ))}
+          </div>
+        )}
+        {pin.slammers.length > 0 && (
+          <div class="pin-sec">
+            <p class="pin-sub">Innen valók:</p>
+            {pin.slammers.slice(0, 6).map((s) => (
+              <a href={`/slammerek/${s.slug}`} class="pin-link"><span>👤 {s.name}</span><span aria-hidden="true">→</span></a>
+            ))}
+          </div>
+        )}
+        {pin.clubs.length === 0 && (
+          <button type="button" class="pin-add" data-city={pin.city}>+ Nincs még itt klub — vidd fel!</button>
+        )}
       </div>
     </div>
   ))}
 </div>
-{notPlaced > 0 && (
-  <p class="mt-3 text-center text-xs text-surface/45">+{notPlaced} klub a fenti szalagban (a városuk még nincs a térkép-adatbázisban).</p>
-)}
 
 <style>
   .map-pin { z-index: 1; }
-  .map-pin:hover, .map-pin.open { z-index: 20; }
+  .map-pin:hover, .map-pin.open { z-index: 30; }
   .pin-dot {
-    width: 16px; height: 16px; border-radius: 9999px;
-    background: var(--color-accent); border: 2px solid #fff2;
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
-    cursor: pointer; display: block; animation: pin-pulse 2.4s ease-out infinite;
+    width: 14px; height: 14px; border-radius: 9999px; cursor: pointer; display: block;
+    border: 2px solid rgba(255,255,255,0.25);
   }
-  .map-pin:hover .pin-dot, .map-pin.open .pin-dot { transform: scale(1.25); }
-  @keyframes pin-pulse {
-    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
-    70% { box-shadow: 0 0 0 12px transparent; }
-    100% { box-shadow: 0 0 0 0 transparent; }
-  }
-  .pin-city {
-    position: absolute; left: 50%; top: 18px; transform: translateX(-50%);
-    white-space: nowrap; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8);
-    text-shadow: 0 1px 4px #000a; pointer-events: none;
-  }
-  .pin-pop {
-    position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(6px);
-    display: grid; gap: 4px; min-width: 150px; padding: 8px;
-    border-radius: 10px; border: 1px solid rgba(255,255,255,0.12);
-    background: #15151acc; backdrop-filter: blur(6px); box-shadow: 0 10px 30px #000a;
-    opacity: 0; visibility: hidden; transition: opacity .2s, transform .2s;
-  }
-  .map-pin:hover .pin-pop, .map-pin.open .pin-pop {
-    opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
-  }
-  .pin-link {
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    font-size: 13px; font-weight: 600; color: #fff; text-decoration: none;
-    padding: 6px 8px; border-radius: 7px;
-  }
+  .map-pin.club .pin-dot { width: 16px; height: 16px; background: var(--color-accent); border-color: #fff3; animation: pin-pulse 2.4s ease-out infinite; }
+  .map-pin.people .pin-dot { background: color-mix(in srgb, var(--color-accent) 45%, #888); }
+  .map-pin.empty .pin-dot { background: rgba(255,255,255,0.22); }
+  .map-pin:hover .pin-dot, .map-pin.open .pin-dot { transform: scale(1.3); }
+  @keyframes pin-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); } 70% { box-shadow: 0 0 0 12px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .pin-city { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); white-space: nowrap; font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.65); text-shadow: 0 1px 4px #000a; pointer-events: none; }
+  .map-pin.club .pin-city { color: rgba(255,255,255,0.9); }
+  .pin-pop { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(6px); display: grid; gap: 6px; min-width: 180px; max-width: 240px; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); background: #15151aee; backdrop-filter: blur(8px); box-shadow: 0 12px 34px #000b; opacity: 0; visibility: hidden; transition: opacity .2s, transform .2s; }
+  .map-pin:hover .pin-pop, .map-pin.open .pin-pop { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+  .pin-pop-title { font-family: var(--font-display, inherit); font-weight: 700; color: #fff; font-size: 15px; }
+  .pin-sec { display: grid; gap: 3px; }
+  .pin-sub { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .pin-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; color: #fff; text-decoration: none; padding: 5px 7px; border-radius: 7px; }
   .pin-link:hover { background: color-mix(in srgb, var(--color-accent) 22%, transparent); color: var(--color-accent); }
-  @media (prefers-reduced-motion: reduce) { .pin-dot { animation: none; } }
+  .pin-add { text-align: left; font-size: 12px; font-weight: 600; color: var(--color-accent); padding: 6px 7px; border-radius: 7px; border: 1px dashed color-mix(in srgb, var(--color-accent) 45%, transparent); cursor: pointer; }
+  .pin-add:hover { background: color-mix(in srgb, var(--color-accent) 15%, transparent); }
+  @media (prefers-reduced-motion: reduce) { .pin-dot { animation: none !important; } }
 </style>
 <script>
-  // Mobilon (hover nélkül) kattintásra nyílik a popup.
   document.querySelectorAll('.hu-map .map-pin').forEach((node) => {
     const el = node as HTMLElement;
     el.querySelector('.pin-dot')?.addEventListener('click', (e) => {
@@ -109,4 +102,16 @@ const notPlaced = clubs.length - placed;
     });
   });
   document.addEventListener('click', () => document.querySelectorAll('.hu-map .map-pin.open').forEach((o) => o.classList.remove('open')));
+  // „Vidd fel" gomb → űrlap előtöltése a város nevével.
+  document.querySelectorAll('.hu-map .pin-add').forEach((b) => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const city = (b as HTMLElement).dataset.city || '';
+      const input = document.getElementById('cl-city') as HTMLInputElement | null;
+      const form = document.getElementById('club-form');
+      if (input) { input.value = city; }
+      form?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => input?.focus(), 400);
+    });
+  });
 </script>
