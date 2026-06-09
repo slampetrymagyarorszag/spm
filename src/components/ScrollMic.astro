@@ -1,11 +1,11 @@
 ---
 // Görgetést követő, 360°-ban pörgő 3D mikrofon (frame-szekvencia scroll-scrub).
 // A képkockák a /mic-frames/ mappában, a darabszám a /mic-frames/manifest.json-ban.
-// A mikrofon FIXEN a jobb oldalon ül; a megjelenített kocka a TELJES oldal görgetési
-// haladásához kötött (alul = 360°). Csak a sötét szekciók (data-mic-dark) fölött látszik.
-// A fekete hátteret mix-blend-screen tünteti el. prefers-reduced-motion esetén statikus.
+// CANVAS-alapú rajzolás: a képkockákat előre betöltjük ÉS dekódoljuk, majd minden
+// frame-váltásnál ctx.drawImage-zsel rajzolunk — így nincs JPEG-újradekódolás a fő
+// szálon görgetés közben (sokkal simább). prefers-reduced-motion esetén statikus.
 ---
-<img id="scroll-mic" class="scroll-mic" alt="" aria-hidden="true" />
+<canvas id="scroll-mic" class="scroll-mic" aria-hidden="true"></canvas>
 <style>
   .scroll-mic {
     position: fixed;
@@ -14,8 +14,6 @@
     height: 100vh;
     width: 46vw;
     max-width: 660px;
-    object-fit: contain;
-    object-position: right center;
     pointer-events: none;
     mix-blend-mode: screen;
     opacity: 0;
@@ -30,8 +28,10 @@
 </style>
 <script>
   (async () => {
-    const el = document.getElementById('scroll-mic') as HTMLImageElement | null;
-    if (!el) return;
+    const canvas = document.getElementById('scroll-mic') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let count = 0;
@@ -48,16 +48,41 @@
     const pad = (n: number) => String(n).padStart(3, '0');
     const srcFor = (i: number) => `/mic-frames/frame_${pad(i + 1)}.${ext}`;
 
-    // Képkockák előtöltése a gyors váltáshoz.
+    // Képkockák előtöltése ÉS dekódolása (a dekódolás a lényeg a simasághoz).
     const imgs: HTMLImageElement[] = [];
+    const ready: boolean[] = new Array(count).fill(false);
     for (let i = 0; i < count; i++) {
       const im = new Image();
+      im.decoding = 'async';
       im.src = srcFor(i);
+      const idx = i;
+      im.decode?.().then(() => { ready[idx] = true; }).catch(() => { ready[idx] = true; });
+      im.addEventListener('load', () => { ready[idx] = true; });
       imgs.push(im);
     }
-    el.src = srcFor(0);
 
     const darks = Array.from(document.querySelectorAll('[data-mic-dark]'));
+
+    // A canvas belső felbontása a megjelenített mérethez + devicePixelRatio.
+    function sizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const r = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.round(r.width * dpr));
+      canvas.height = Math.max(1, Math.round(r.height * dpr));
+    }
+
+    function draw(idx: number) {
+      const im = imgs[idx];
+      if (!im || !ready[idx] || !im.naturalWidth) return;
+      const cw = canvas.width, ch = canvas.height;
+      const iw = im.naturalWidth, ih = im.naturalHeight;
+      const scale = Math.min(cw / iw, ch / ih);
+      const dw = iw * scale, dh = ih * scale;
+      const dx = cw - dw;          // jobbra igazítva
+      const dy = (ch - dh) / 2;    // függőlegesen középre
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(im, dx, dy, dw, dh);
+    }
 
     function frameForScroll(): number {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -79,18 +104,26 @@
       raf = 0;
       const idx = reduce ? 0 : frameForScroll();
       if (idx !== lastIdx) {
-        const im = imgs[idx];
-        if (im) el.src = im.src;
+        draw(idx);
         lastIdx = idx;
       }
-      el.style.opacity = darkVisible() ? '1' : '0';
+      canvas.style.opacity = darkVisible() ? '1' : '0';
     }
     function onScroll() {
       if (!raf) raf = requestAnimationFrame(update);
     }
+    function onResize() {
+      sizeCanvas();
+      lastIdx = -1; // kényszerített újrarajzolás az új mérettel
+      onScroll();
+    }
 
+    // Ha a 0. kocka késik, rajzoljuk ki amint kész.
+    if (imgs[0]) imgs[0].decode?.().then(() => { lastIdx = -1; update(); }).catch(() => {});
+
+    sizeCanvas();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
     update();
   })();
 </script>

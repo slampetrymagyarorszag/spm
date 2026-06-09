@@ -38,6 +38,12 @@ export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdA
   _id, title, kind, youtubeUrl, image, albumUrl, albumCover, year
 }`;
 
+// Médiatár-konfiguráció: lejátszási listák + letölthető dokumentumok.
+export const MEDIA_CONFIG_QUERY = `*[_type == "siteSettings"][0]{
+  youtubePlaylists[]{ title, playlistId },
+  "downloads": downloads[]{ title, description, url, "fileUrl": file.asset->url }
+}`;
+
 // Csak a szerkesztő által jóváhagyott, beküldött esemény-tippek.
 export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true] | order(submittedAt desc){
   _id, eventName, description, facebookUrl

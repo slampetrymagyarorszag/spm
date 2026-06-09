@@ -4,21 +4,34 @@ import PageHero from '../../components/PageHero.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
 import MediaCard from '../../components/MediaCard.astro';
 import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
-import { getMedia } from '../../sanity/lib/api';
-import { fetchChannelUploads } from '../../lib/youtube';
+import { getMedia, getMediaConfig } from '../../sanity/lib/api';
+import { fetchChannelUploads, fetchPlaylistItems } from '../../lib/youtube';
 import { sanityClient } from 'sanity:client';
 
 const env = import.meta.env;
-const [media, videos] = await Promise.all([
+const apiKey = env.YOUTUBE_API_KEY ?? process.env.YOUTUBE_API_KEY;
+
+const [media, config, videos] = await Promise.all([
   getMedia(sanityClient),
+  getMediaConfig(sanityClient),
   fetchChannelUploads({
-    apiKey: env.YOUTUBE_API_KEY ?? process.env.YOUTUBE_API_KEY,
+    apiKey,
     channelId: env.YOUTUBE_CHANNEL_ID ?? process.env.YOUTUBE_CHANNEL_ID,
     handle: env.YOUTUBE_CHANNEL_HANDLE ?? process.env.YOUTUBE_CHANNEL_HANDLE,
-    max: 24,
+    max: 9,
   }),
 ]);
-const hasAny = media.length > 0 || videos.length > 0;
+
+// A beállított lejátszási listák videói (pl. „Májusi klub"), listánként max 6.
+const playlistDefs = (config.youtubePlaylists ?? []).filter((p) => p.playlistId);
+const playlists = await Promise.all(
+  playlistDefs.map(async (p) => ({
+    title: p.title || 'Lejátszási lista',
+    videos: await fetchPlaylistItems(apiKey, p.playlistId, 6),
+  })),
+);
+const downloads = (config.downloads ?? []).filter((d) => d.fileUrl || d.url);
+const hasAny = media.length > 0 || videos.length > 0 || playlists.some((p) => p.videos.length) || downloads.length > 0;
 ---
 <BaseLayout title="Médiatár">
   <PageHero label="Videók és képek" title="Médiatár" lead="Fellépések, versenyek, archív anyagok." object="/hero-clapper.png" objectHover="/hero-clapper-break.png" objectAlt="" />
@@ -39,12 +52,53 @@ const hasAny = media.length > 0 || videos.length > 0;
       </div>
     )}
 
+    {playlists.map((pl) => pl.videos.length > 0 && (
+      <div class="mb-16">
+        <SectionHeader label="Lejátszási lista" title={pl.title} />
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {pl.videos.map((v) => (
+            <figure>
+              <YouTubeEmbed url={v.url} title={v.title} />
+              <figcaption class="mt-2 font-display">{v.title}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    ))}
+
     {media.length > 0 && (
-      <div>
+      <div class="mb-16">
         <SectionHeader label="Galéria" title="Albumok és képek" />
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {media.map((item) => <MediaCard item={item} />)}
         </div>
+      </div>
+    )}
+
+    {downloads.length > 0 && (
+      <div>
+        <SectionHeader label="Dokumentumok" title="Letölthető anyagok" />
+        <ul class="grid gap-4 sm:grid-cols-2">
+          {downloads.map((d) => (
+            <li>
+              <a
+                href={d.fileUrl || d.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center gap-4 rounded-xl border border-ink/10 bg-surface p-4 transition hover:-translate-y-0.5 hover:border-accent hover:shadow-md"
+              >
+                <span class="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+                </span>
+                <span class="min-w-0">
+                  <span class="block font-display text-lg leading-tight group-hover:text-accent">{d.title}</span>
+                  {d.description && <span class="block text-sm text-muted">{d.description}</span>}
+                </span>
+                <span class="ml-auto text-accent transition-transform group-hover:translate-x-0.5" aria-hidden="true">↓</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     )}
   </section>

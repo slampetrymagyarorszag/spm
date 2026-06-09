@@ -17,10 +17,13 @@ const photoUrl = slammer.photo ? urlForImage(slammer.photo).width(1200).height(6
 const metaDescription = [slammer.hometown, 'slammer — Slam Poetry Magyarország'].filter(Boolean).join(' · ');
 ---
 <BaseLayout title={slammer.name} description={metaDescription} image={photoUrl} ogType="article">
-  <section class="bg-ink text-surface">
-    <div class="mx-auto max-w-6xl px-4 py-16 grid gap-8 md:grid-cols-[2fr_3fr] items-end">
+  <section class="relative overflow-hidden bg-ink text-surface">
+    <!-- füstös, ambient színpad-háttér -->
+    <img src="/slammer-ambient.jpg" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30"></div>
+    <div class="relative z-10 mx-auto max-w-6xl px-4 py-16 grid gap-8 md:grid-cols-[2fr_3fr] items-end">
       <div>
-        {slammer.photo && <img src={urlForImage(slammer.photo).width(700).url()} alt={slammer.name} class="rounded-lg" />}
+        {slammer.photo && <img src={urlForImage(slammer.photo).width(700).url()} alt={slammer.name} class="rounded-lg shadow-2xl" />}
       </div>
       <div>
         {slammer.hometown && <p class="text-xs uppercase tracking-[0.2em] text-accent">{slammer.hometown}</p>}

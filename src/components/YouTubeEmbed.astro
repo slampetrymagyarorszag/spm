@@ -1,4 +1,6 @@
 ---
+// „Lite" YouTube-beágyazás: elsőre csak a bélyegkép + lejátszás gomb tölt be (gyors),
+// és az iframe csak kattintásra jön létre. Sok videónál drámaian gyorsabb az oldal.
 interface Props { url: string; title?: string }
 const { url, title = 'YouTube videó' } = Astro.props;
 function youtubeId(u: string): string | null {
@@ -6,9 +8,44 @@ function youtubeId(u: string): string | null {
   return m ? m[1] : null;
 }
 const id = youtubeId(url);
+const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : '';
 ---
 {id && (
-  <div class="aspect-video overflow-hidden rounded-lg bg-ink">
-    <iframe class="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${id}`} title={title} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <div class="yt-lite group relative aspect-video overflow-hidden rounded-lg bg-ink" data-id={id} data-title={title}>
+    <img
+      src={thumb}
+      alt={title}
+      loading="lazy"
+      decoding="async"
+      width="480"
+      height="360"
+      class="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.02]"
+    />
+    <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/50 to-transparent"></span>
+    <button type="button" class="yt-play absolute inset-0 grid place-items-center" aria-label={`Lejátszás: ${title}`}>
+      <span class="grid h-16 w-16 place-items-center rounded-full bg-accent/90 text-ink shadow-lg transition group-hover:scale-110">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </span>
+    </button>
   </div>
 )}
+<script>
+  document.querySelectorAll('.yt-lite').forEach((node) => {
+    const el = node as HTMLElement;
+    if (el.dataset.wired) return;
+    el.dataset.wired = '1';
+    el.querySelector('.yt-play')?.addEventListener('click', () => {
+      const id = el.dataset.id;
+      const title = el.dataset.title ?? 'YouTube videó';
+      if (!id) return;
+      const iframe = document.createElement('iframe');
+      iframe.className = 'absolute inset-0 h-full w-full';
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+      iframe.title = title;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      el.innerHTML = '';
+      el.appendChild(iframe);
+    });
+  });
+</script>

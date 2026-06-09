@@ -41,23 +41,33 @@ async function resolveUploadsPlaylist(apiKey: string, channelId?: string, handle
   return json?.items?.[0]?.contentDetails?.relatedPlaylists?.uploads ?? null;
 }
 
-// A csatorna legutóbbi feltöltései. Kulcs/azonosító hiányában vagy hibára [] (graceful).
-export async function fetchChannelUploads(opts: {
-  apiKey?: string; channelId?: string; handle?: string; max?: number;
-}): Promise<YouTubeVideo[]> {
-  const { apiKey, channelId, handle, max = 24 } = opts;
-  if (!apiKey || (!channelId && !handle)) return [];
+// Egy konkrét lejátszási lista legutóbbi videói (pl. „Májusi klub"). Hibára [] (graceful).
+export async function fetchPlaylistItems(apiKey?: string, playlistId?: string, max = 6): Promise<YouTubeVideo[]> {
+  if (!apiKey || !playlistId) return [];
   try {
-    const uploads = await resolveUploadsPlaylist(apiKey, channelId, handle);
-    if (!uploads) return [];
     const params = new URLSearchParams({
-      part: 'snippet,contentDetails', playlistId: uploads,
+      part: 'snippet,contentDetails', playlistId,
       maxResults: String(Math.min(max, 50)), key: apiKey,
     });
     const res = await fetch(`${API}/playlistItems?${params}`);
     if (!res.ok) return [];
     const json = await res.json();
     return parsePlaylistItems(json).slice(0, max);
+  } catch {
+    return [];
+  }
+}
+
+// A csatorna legutóbbi feltöltései. Kulcs/azonosító hiányában vagy hibára [] (graceful).
+export async function fetchChannelUploads(opts: {
+  apiKey?: string; channelId?: string; handle?: string; max?: number;
+}): Promise<YouTubeVideo[]> {
+  const { apiKey, channelId, handle, max = 9 } = opts;
+  if (!apiKey || (!channelId && !handle)) return [];
+  try {
+    const uploads = await resolveUploadsPlaylist(apiKey, channelId, handle);
+    if (!uploads) return [];
+    return await fetchPlaylistItems(apiKey, uploads, max);
   } catch {
     return [];
   }

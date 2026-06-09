@@ -15,7 +15,9 @@ const email = settings.contactEmail || 'info@slampoetry.hu';
 ---
 <BaseLayout title="Kapcsolat">
   <section class="relative overflow-hidden bg-ink text-surface">
-    <!-- ambient gradiens-orbok + grain -->
+    <!-- füstös, fellépős színpad-háttér + ambient gradiens-orbok -->
+    <img src="/contact-bg.jpg" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/80 to-ink"></div>
     <div class="pointer-events-none absolute -left-40 -top-20 h-[28rem] w-[28rem] rounded-full bg-accent/25 blur-[140px]"></div>
     <div class="pointer-events-none absolute -bottom-24 right-0 h-[24rem] w-[24rem] rounded-full bg-fuchsia-600/20 blur-[140px]"></div>
 

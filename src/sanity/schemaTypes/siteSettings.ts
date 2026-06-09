@@ -58,6 +58,32 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
+      name: 'youtubePlaylists', title: 'YouTube lejátszási listák (médiatár)', type: 'array',
+      description: 'Ezek a listák jelennek meg a Médiatárban (pl. „Májusi klub"), a legfrissebb videókkal. A lista ID-t a YouTube playlist linkjéből másold ki (a „list=" utáni rész, általában PL...-lel kezdődik).',
+      of: [{
+        type: 'object',
+        fields: [
+          defineField({ name: 'title', title: 'Cím', type: 'string' }),
+          defineField({ name: 'playlistId', title: 'Lejátszási lista ID', type: 'string' }),
+        ],
+        preview: { select: { title: 'title', subtitle: 'playlistId' } },
+      }],
+    }),
+    defineField({
+      name: 'downloads', title: 'Letölthető dokumentumok (médiatár alatt)', type: 'array',
+      description: 'Pl. az általános slam kiajánló PDF. Üresen hagyva nem jelenik meg semmi — amint feltöltesz egyet, megjelenik a Médiatár alján.',
+      of: [{
+        type: 'object',
+        fields: [
+          defineField({ name: 'title', title: 'Cím', type: 'string', validation: (r) => r.required() }),
+          defineField({ name: 'description', title: 'Rövid leírás (opcionális)', type: 'string' }),
+          defineField({ name: 'file', title: 'Fájl (PDF stb.)', type: 'file' }),
+          defineField({ name: 'url', title: 'Vagy külső link (ha nem fájlt töltesz fel)', type: 'url' }),
+        ],
+        preview: { select: { title: 'title', subtitle: 'description' } },
+      }],
+    }),
+    defineField({
       name: 'monthlyContest', title: 'Havi klub — jelentkezés gomb', type: 'object',
       description: 'A főoldali hero melletti „Jelentkezem a havi versenyre" gomb (Slam Poetry Budapest havi klub). Kapcsold be, add meg, melyik havi klubról van szó, és állítsd be, mikor nyíljon/záruljon a jelentkezés. Ha vége, egyszerűen kapcsold ki — a következő hónapnál csak átírod a hónapot és a dátumokat.',
       options: { collapsible: true, collapsed: true },

@@ -104,9 +104,17 @@ export type MediaItem = {
   _id: string; title: string; kind: 'video' | 'image' | 'album';
   youtubeUrl?: string; image?: any; albumUrl?: string; albumCover?: any; year?: number;
 };
-import { MEDIA_QUERY } from './queries';
+import { MEDIA_QUERY, MEDIA_CONFIG_QUERY } from './queries';
 export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
   return (await client.fetch(MEDIA_QUERY)) ?? [];
+}
+
+export type MediaConfig = {
+  youtubePlaylists?: { title?: string; playlistId?: string }[];
+  downloads?: { title: string; description?: string; url?: string; fileUrl?: string }[];
+};
+export async function getMediaConfig(client: Fetcher): Promise<MediaConfig> {
+  return (await client.fetch(MEDIA_CONFIG_QUERY)) ?? {};
 }
 
 export type EventTip = { _id: string; eventName: string; description?: string; facebookUrl?: string };
