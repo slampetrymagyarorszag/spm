@@ -2,9 +2,19 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import SlammerSearch from '../../components/islands/SlammerSearch.tsx';
-import { getSlammers } from '../../sanity/lib/api';
+import SlammerApplicationForm from '../../components/SlammerApplicationForm.astro';
+import { getSlammers, getApprovedSlammerApplications } from '../../sanity/lib/api';
+import { urlForImage } from '../../sanity/lib/image';
 import { sanityClient } from 'sanity:client';
-const slammers = await getSlammers(sanityClient);
+const [slammers, submissions] = await Promise.all([
+  getSlammers(sanityClient),
+  getApprovedSlammerApplications(sanityClient),
+]);
+function youtubeId(u?: string): string | null {
+  if (!u) return null;
+  const m = u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
 ---
 <BaseLayout title="Slammerek">
   <PageHero label="A színtér arcai" title="Slammerek" lead="Kereshető előadói adatbázis." object="/hero-micstand.png" objectHover="/hero-micstand-break.png" objectAlt="" />
@@ -13,4 +23,38 @@ const slammers = await getSlammers(sanityClient);
       ? <p class="text-muted">Hamarosan feltöltjük a slammerek profiljait.</p>
       : <SlammerSearch slammers={slammers} client:load />}
   </section>
+
+  {submissions.length > 0 && (
+    <section class="mx-auto max-w-6xl px-4 pb-16">
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">Közösségi beküldések</span>
+      </p>
+      <h2 class="mb-6 font-display text-2xl">Tőletek érkezett</h2>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {submissions.map((s) => {
+          const yt = youtubeId(s.youtubeUrl);
+          return (
+            <article class="overflow-hidden rounded-2xl border border-ink/10 bg-surface shadow-sm">
+              <div class="aspect-[3/4] overflow-hidden bg-ink/5">
+                {s.photo && <img src={urlForImage(s.photo).width(500).height(667).fit('crop').url()} alt={s.stageName} loading="lazy" decoding="async" width="500" height="667" class="h-full w-full object-cover" />}
+              </div>
+              <div class="p-5">
+                <h3 class="font-display text-xl leading-tight">{s.stageName}</h3>
+                {s.realName && s.realName !== s.stageName && <p class="text-sm text-muted">{s.realName}</p>}
+                {s.description && <p class="mt-2 text-sm text-muted line-clamp-3">{s.description}</p>}
+                {yt && (
+                  <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+                    Megnézem YouTube-on <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  <!-- Slammer-önjelentkezés (mindig látszik) -->
+  <SlammerApplicationForm />
 </BaseLayout>

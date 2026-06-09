@@ -65,7 +65,7 @@ export type EventListItem = {
 };
 export type EventDetail = EventListItem & {
   description?: any; ticketUrl?: string; facebookEventUrl?: string;
-  registrationEnabled?: boolean; registrationDeadline?: string;
+  registrationEnabled?: boolean; championshipRegistration?: boolean; registrationDeadline?: string;
   performers?: { _id: string; name: string; slug: string; photo?: any }[];
 };
 
@@ -88,9 +88,14 @@ export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
 }
 
 export type EventTip = { _id: string; eventName: string; description?: string; facebookUrl?: string };
-import { EVENT_TIPS_QUERY } from './queries';
+import { EVENT_TIPS_QUERY, SLAMMER_APPLICATIONS_QUERY } from './queries';
 export async function getEventTips(client: Fetcher): Promise<EventTip[]> {
   return (await client.fetch(EVENT_TIPS_QUERY)) ?? [];
+}
+
+export type SlammerApplication = { _id: string; realName?: string; stageName: string; description?: string; youtubeUrl?: string; photo?: any };
+export async function getApprovedSlammerApplications(client: Fetcher): Promise<SlammerApplication[]> {
+  return (await client.fetch(SLAMMER_APPLICATIONS_QUERY)) ?? [];
 }
 
 export type PageDoc = { title: string; lead?: string; body?: any; seo?: Seo };

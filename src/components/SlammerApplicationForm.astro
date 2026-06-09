@@ -1,0 +1,96 @@
+---
+// Slammer-önjelentkezés: a látogató kéri, hogy felkerüljön a listára.
+// Multipart beküldés (fotóval) a /api/slammer-application végpontra.
+import AnimatedText from './AnimatedText.astro';
+---
+<section class="relative overflow-hidden bg-ink text-surface">
+  <div class="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-accent/20 blur-[120px]"></div>
+  <div class="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-accent/10 blur-[120px]"></div>
+
+  <div class="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2 md:py-20">
+    <div>
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">Hiányolod magad?</span>
+      </p>
+      <h2 class="font-display text-4xl leading-[0.95] md:text-5xl">
+        <AnimatedText text="Szeretnél rajta lenni a listán?" />
+      </h2>
+      <p class="mt-4 max-w-md text-lg text-surface/75">
+        Küldd be a neved, művészneved, egy képet magadról, egy rövid bemutatkozást és egy YouTube linket — átnézzük, és felvehetünk a slammerek közé.
+      </p>
+      <div class="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-surface/70">
+        <strong class="text-surface/90">Mielőtt beküldöd:</strong> kérünk, ne küldj sértő, gyűlöletkeltő vagy jogsértő tartalmat, se valótlan információt. A beérkezett tartalmat moderáljuk — fenntartjuk a jogot, hogy a beküldést indoklás nélkül ne tegyük közzé, vagy később eltávolítsuk.
+      </div>
+    </div>
+
+    <form class="js-slammer-form grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur md:p-7" aria-label="Slammer-jelentkezés űrlap">
+      <div>
+        <label for="sa-name" class="mb-1 block text-sm text-surface/70">Neved <span class="text-accent">*</span></label>
+        <input id="sa-name" type="text" name="realName" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+      <div>
+        <label for="sa-stage" class="mb-1 block text-sm text-surface/70">Művészneved <span class="text-accent">*</span></label>
+        <input id="sa-stage" type="text" name="stageName" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+      <div>
+        <label for="sa-photo" class="mb-1 block text-sm text-surface/70">Kép magadról <span class="text-accent">*</span> <span class="text-surface/40">(max 8 MB)</span></label>
+        <input id="sa-photo" type="file" name="photo" accept="image/*" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-2.5 text-sm text-surface/80 file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-3 file:py-1.5 file:font-semibold file:text-ink" />
+      </div>
+      <div>
+        <label for="sa-desc" class="mb-1 block text-sm text-surface/70">Rövid bemutatkozás <span class="text-accent">*</span></label>
+        <textarea id="sa-desc" name="description" rows="3" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent"></textarea>
+      </div>
+      <div>
+        <label for="sa-yt" class="mb-1 block text-sm text-surface/70">YouTube link <span class="text-accent">*</span></label>
+        <input id="sa-yt" type="url" name="youtubeUrl" required placeholder="https://youtu.be/…" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+      <div>
+        <label for="sa-email" class="mb-1 block text-sm text-surface/70">Email <span class="text-surface/40">(opcionális, ha visszajeleznénk)</span></label>
+        <input id="sa-email" type="email" name="email" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+
+      <label class="flex items-start gap-3 text-sm text-surface/75">
+        <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
+        <span>Elolvastam és elfogadom, hogy nem küldök sértő vagy valótlan tartalmat, és a szervezők dönthetnek a közzétételről.</span>
+      </label>
+
+      <!-- honeypot -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+      <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Beküldöm a jelentkezésem</button>
+      <p class="js-slammer-status text-sm" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+<script>
+  document.querySelectorAll('form.js-slammer-form').forEach((node) => {
+    const f = node as HTMLFormElement;
+    if (f.dataset.wired) return;
+    f.dataset.wired = '1';
+    const status = f.querySelector('.js-slammer-status') as HTMLElement;
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
+      btn.disabled = true;
+      status.textContent = 'Küldés…';
+      status.style.color = '';
+      try {
+        const res = await fetch('/api/slammer-application', { method: 'POST', body: new FormData(f) });
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          status.textContent = 'Köszönjük a jelentkezést! Átnézzük, és ha minden rendben, felvesszük.';
+          status.style.color = '#7CFFB2';
+          f.reset();
+        } else {
+          status.textContent = json.error ?? 'Hiba történt.';
+          status.style.color = '#ff8da1';
+        }
+      } catch {
+        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.style.color = '#ff8da1';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

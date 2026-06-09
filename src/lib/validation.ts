@@ -31,3 +31,55 @@ export function validateEventTip(input: EventTipInput): ValidationResult {
   if (input.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };
   return { ok: true };
 }
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+// Slammer-önjelentkezés: a látogató kéri, hogy felkerüljön a slammer-listára.
+// Kötelező: név, művésznév, leírás, YouTube link. (A fotót a multipart törzs viszi.)
+export type SlammerApplicationInput = {
+  realName?: string;
+  stageName?: string;
+  description?: string;
+  youtubeUrl?: string;
+  email?: string; // opcionális
+  consent?: unknown; // a moderációs nyilatkozat elfogadása (kötelező)
+  website?: string; // honeypot
+};
+
+export function validateSlammerApplication(input: SlammerApplicationInput): ValidationResult {
+  if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
+  if (!input.realName || input.realName.trim().length < 2) return { ok: false, error: 'A neved megadása kötelező.' };
+  if (!input.stageName || input.stageName.trim().length < 2) return { ok: false, error: 'A művészneved megadása kötelező.' };
+  if (!input.description || input.description.trim().length < 10) return { ok: false, error: 'Kérünk egy rövid bemutatkozást (legalább pár szó).' };
+  if (!input.youtubeUrl || !/^https?:\/\/\S+$/i.test(input.youtubeUrl.trim())) return { ok: false, error: 'Érvényes YouTube link szükséges (https://…).' };
+  if (input.email && !EMAIL_RE.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };
+  if (!isConsented(input.consent)) return { ok: false, error: 'A beküldéshez el kell fogadnod a moderációs feltételeket.' };
+  return { ok: true };
+}
+
+// Országos bajnokság jelentkezés: név, email, művésznév kötelező; eredmények és a
+// „melyik nap nem megfelelő" opcionális.
+export type ChampionshipInput = {
+  name?: string;
+  email?: string;
+  stageName?: string;
+  achievements?: string;
+  unavailableDay?: string;
+  consent?: unknown;
+  eventSlug?: string;
+  website?: string;
+};
+
+export function validateChampionship(input: ChampionshipInput): ValidationResult {
+  if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
+  if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A név megadása kötelező.' };
+  if (!input.email || !EMAIL_RE.test(input.email)) return { ok: false, error: 'Érvényes email cím szükséges.' };
+  if (!input.stageName || input.stageName.trim().length < 2) return { ok: false, error: 'A művésznév megadása kötelező.' };
+  if (!isConsented(input.consent)) return { ok: false, error: 'Kérjük, fogadd el a jelentkezés feltételeit.' };
+  return { ok: true };
+}
+
+// A jelölőnégyzet sokféleképp érkezhet (true, "true", "on", "1") — egységesítjük.
+export function isConsented(v: unknown): boolean {
+  return v === true || v === 'true' || v === 'on' || v === '1' || v === 1;
+}

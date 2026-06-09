@@ -19,6 +19,9 @@ import AnimatedText from './AnimatedText.astro';
       <p class="mt-4 max-w-md text-lg text-surface/75">
         Láttál olyat, ami nincs fent a naptárban? Küldd el nekünk — átnézzük, és felvesszük a többi közé.
       </p>
+      <div class="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-surface/70">
+        <strong class="text-surface/90">Mielőtt beküldöd:</strong> kérünk, ne adj meg sértő vagy valótlan tartalmat, és csak valódi, nyilvános eseményt linkelj. A beküldéseket moderáljuk — fenntartjuk a jogot, hogy indoklás nélkül ne tegyük közzé.
+      </div>
     </div>
 
     <form class="js-tip-form grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur md:p-7" aria-label="Esemény-tipp űrlap">
@@ -42,6 +45,11 @@ import AnimatedText from './AnimatedText.astro';
         <input id="tip-email" type="email" name="email" placeholder="te@example.hu"
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
+
+      <label class="flex items-start gap-3 text-sm text-surface/75">
+        <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
+        <span>Valódi, nyilvános eseményt küldök be, nem sértő vagy valótlan tartalommal. Tudomásul veszem, hogy a szervezők dönthetnek a közzétételről.</span>
+      </label>
 
       <!-- honeypot -->
       <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />

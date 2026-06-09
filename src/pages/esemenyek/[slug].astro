@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../../components/RichText.astro';
 import EventNeonCard from '../../components/EventNeonCard.astro';
 import RegistrationForm from '../../components/RegistrationForm.astro';
+import ChampionshipRegistrationForm from '../../components/ChampionshipRegistrationForm.astro';
 import { urlForImage } from '../../sanity/lib/image';
 import { getEvents, getEventBySlug } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
@@ -69,7 +70,11 @@ const eventJsonLd = {
 
     {ev.description && <div class="mt-10"><RichText value={ev.description} /></div>}
 
-    {ev.registrationEnabled && <RegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />}
+    {ev.registrationEnabled && (
+      ev.championshipRegistration
+        ? <ChampionshipRegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />
+        : <RegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />
+    )}
 
     {ev.performers?.length && (
       <div class="mt-12">

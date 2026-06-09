@@ -33,6 +33,10 @@ export const event = defineType({
 
     // — Jelentkezés (országos bajnokság / Budapest Klub) —
     defineField({ name: 'registrationEnabled', title: 'Jelentkezés engedélyezve', type: 'boolean', group: 'registration', initialValue: false }),
+    defineField({
+      name: 'championshipRegistration', title: 'Országos bajnokság jelentkezés (speciális űrlap)', type: 'boolean', group: 'registration', initialValue: false,
+      description: 'Ha be van kapcsolva (a „Jelentkezés engedélyezve” mellett), az eseményen a bajnoki jelentkezési űrlap jelenik meg: művésznév, eddigi eredmények, és melyik előválogató nap nem megfelelő.',
+    }),
     defineField({ name: 'registrationEmail', title: 'Jelentkezés címzettje', type: 'string', group: 'registration', initialValue: 'contest@slampoetry.hu' }),
     defineField({ name: 'registrationDeadline', title: 'Jelentkezési határidő', type: 'datetime', group: 'registration' }),
   ],

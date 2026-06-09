@@ -30,7 +30,7 @@ export const EVENTS_QUERY = `*[_type == "event" && defined(slug.current)]{
 }`;
 export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug][0]{
   _id, title, "slug": slug.current, startsAt, cover, accentColor, location, description,
-  ticketUrl, facebookEventUrl, registrationEnabled, registrationDeadline,
+  ticketUrl, facebookEventUrl, registrationEnabled, championshipRegistration, registrationDeadline,
   performers[]->{ _id, name, "slug": slug.current, photo }
 }`;
 
@@ -41,6 +41,11 @@ export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdA
 // Csak a szerkesztő által jóváhagyott, beküldött esemény-tippek.
 export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true] | order(submittedAt desc){
   _id, eventName, description, facebookUrl
+}`;
+
+// Csak a jóváhagyott, beküldött slammer-jelentkezések.
+export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && approved == true] | order(submittedAt desc){
+  _id, realName, stageName, description, youtubeUrl, photo
 }`;
 
 export const PAGE_BY_SLUG_QUERY = `*[_type == "page" && slug.current == $slug][0]{

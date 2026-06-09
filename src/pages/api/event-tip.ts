@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { validateEventTip } from '../../lib/validation';
+import { validateEventTip, isConsented } from '../../lib/validation';
 import { writeClient } from '../../sanity/lib/writeClient';
 
 export const prerender = false;
@@ -13,6 +13,9 @@ export const POST: APIRoute = async ({ request }) => {
   if (!result.ok) {
     if (result.error === 'spam') return json({ ok: true }, 200); // spam: csendben elnyel
     return json({ ok: false, error: result.error }, 400);
+  }
+  if (!isConsented(data.consent)) {
+    return json({ ok: false, error: 'A beküldéshez el kell fogadnod a feltételeket.' }, 400);
   }
 
   if (!writeClient) {
