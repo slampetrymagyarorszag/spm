@@ -45,8 +45,8 @@ const eventJsonLd = {
 <BaseLayout title={ev.title} description={metaDescription} image={coverUrl ?? undefined} ogType="article">
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(eventJsonLd)} />
   <section class="relative overflow-hidden bg-ink text-surface" style={heroStyle}>
-    {coverUrl && <img src={coverUrl} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover opacity-40" />}
-    {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40"></div>}
+    {coverUrl && <img src={coverUrl} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover opacity-20" />}
+    {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/85 to-ink/60"></div>}
     <div class="relative z-10 mx-auto max-w-5xl px-4 py-20 md:py-28">
       <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
         <span class="h-px w-8 bg-accent"></span><span class="inline-block">Esemény</span>
