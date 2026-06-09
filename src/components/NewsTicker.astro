@@ -26,6 +26,10 @@ const fmt = (d: string) =>
             <img
               src={urlForImage(post.cover).width(640).height(360).fit('crop').url()}
               alt=""
+              loading="lazy"
+              decoding="async"
+              width="640"
+              height="360"
               class="h-full w-full object-cover transition duration-500 group-hover/card:scale-105"
             />
           )}

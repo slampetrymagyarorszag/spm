@@ -32,6 +32,8 @@ export default function FeaturedSlammers({ slammers }: { slammers: FeaturedItem[
                 src={s.photoUrl}
                 alt=""
                 aria-hidden="true"
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out"
                 style={{
                   filter: isActive ? 'none' : 'grayscale(45%) brightness(0.65)',

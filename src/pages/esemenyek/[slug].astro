@@ -78,7 +78,7 @@ const eventJsonLd = {
           {ev.performers.map((p) => (
             <a href={`/slammerek/${p.slug}`} class="group">
               <div class="aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
-                {p.photo && <img src={urlForImage(p.photo).width(300).height(400).url()} alt={p.name} class="h-full w-full object-cover transition group-hover:scale-105" />}
+                {p.photo && <img src={urlForImage(p.photo).width(300).height(400).url()} alt={p.name} loading="lazy" decoding="async" width="300" height="400" class="h-full w-full object-cover transition group-hover:scale-105" />}
               </div>
               <p class="mt-2 font-display group-hover:text-accent">{p.name}</p>
             </a>

@@ -5,7 +5,7 @@ const { title, albumUrl, cover } = Astro.props;
 ---
 <a href={albumUrl} class="group block">
   <div class="relative aspect-[4/3] overflow-hidden rounded-lg bg-ink/10">
-    {cover && <img src={urlForImage(cover).width(640).height(480).url()} alt={title} class="h-full w-full object-cover transition group-hover:scale-105" />}
+    {cover && <img src={urlForImage(cover).width(640).height(480).url()} alt={title} loading="lazy" decoding="async" width="640" height="480" class="h-full w-full object-cover transition group-hover:scale-105" />}
     <span class="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs text-white">Album a Facebookon ↗</span>
   </div>
   <h3 class="mt-2 font-display text-lg group-hover:text-accent">{title}</h3>

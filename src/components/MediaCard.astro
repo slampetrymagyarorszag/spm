@@ -13,5 +13,5 @@ const { item } = Astro.props;
   <FacebookAlbumCard title={item.title} albumUrl={item.albumUrl} cover={item.albumCover} />
 )}
 {item.kind === 'image' && item.image && (
-  <figure><img src={urlForImage(item.image).width(640).url()} alt={item.title} class="rounded-lg" /><figcaption class="mt-2 font-display">{item.title}</figcaption></figure>
+  <figure><img src={urlForImage(item.image).width(640).url()} alt={item.title} loading="lazy" decoding="async" class="rounded-lg" /><figcaption class="mt-2 font-display">{item.title}</figcaption></figure>
 )}
