@@ -58,6 +58,35 @@ export const structure: StructureResolver = (S) =>
 
       S.documentTypeListItem('mediaItem').title('Médiatár'),
       S.documentTypeListItem('page').title('Oldalak'),
+
+      S.divider(),
+
+      // Látogatói esemény-tippek elbírálása
+      S.listItem()
+        .title('📥 Beküldött események')
+        .child(
+          S.list()
+            .title('Beküldött események')
+            .items([
+              S.listItem()
+                .title('⏳ Elbírálásra vár')
+                .child(
+                  S.documentList()
+                    .title('Elbírálásra vár')
+                    .filter('_type == "eventTip" && approved != true')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('✅ Jóváhagyott')
+                .child(
+                  S.documentList()
+                    .title('Jóváhagyott')
+                    .filter('_type == "eventTip" && approved == true')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+            ]),
+        ),
+
       S.divider(),
       S.listItem()
         .title('Oldal beállítások')

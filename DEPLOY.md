@@ -30,9 +30,12 @@ A változókat a **Vercel dashboard → a projekt → Settings → Environment V
 | `YOUTUBE_CHANNEL_ID` | `UCg2q-EVjQML15iQNK3L4B0Q` |
 | `CONTACT_EMAIL` | `contest@slampoetry.hu` (opcionális, ez az alap) |
 | `MAIL_FROM` | `Slam Poetry <no-reply@slampoetry.hu>` (a Resend-nél hitelesített domain) |
-| `RESEND_API_KEY` | **később**, amikor megvan (addig az űrlapok 500-at adnak) |
+| `RESEND_API_KEY` | **később**, amikor megvan (a kapcsolat/jelentkezés űrlapokhoz; az esemény-tipp NEM ezt használja) |
+| `SANITY_FORM_TOKEN` | az esemény-tipp űrlaphoz: egy **külön, írásra jogosult** Sanity token. A beküldés ezzel hoz létre „Beküldött esemény" dokumentumot a Studióban. |
 
 > NE tedd fel a `SANITY_WRITE_TOKEN`-t — az csak a migrációs szkripthez kellett, futásidőben nem.
+> A `SANITY_FORM_TOKEN` ettől KÜLÖN token: hozz létre a Sanity → API → Tokens alatt egy új,
+> Editor jogú tokent kifejezetten az űrlaphoz, és csak EZT tedd a Vercelre.
 
 A változók felvétele/módosítása után **újra kell deployolni** (`npx vercel --prod`), hogy érvénybe lépjenek.
 

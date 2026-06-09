@@ -38,6 +38,11 @@ export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdA
   _id, title, kind, youtubeUrl, image, albumUrl, albumCover, year
 }`;
 
+// Csak a szerkesztő által jóváhagyott, beküldött esemény-tippek.
+export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true] | order(submittedAt desc){
+  _id, eventName, description, facebookUrl
+}`;
+
 export const PAGE_BY_SLUG_QUERY = `*[_type == "page" && slug.current == $slug][0]{
   title, lead, body, seo{ metaTitle, metaDescription, shareImage }
 }`;

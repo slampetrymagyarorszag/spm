@@ -87,6 +87,12 @@ export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
   return (await client.fetch(MEDIA_QUERY)) ?? [];
 }
 
+export type EventTip = { _id: string; eventName: string; description?: string; facebookUrl?: string };
+import { EVENT_TIPS_QUERY } from './queries';
+export async function getEventTips(client: Fetcher): Promise<EventTip[]> {
+  return (await client.fetch(EVENT_TIPS_QUERY)) ?? [];
+}
+
 export type PageDoc = { title: string; lead?: string; body?: any; seo?: Seo };
 import { PAGE_BY_SLUG_QUERY } from './queries';
 export async function getPageBySlug(client: Fetcher, slug: string): Promise<PageDoc | null> {
