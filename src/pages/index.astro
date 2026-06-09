@@ -122,4 +122,16 @@ const secondaryCtaHref = home.secondaryCtaHref || '/mi-az-a-slam-poetry';
       <NewsTicker posts={latestPosts} />
     )}
   </section>
+
+  <!-- Közösségi hangulat-band: valódi slam-est fotó + CTA -->
+  <section class="relative overflow-hidden bg-ink text-surface">
+    <img src="/community.jpg" alt="Telt házas slam est közönsége" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-45" />
+    <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40"></div>
+    <div class="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center md:py-32">
+      <p class="mb-3 text-xs uppercase tracking-[0.2em] text-accent">Élő közösség</p>
+      <h2 class="font-display text-4xl leading-[0.95] md:text-6xl">A slam élőben az igazi</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-surface/80">Három perc, öt zsűritag, telt ház. Gyere el egy estre, és éld át, miért szól erről a műfaj.</p>
+      <a href="/esemenyek" class="mt-8 inline-block rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90">Közelgő események →</a>
+    </div>
+  </section>
 </BaseLayout>
