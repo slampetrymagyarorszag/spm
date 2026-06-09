@@ -21,8 +21,10 @@ const [events, slammers, featured, posts, settings] = await Promise.all([
 ]);
 const siteSettings = settings ?? { title: 'Slam Poetry Magyarország' };
 const upcoming = splitEvents(events).upcoming.slice(0, 4);
-// Kiemelt slammerek a CMS-ből (max 10); ha nincs kiemelt, az első néhány (név szerint).
-const slammerSource = featured.length ? featured : slammers;
+// Kiemelt slammerek elöl (CMS „Kiemelt a főoldalon" + sorrend), mögöttük a többiek
+// név szerint feltöltve — így a galéria mindig tele van, de a kiemeltek vezetnek.
+const featuredIds = new Set(featured.map((s) => s._id));
+const slammerSource = [...featured, ...slammers.filter((s) => !featuredIds.has(s._id))];
 const featuredSlammers = slammerSource
   .filter((s) => s.photo)
   .slice(0, 10)
