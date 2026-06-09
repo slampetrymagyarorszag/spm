@@ -128,6 +128,12 @@ export async function getApprovedSlammerApplications(client: Fetcher): Promise<S
   return (await client.fetch(SLAMMER_APPLICATIONS_QUERY)) ?? [];
 }
 
+export type SlamClub = { _id: string; city: string; name?: string; facebookUrl: string };
+import { SLAM_CLUBS_QUERY } from './queries';
+export async function getSlamClubs(client: Fetcher): Promise<SlamClub[]> {
+  return (await client.fetch(SLAM_CLUBS_QUERY)) ?? [];
+}
+
 export type PageDoc = { title: string; lead?: string; body?: any; seo?: Seo };
 import { PAGE_BY_SLUG_QUERY } from './queries';
 export async function getPageBySlug(client: Fetcher, slug: string): Promise<PageDoc | null> {

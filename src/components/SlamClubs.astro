@@ -1,0 +1,50 @@
+---
+// Slam klubok — kétsoros, folyamatosan futó neon-szalag. Minden chip kattintható,
+// a klub Facebook-oldalára visz. Hoverre megáll. prefers-reduced-motion: tördelve.
+import type { SlamClub } from '../sanity/lib/api';
+interface Props { clubs: SlamClub[] }
+const { clubs } = Astro.props;
+const repeat = <T,>(arr: T[], n: number): T[] => Array.from({ length: n }).flatMap(() => arr);
+const base = clubs.length ? repeat(clubs, Math.max(1, Math.ceil(8 / clubs.length))) : [];
+const row1 = [...base, ...base];
+const row2 = [...[...base].reverse(), ...[...base].reverse()];
+---
+{clubs.length === 0 ? (
+  <p class="text-surface/60">Még nincs felvett slam klub — lentebb beküldheted a sajátodat!</p>
+) : (
+  <div class="space-y-4">
+    {[row1, row2].map((row, ri) => (
+      <div class="club-row group relative overflow-hidden">
+        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-ink to-transparent"></div>
+        <div class={`club-track flex w-max gap-4 ${ri === 1 ? 'rev' : ''} group-hover:[animation-play-state:paused]`}>
+          {row.map((c) => (
+            <a
+              href={c.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="club-chip group/chip flex shrink-0 items-center gap-3 rounded-xl border border-accent/40 bg-white/[0.03] px-5 py-3 transition hover:-translate-y-0.5 hover:border-accent hover:bg-accent/10"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="text-accent"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.79 8.43-4.94 8.43-9.94Z"/></svg>
+              <span class="leading-tight">
+                <span class="block font-display text-xl text-surface group-hover/chip:text-accent">{c.city}</span>
+                <span class="block text-xs uppercase tracking-wide text-surface/55">{c.name || 'Slam klub'}</span>
+              </span>
+              <span class="text-accent" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+<style>
+  @keyframes club-ltr { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes club-rtl { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  .club-track { animation: club-ltr 45s linear infinite; }
+  .club-track.rev { animation-name: club-rtl; animation-duration: 55s; }
+  @media (max-width: 768px) { .club-track { animation-duration: 30s; } }
+  @media (prefers-reduced-motion: reduce) {
+    .club-track { animation: none; flex-wrap: wrap; }
+  }
+</style>

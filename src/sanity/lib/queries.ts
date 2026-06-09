@@ -54,6 +54,11 @@ export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && ap
   _id, realName, stageName, description, youtubeUrl, photo
 }`;
 
+// Jóváhagyott slam klubok (Slammerek → Slam klubok fül).
+export const SLAM_CLUBS_QUERY = `*[_type == "slamClub" && approved == true] | order(city asc){
+  _id, city, name, facebookUrl
+}`;
+
 export const PAGE_BY_SLUG_QUERY = `*[_type == "page" && slug.current == $slug][0]{
   title, lead, body, seo{ metaTitle, metaDescription, shareImage }
 }`;

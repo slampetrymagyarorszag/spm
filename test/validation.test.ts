@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest } from '../src/lib/validation';
+import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest, validateSlamClub } from '../src/lib/validation';
 
 describe('validateSubmission', () => {
   const ok = { name: 'Teszt Elek', email: 'teszt@example.com', message: 'Szeretnék jelentkezni.' };
@@ -48,4 +48,12 @@ describe('validateMonthlyContest', () => {
   it('hiányzó név → hiba', () => { expect(validateMonthlyContest({ ...ok, name: '' }).ok).toBe(false); });
   it('rossz email → hiba', () => { expect(validateMonthlyContest({ ...ok, email: 'rossz' }).ok).toBe(false); });
   it('ismeretlen típus → hiba', () => { expect(validateMonthlyContest({ ...ok, entryType: 'egyeb' }).ok).toBe(false); });
+});
+
+describe('validateSlamClub', () => {
+  const ok = { city: 'Szeged', name: 'Slam Poetry Szeged', facebookUrl: 'https://www.facebook.com/szegedslampoetry' };
+  it('érvényes klubot elfogad', () => { expect(validateSlamClub(ok)).toEqual({ ok: true }); });
+  it('honeypot → spam', () => { expect(validateSlamClub({ ...ok, website: 'x' })).toEqual({ ok: false, error: 'spam' }); });
+  it('hiányzó város → hiba', () => { expect(validateSlamClub({ ...ok, city: '' }).ok).toBe(false); });
+  it('rossz link → hiba', () => { expect(validateSlamClub({ ...ok, facebookUrl: 'nem' }).ok).toBe(false); });
 });

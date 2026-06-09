@@ -3,12 +3,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import SlammerSearch from '../../components/islands/SlammerSearch.tsx';
 import SlammerApplicationForm from '../../components/SlammerApplicationForm.astro';
-import { getSlammers, getApprovedSlammerApplications } from '../../sanity/lib/api';
+import SlamClubs from '../../components/SlamClubs.astro';
+import SlamClubForm from '../../components/SlamClubForm.astro';
+import { getSlammers, getApprovedSlammerApplications, getSlamClubs } from '../../sanity/lib/api';
 import { urlForImage } from '../../sanity/lib/image';
 import { sanityClient } from 'sanity:client';
-const [slammers, submissions] = await Promise.all([
+const [slammers, submissions, clubs] = await Promise.all([
   getSlammers(sanityClient),
   getApprovedSlammerApplications(sanityClient),
+  getSlamClubs(sanityClient),
 ]);
 function youtubeId(u?: string): string | null {
   if (!u) return null;
@@ -18,43 +21,94 @@ function youtubeId(u?: string): string | null {
 ---
 <BaseLayout title="Slammerek">
   <PageHero label="A színtér arcai" title="Slammerek" lead="Kereshető előadói adatbázis." object="/hero-micstand.png" objectHover="/hero-micstand-break.png" objectAlt="" />
-  <section class="mx-auto max-w-6xl px-4 py-16">
-    {slammers.length === 0
-      ? <p class="text-muted">Hamarosan feltöltjük a slammerek profiljait.</p>
-      : <SlammerSearch slammers={slammers} client:load />}
-  </section>
 
-  {submissions.length > 0 && (
-    <section class="mx-auto max-w-6xl px-4 pb-16">
-      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
-        <span class="h-px w-8 bg-accent"></span><span class="inline-block">Közösségi beküldések</span>
-      </p>
-      <h2 class="mb-6 font-display text-2xl">Tőletek érkezett</h2>
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {submissions.map((s) => {
-          const yt = youtubeId(s.youtubeUrl);
-          return (
-            <article class="overflow-hidden rounded-2xl border border-ink/10 bg-surface shadow-sm">
-              <div class="aspect-[3/4] overflow-hidden bg-ink/5">
-                {s.photo && <img src={urlForImage(s.photo).width(500).height(667).fit('crop').url()} alt={s.stageName} loading="lazy" decoding="async" width="500" height="667" class="h-full w-full object-cover" />}
-              </div>
-              <div class="p-5">
-                <h3 class="font-display text-xl leading-tight">{s.stageName}</h3>
-                {s.realName && s.realName !== s.stageName && <p class="text-sm text-muted">{s.realName}</p>}
-                {s.description && <p class="mt-2 text-sm text-muted line-clamp-3">{s.description}</p>}
-                {yt && (
-                  <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
-                    Megnézem YouTube-on <span aria-hidden="true">↗</span>
-                  </a>
-                )}
-              </div>
-            </article>
-          );
-        })}
+  <!-- Fülek -->
+  <div class="mx-auto max-w-6xl px-4 pt-12">
+    <div role="tablist" aria-label="Slammerek nézetek" class="flex gap-1 border-b border-ink/10">
+      <button type="button" data-tab="slammerek" aria-selected="true" class="tab-btn -mb-px border-b-2 border-accent px-5 py-3 font-display text-lg text-ink">
+        Slammerek
+      </button>
+      <button type="button" data-tab="klubok" aria-selected="false" class="tab-btn -mb-px border-b-2 border-transparent px-5 py-3 font-display text-lg text-muted hover:text-ink">
+        Slam klubok
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel: Slammerek -->
+  <div data-panel="slammerek">
+    <section class="mx-auto max-w-6xl px-4 py-12">
+      {slammers.length === 0
+        ? <p class="text-muted">Hamarosan feltöltjük a slammerek profiljait.</p>
+        : <SlammerSearch slammers={slammers} client:load />}
+    </section>
+
+    {submissions.length > 0 && (
+      <section class="mx-auto max-w-6xl px-4 pb-16">
+        <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+          <span class="h-px w-8 bg-accent"></span><span class="inline-block">Közösségi beküldések</span>
+        </p>
+        <h2 class="mb-6 font-display text-2xl">Tőletek érkezett</h2>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {submissions.map((s) => {
+            const yt = youtubeId(s.youtubeUrl);
+            return (
+              <article class="overflow-hidden rounded-2xl border border-ink/10 bg-surface shadow-sm">
+                <div class="aspect-[3/4] overflow-hidden bg-ink/5">
+                  {s.photo && <img src={urlForImage(s.photo).width(500).height(667).fit('crop').url()} alt={s.stageName} loading="lazy" decoding="async" width="500" height="667" class="h-full w-full object-cover" />}
+                </div>
+                <div class="p-5">
+                  <h3 class="font-display text-xl leading-tight">{s.stageName}</h3>
+                  {s.realName && s.realName !== s.stageName && <p class="text-sm text-muted">{s.realName}</p>}
+                  {s.description && <p class="mt-2 text-sm text-muted line-clamp-3">{s.description}</p>}
+                  {yt && (
+                    <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+                      Megnézem YouTube-on <span aria-hidden="true">↗</span>
+                    </a>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    <SlammerApplicationForm />
+  </div>
+
+  <!-- Panel: Slam klubok -->
+  <div data-panel="klubok" hidden>
+    <section class="relative overflow-hidden bg-ink text-surface">
+      <div class="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-accent/15 blur-[120px]"></div>
+      <div class="relative z-10 mx-auto max-w-6xl px-4 py-14 md:py-16">
+        <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+          <span class="h-px w-8 bg-accent"></span><span class="inline-block">Hol találsz slamet?</span>
+        </p>
+        <h2 class="mb-2 font-display text-3xl md:text-4xl">Slam klubok országszerte</h2>
+        <p class="mb-8 max-w-xl text-surface/70">Kattints egy városra, és átviszünk a klub oldalára. Hiányzik a tiétek? Küldd be lentebb!</p>
+        <SlamClubs clubs={clubs} />
+        <div class="mt-10 max-w-2xl">
+          <SlamClubForm />
+        </div>
       </div>
     </section>
-  )}
-
-  <!-- Slammer-önjelentkezés (mindig látszik) -->
-  <SlammerApplicationForm />
+  </div>
 </BaseLayout>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll('.tab-btn')) as HTMLButtonElement[];
+  const panels = new Map<string, HTMLElement>();
+  document.querySelectorAll('[data-panel]').forEach((p) => panels.set((p as HTMLElement).dataset.panel!, p as HTMLElement));
+  function activate(name: string) {
+    tabs.forEach((t) => {
+      const on = t.dataset.tab === name;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.classList.toggle('border-accent', on);
+      t.classList.toggle('text-ink', on);
+      t.classList.toggle('border-transparent', !on);
+      t.classList.toggle('text-muted', !on);
+    });
+    panels.forEach((p, key) => { p.hidden = key !== name; });
+  }
+  tabs.forEach((t) => t.addEventListener('click', () => activate(t.dataset.tab!)));
+</script>

@@ -95,6 +95,22 @@ export function validateMonthlyContest(input: MonthlyContestInput): ValidationRe
   return { ok: true };
 }
 
+// Slam klub beküldés: város + Facebook (vagy más) link kötelező.
+export type SlamClubInput = {
+  city?: string;
+  name?: string;
+  facebookUrl?: string;
+  email?: string;
+  website?: string;
+};
+export function validateSlamClub(input: SlamClubInput): ValidationResult {
+  if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
+  if (!input.city || input.city.trim().length < 2) return { ok: false, error: 'A város megadása kötelező.' };
+  if (!input.facebookUrl || !/^https?:\/\/\S+$/i.test(input.facebookUrl.trim())) return { ok: false, error: 'Érvényes link szükséges (https://…).' };
+  if (input.email && !EMAIL_RE.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };
+  return { ok: true };
+}
+
 // A jelölőnégyzet sokféleképp érkezhet (true, "true", "on", "1") — egységesítjük.
 export function isConsented(v: unknown): boolean {
   return v === true || v === 'true' || v === 'on' || v === '1' || v === 1;

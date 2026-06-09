@@ -113,6 +113,32 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
 
+      // Beküldött / kezelt slam klubok
+      S.listItem()
+        .title('🏙️ Slam klubok')
+        .child(
+          S.list()
+            .title('Slam klubok')
+            .items([
+              S.listItem()
+                .title('⏳ Elbírálásra vár')
+                .child(
+                  S.documentList()
+                    .title('Elbírálásra vár')
+                    .filter('_type == "slamClub" && approved != true')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('✅ Jóváhagyott (megjelenik)')
+                .child(
+                  S.documentList()
+                    .title('Jóváhagyott klubok')
+                    .filter('_type == "slamClub" && approved == true')
+                    .defaultOrdering([{ field: 'city', direction: 'asc' }]),
+                ),
+            ]),
+        ),
+
       S.divider(),
       S.listItem()
         .title('Oldal beállítások')
