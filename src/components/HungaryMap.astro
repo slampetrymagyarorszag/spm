@@ -3,9 +3,9 @@
 // ha van klub → linkek; ha vannak onnan való slammerek → profil-linkek;
 // ha nincs klub → „küldd be" gomb, ami előtölti a város nevét a formba.
 import { HU_MAP, projectHU } from '../data/hungaryMap';
-import type { SlamClub, SlammerListItem } from '../sanity/lib/api';
-interface Props { clubs: SlamClub[]; slammers?: SlammerListItem[] }
-const { clubs, slammers = [] } = Astro.props;
+import type { SlamClub } from '../sanity/lib/api';
+interface Props { clubs: SlamClub[] }
+const { clubs } = Astro.props;
 
 const CITY: Record<string, [number, number]> = {
   budapest: [19.0402, 47.4979], szeged: [20.1414, 46.253], 'pécs': [18.2323, 46.0727],
@@ -22,16 +22,15 @@ const norm = (s: string) => (s || '').trim().toLowerCase();
 
 const pins = Object.entries(CITY).map(([key, coords]) => {
   const cityClubs = clubs.filter((c) => norm(c.city) === key);
-  const citySlammers = slammers.filter((s) => norm(s.hometown || '') === key);
-  const display = cityClubs[0]?.city || citySlammers[0]?.hometown || (key.charAt(0).toUpperCase() + key.slice(1));
+  const display = cityClubs[0]?.city || (key.charAt(0).toUpperCase() + key.slice(1));
   const p = projectHU(coords[0], coords[1]);
   return {
     key, city: display,
     left: (p.x / HU_MAP.width) * 100, top: (p.y / HU_MAP.height) * 100,
-    clubs: cityClubs, slammers: citySlammers,
-    state: cityClubs.length ? 'club' : citySlammers.length ? 'people' : 'empty',
+    clubs: cityClubs,
+    state: cityClubs.length ? 'club' : 'empty',
   };
-}).filter((p) => p.state !== 'empty' || true); // minden város kattintható
+});
 ---
 <div class="hu-map relative mx-auto w-full max-w-4xl" style={`aspect-ratio:${HU_MAP.width}/${HU_MAP.height}`}>
   <svg viewBox={HU_MAP.viewBox} preserveAspectRatio="xMidYMid meet" class="absolute inset-0 h-full w-full" role="img" aria-label="Magyarország térkép a slam klubokkal">
@@ -48,14 +47,6 @@ const pins = Object.entries(CITY).map(([key, coords]) => {
           <div class="pin-sec">
             {pin.clubs.map((c) => (
               <a href={c.facebookUrl} target="_blank" rel="noopener noreferrer" class="pin-link"><span>🎤 {c.name || 'Slam klub'}</span><span aria-hidden="true">↗</span></a>
-            ))}
-          </div>
-        )}
-        {pin.slammers.length > 0 && (
-          <div class="pin-sec">
-            <p class="pin-sub">Innen valók:</p>
-            {pin.slammers.slice(0, 6).map((s) => (
-              <a href={`/slammerek/${s.slug}`} class="pin-link"><span>👤 {s.name}</span><span aria-hidden="true">→</span></a>
             ))}
           </div>
         )}
