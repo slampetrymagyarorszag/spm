@@ -15,8 +15,8 @@ const row2 = [...[...base].reverse(), ...[...base].reverse()];
   <div class="space-y-4">
     {[row1, row2].map((row, ri) => (
       <div class="club-row group relative overflow-hidden">
-        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent"></div>
-        <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-ink to-transparent"></div>
+        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[var(--sd-bg)] to-transparent"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[var(--sd-bg)] to-transparent"></div>
         <div class={`club-track flex w-max gap-4 ${ri === 1 ? 'rev' : ''} group-hover:[animation-play-state:paused]`}>
           {row.map((c) => (
             <a

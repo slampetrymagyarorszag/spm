@@ -4,7 +4,7 @@ import AnimatedText from './AnimatedText.astro';
 interface Props { label?: string; title: string; lead?: string; mic?: boolean; object?: string; objectHover?: string; objectAlt?: string }
 const { label, title, lead, mic = false, object, objectHover, objectAlt = '' } = Astro.props;
 ---
-<section class="hero-group relative overflow-hidden bg-ink text-surface">
+<section class="hero-group surface-dark relative overflow-hidden bg-ink text-surface">
   {mic && <ScrollMic />}
   {object && (
     <div class="hero-fade group/obj absolute bottom-0 left-0 hidden h-[110%] md:block" aria-hidden={objectAlt ? undefined : 'true'}>

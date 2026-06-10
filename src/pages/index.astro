@@ -68,7 +68,7 @@ const secondaryCtaHref = home.secondaryCtaHref || '/mi-az-a-slam-poetry';
   <script type="application/ld+json" slot="head" set:html={JSON.stringify([orgJsonLd, siteJsonLd])} />
   <ScrollMic />
   <!-- Hero -->
-  <section data-mic-dark class="relative overflow-hidden bg-ink text-surface">
+  <section data-mic-dark class="surface-dark relative overflow-hidden bg-ink text-surface">
     <div class="relative z-10 mx-auto max-w-6xl px-4 py-28 md:py-36">
       <span class="sticker mb-6">{heroSticker}</span>
       <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">{heroTitle}</h1>
@@ -96,7 +96,7 @@ const secondaryCtaHref = home.secondaryCtaHref || '/mi-az-a-slam-poetry';
   </section>
 
   <!-- Slammerek -->
-  <section data-mic-dark class="bg-ink text-surface">
+  <section data-mic-dark class="surface-dark bg-ink text-surface">
     <div class="mx-auto max-w-6xl px-4 py-16 md:py-20">
       <div class="flex items-end justify-between">
         <SectionHeader label="A színtér arcai" title="Slammerek" />
@@ -123,7 +123,7 @@ const secondaryCtaHref = home.secondaryCtaHref || '/mi-az-a-slam-poetry';
     )}
   </section>
 
-  <!-- Közösségi hangulat-band: valódi slam-est fotó + CTA -->
+  <!-- Közösségi hangulat-band: valódi slam-est fotó + CTA (mindig sötét) -->
   <section class="relative overflow-hidden bg-ink text-surface">
     <img src="/community.jpg" alt="Telt házas slam est közönsége" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-45" />
     <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40"></div>

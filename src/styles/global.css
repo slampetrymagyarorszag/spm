@@ -21,13 +21,56 @@
 :root {
   /* Felülírható accent: az esemény-oldalak ezt állítják majd */
   --accent: var(--color-accent);
+
+  /* Téma-tokenek — alapértelmezett: SÖTÉT (a brand jellege) */
+  --page-bg: #ffffff;
+  --page-fg: var(--color-ink);
+  --sd-bg: #111114;   /* „dramatikus" sötét szekciók háttere */
+  --sd-fg: #f4f4f6;   /* … és szövege */
+}
+
+/* LIGHT mód (html.light) — világos paletta, a magenta accent marad */
+html.light {
+  --page-bg: #f6f6f9;
+  --page-fg: #17171c;
+  --sd-bg: #ececed;
+  --sd-fg: #18181d;
 }
 
 html {
   font-family: var(--font-sans);
-  color: var(--color-ink);
-  background: var(--color-surface);
+  color: var(--page-fg);
+  background: var(--page-bg);
 }
+
+/* Téma-aware dramatikus szekció: sötétben sötét, világosban világos. */
+.surface-dark { background-color: var(--sd-bg); color: var(--sd-fg); }
+
+/* Light módban a SÖTÉT-ONLY effektek elrejtése (mix-blend-screen csak sötéten jó). */
+html.light .scroll-mic,
+html.light .hero-fade { display: none !important; }
+
+/* Light módban a konvertált szekciókon belüli sötét-utility-k igazítása. */
+html.light .surface-dark .text-surface { color: var(--sd-fg) !important; }
+html.light .surface-dark [class*="text-surface/"] { color: #565663 !important; }
+html.light .surface-dark [class*="text-white/"] { color: #565663 !important; }
+html.light .surface-dark [class*="bg-white/"] { background-color: rgba(0,0,0,0.04) !important; }
+html.light .surface-dark [class*="bg-ink/"] { background-color: rgba(0,0,0,0.05) !important; }
+html.light .surface-dark [class*="border-white/"],
+html.light .surface-dark [class*="border-surface/"] { border-color: rgba(0,0,0,0.12) !important; }
+html.light .surface-dark input,
+html.light .surface-dark textarea { color: #17171c; }
+html.light .surface-dark input::placeholder,
+html.light .surface-dark textarea::placeholder { color: #8a8a95; }
+html.light .surface-dark .pin-city { color: #2a2a33; text-shadow: none; }
+/* A fejléc B&W logója light módban normál (nem invertált). */
+html.light .surface-dark .mix-blend-screen { mix-blend-mode: normal !important; }
+html.light .surface-dark .invert { filter: none !important; }
+
+/* Téma-váltó gomb: nap/hold ikon-csere. */
+.theme-toggle .icon-moon { display: none; }
+html.light .theme-toggle .icon-sun { display: none; }
+html.light .theme-toggle .icon-moon { display: block; }
 
 .font-display {
   font-family: var(--font-display);

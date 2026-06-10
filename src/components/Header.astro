@@ -1,5 +1,6 @@
 ---
 import type { SiteSettings } from "../sanity/lib/api";
+import ThemeToggle from "./ThemeToggle.astro";
 interface Props { settings: SiteSettings; }
 const { settings } = Astro.props;
 const nav = settings.nav?.length ? settings.nav : [
@@ -18,7 +19,7 @@ const socials = [
   { key: "youtube", label: "YouTube", url: s.youtube || "https://www.youtube.com/@slampoetrymagyarorsz" },
 ];
 ---
-<header class="sticky top-0 z-50 bg-ink text-surface">
+<header class="surface-dark sticky top-0 z-50 bg-ink text-surface">
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
     <div class="flex items-center gap-4">
       <a href="/" class="flex items-center gap-3">
@@ -61,10 +62,13 @@ const socials = [
       </ul>
     </div>
 
-    <ul class="hidden gap-5 md:flex">
-      {nav.map((item) => (
-        <li><a href={item.href} class="text-sm uppercase tracking-wide hover:text-accent">{item.label}</a></li>
-      ))}
-    </ul>
+    <div class="flex items-center gap-4">
+      <ul class="hidden gap-5 md:flex">
+        {nav.map((item) => (
+          <li><a href={item.href} class="text-sm uppercase tracking-wide hover:text-accent">{item.label}</a></li>
+        ))}
+      </ul>
+      <ThemeToggle />
+    </div>
   </nav>
 </header>
