@@ -26,9 +26,9 @@ const socials = [
         {settings.logoUrl
           ? <img src={settings.logoUrl} alt={settings.title} class="h-10 w-auto" />
           : (
-            /* Tartalék: a statikus public/logo.jpg fekete-fehér háttéren — a sötét fejlécen
-               invertáljuk + "screen" keveréssel, így a fehér háttér eltűnik, a logó fehéren látszik. */
-            <img src="/logo.jpg" alt={settings.title} class="h-10 w-auto invert mix-blend-screen" />
+            /* Tartalék: átlátszó hátterű logo.png (fekete sziluett). Sötét módban invertálva
+               fehéren látszik; light módban (a .invert felülírás miatt) feketén — háttérdoboz nélkül. */
+            <img src="/logo.png" alt={settings.title} class="h-10 w-auto invert" />
           )}
         <span class="font-display text-sm leading-[0.82] sm:text-base">
           <span class="block">Slam Poetry</span>
