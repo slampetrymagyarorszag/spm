@@ -45,10 +45,56 @@ A beágyazott Studio (`/admin`) és az adatlekérés miatt add hozzá a deploy-d
 **sanity.io/manage → 8x0yi65e → API → CORS origins → Add** → a Vercel-URL (pl.
 `https://slampoetry.vercel.app`, majd a saját domain is) → **Allow credentials: BE**.
 
-## 4) Saját domain (opcionális)
+## 4) A `slampoetry.hu` domain rákötése (DNS) — névszerver-csere NÉLKÜL
 
-Vercel dashboard → a projekt → Settings → Domains → add hozzá a `slampoetry.hu`-t, és állítsd be a
-DNS-t a Vercel utasítása szerint.
+**A helyzet röviden.** Három külön dolog:
+- **Domain-regisztráció**: a **Microware**-nél, Prekopcsák Zoltán nevén (2028-ig fizetve) — ezzel most nincs teendő.
+- **DNS-rekordok + tárhely + email**: a **megacp**-nél (`ns1/2/3.megacp.com` névszerverek) — **ide van hozzáférésed** (megacp login + cPanel + webmail).
+- A regisztrátor csak a névszerverekre mutat; a tényleges rekordokat a **megacp-nél** szerkesztjük.
+
+➡️ **Ezért NEM kell névszervert cserélni, és Zoltánt/Microware-t sem kell bevonni.** A DNS-t a megacp-nél állítjuk át, a beérkező email a helyén marad.
+
+### Lépések (ajánlott út)
+
+**a) Vercel:** Project → Settings → Domains → **Add `slampoetry.hu`** (és `www`). A Vercel kiírja a pontos értékeket — jellemzően az alábbiak.
+
+**b) Resend:** Domains → **Add `slampoetry.hu`** → kiír SPF / DKIM (és opcionális DMARC) rekordokat.
+
+**c) megacp / cPanel → Zone Editor** (ha van „DNS / Zone Editor" menü, te is megteheted; ha nincs, lásd a lenti ticketet a megacp supporthoz). Állítsd be:
+
+| Típus | Név (host) | Érték | Megjegyzés |
+|---|---|---|---|
+| **A** | `@` (slampoetry.hu) | `76.76.21.21` | a régi tárhely-IP **helyett** (pontos értéket a Vercel adja) |
+| **CNAME** | `www` | `cname.vercel-dns.com` | a Vercel adja |
+| **MX** | `@` | `*.megacp.com` (meglévő) | **NE változtasd** — az email marad a megacp-nél |
+| **TXT (SPF)** | `@` | a meglévő SPF-et **kiegészíted** a Resend `include`-jával | egy domainen **csak egy** SPF TXT lehet |
+| **CNAME/TXT (DKIM)** | a Resend adja (pl. `resend._domainkey`) | a Resend adja | a Resend domain-oldaláról másold |
+| **TXT (DMARC, opc.)** | `_dmarc` | a Resend ajánlása | opcionális |
+
+**d) Ellenőrzés:** `nslookup slampoetry.hu` → Vercel IP; Vercel Domains → **Valid**; Resend Domains → **Verified**; az oldal betölt a `https://slampoetry.hu`-n; egy kapcsolat-űrlap beküldése emailt kézbesít.
+
+### Fallback (CSAK ha a megacp nem enged DNS-t szerkeszteni)
+Zoltán átírja a névszervereket a Vercelére → a DNS a Vercelhez kerül. **Ekkor a megacp MX-eket (beérkező email) ÉS a Resend rekordokat újra fel kell venni a Vercel DNS-ben** (különben eláll a levelezés). Több lépés, nagyobb kockázat — csak végszükség esetén.
+
+---
+
+### Beilleszthető megacp support ticket (ha nem te szerkeszted a DNS-t)
+
+> **Tárgy:** slampoetry.hu — DNS-rekord módosítás (weboldal Vercelre, email marad)
+>
+> Tisztelt Ügyfélszolgálat!
+>
+> A `slampoetry.hu` domainhez kérnék DNS-módosítást. A weboldalt egy új szolgáltatóhoz (Vercel) költöztetjük, de **a domain és a teljes levelezés (MX) maradjon változatlanul Önöknél**. Kérem, a DNS-zónában:
+>
+> 1. A gyökér **A rekordot** (`slampoetry.hu`) állítsák át a Vercel címére: **`76.76.21.21`**.
+> 2. A **`www`** allegyen **CNAME**: **`cname.vercel-dns.com`**.
+> 3. Az **MX rekordokat NE módosítsák** — a beérkező email maradjon a jelenlegi (`*.megacp.com`) szervereken.
+> 4. Vegyenek fel néhány **kiegészítő rekordot a kimenő emailhez (Resend)** — ezeket külön emailben/üzenetben küldöm (SPF-kiegészítés, DKIM, DMARC). Az **SPF-nél a meglévő rekordot kérem kiegészíteni**, ne másodikat létrehozni.
+>
+> Ha bármi pontosítás kell, kérem jelezzék. Köszönöm a segítséget!
+>
+> Üdvözlettel,
+> Mészáros Péter
 
 ## 5) „Mindig friss" YouTube (ütemezett újraépítés)
 
