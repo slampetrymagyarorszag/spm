@@ -4,6 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
 import MediaCard from '../../components/MediaCard.astro';
 import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
+import MediaFan from '../../components/islands/MediaFan.tsx';
 import { getMedia, getMediaConfig } from '../../sanity/lib/api';
 import { fetchChannelUploads, fetchPlaylistItems } from '../../lib/youtube';
 import { sanityClient } from 'sanity:client';
@@ -41,14 +42,7 @@ const hasAny = media.length > 0 || videos.length > 0 || playlists.some((p) => p.
     {videos.length > 0 && (
       <div class="mb-16">
         <SectionHeader label="YouTube" title="Legújabb videók" />
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {videos.map((v) => (
-            <figure>
-              <YouTubeEmbed url={v.url} title={v.title} />
-              <figcaption class="mt-2 font-display">{v.title}</figcaption>
-            </figure>
-          ))}
-        </div>
+        <MediaFan videos={videos} client:visible />
       </div>
     )}
 
