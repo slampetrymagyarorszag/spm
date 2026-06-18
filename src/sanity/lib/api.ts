@@ -6,7 +6,7 @@ export type SiteSettings = {
   contactEmail?: string;
   logoUrl?: string;
   nav?: { label: string; href: string }[];
-  social?: { facebook?: string; youtube?: string; instagram?: string };
+  social?: { facebook?: string; youtube?: string; instagram?: string; tiktok?: string };
   impressum?: { orgName?: string; address?: string; taxNumber?: string; annualReportsUrl?: string };
   home?: {
     heroSticker?: string; heroTitle?: string; heroLead?: string;

@@ -3,23 +3,42 @@ import ScrollMic from './ScrollMic.astro';
 import AnimatedText from './AnimatedText.astro';
 interface Props { label?: string; title: string; lead?: string; mic?: boolean; object?: string; objectHover?: string; objectAlt?: string }
 const { label, title, lead, mic = false, object, objectHover, objectAlt = '' } = Astro.props;
+// Világos módban átlátszó (luminancia-alfa) változatot töltünk, hogy a kép a világos
+// panelen is jól nézzen ki (a sötét-only mix-blend-screen helyett normál keverés).
+const lightVariant = (src?: string) => (src && src.endsWith('.png') ? src.replace(/\.png$/, '-light.png') : src);
+const objectLight = lightVariant(object);
+const objectHoverLight = lightVariant(objectHover);
 ---
-<section class="hero-group surface-dark relative overflow-hidden bg-ink text-surface">
+<section class="hero-group group/obj surface-dark relative overflow-hidden bg-ink text-surface">
   {mic && <ScrollMic />}
   {object && (
-    <div class="hero-fade group/obj absolute bottom-0 left-0 hidden h-[110%] md:block" aria-hidden={objectAlt ? undefined : 'true'}>
+    <div class="hero-fade absolute bottom-0 left-0 hidden h-[110%] md:block" aria-hidden={objectAlt ? undefined : 'true'}>
+      {/* Alap kép — sötét (screen blend) és világos (átlátszó) változat */}
       <img
         src={object}
         alt={objectAlt}
-        class="h-full w-auto object-contain object-bottom opacity-90 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-[1.03] group-hover/obj:opacity-0"
+        class="hero-only-dark h-full w-auto object-contain object-bottom opacity-90 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-[1.03] group-hover/obj:opacity-0"
+      />
+      <img
+        src={objectLight}
+        alt={objectAlt}
+        class="hero-only-light h-full w-auto object-contain object-bottom opacity-90 transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-[1.03] group-hover/obj:opacity-0"
       />
       {objectHover && (
-        <img
-          src={objectHover}
-          alt=""
-          aria-hidden="true"
-          class="pointer-events-none absolute bottom-0 left-0 h-full w-auto object-contain object-bottom opacity-0 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-105 group-hover/obj:opacity-90"
-        />
+        <>
+          <img
+            src={objectHover}
+            alt=""
+            aria-hidden="true"
+            class="hero-only-dark pointer-events-none absolute bottom-0 left-0 h-full w-auto object-contain object-bottom opacity-0 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-105 group-hover/obj:opacity-90"
+          />
+          <img
+            src={objectHoverLight}
+            alt=""
+            aria-hidden="true"
+            class="hero-only-light pointer-events-none absolute bottom-0 left-0 h-full w-auto object-contain object-bottom opacity-0 transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-105 group-hover/obj:opacity-90"
+          />
+        </>
       )}
     </div>
   )}

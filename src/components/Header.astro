@@ -17,6 +17,7 @@ const socials = [
   { key: "facebook", label: "Facebook", url: s.facebook || "https://www.facebook.com/SlamPoetryHungary" },
   { key: "instagram", label: "Instagram", url: s.instagram || "https://www.instagram.com/slampoetry_magyarorszag/" },
   { key: "youtube", label: "YouTube", url: s.youtube || "https://www.youtube.com/@slampoetrymagyarorsz" },
+  { key: "tiktok", label: "TikTok", url: s.tiktok || "https://www.tiktok.com/@slampoetrymagyarorszag" },
 ];
 ---
 <header class="surface-dark sticky top-0 z-50 bg-ink text-surface">
@@ -55,6 +56,9 @@ const socials = [
               )}
               {soc.key === "youtube" && (
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.12-2.12C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.53A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.12 2.12c1.88.53 9.38.53 9.38.53s7.5 0 9.38-.53a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8ZM9.55 15.57V8.43L15.82 12l-6.27 3.57Z"/></svg>
+              )}
+              {soc.key === "tiktok" && (
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82a4.28 4.28 0 0 1-1.05-2.82h-3.3v12.6a2.59 2.59 0 0 1-2.58 2.5 2.59 2.59 0 0 1-2.59-2.59 2.59 2.59 0 0 1 3.37-2.47V9.66a5.9 5.9 0 0 0-.78-.05A5.9 5.9 0 0 0 3.78 15.5a5.9 5.9 0 0 0 5.9 5.9 5.9 5.9 0 0 0 5.9-5.9V9.01a7.56 7.56 0 0 0 4.42 1.42V7.13a4.28 4.28 0 0 1-3.4-1.31Z"/></svg>
               )}
             </a>
           </li>

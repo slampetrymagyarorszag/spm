@@ -46,9 +46,18 @@ html {
 /* Téma-aware dramatikus szekció: sötétben sötét, világosban világos. */
 .surface-dark { background-color: var(--sd-bg); color: var(--sd-fg); }
 
-/* Light módban a SÖTÉT-ONLY effektek elrejtése (mix-blend-screen csak sötéten jó). */
-html.light .scroll-mic,
-html.light .hero-fade { display: none !important; }
+/* A görgő 3D mikrofon-toll: sötét módban screen-blend (fekete háttér eltűnik),
+   világos módban invert + szín-visszaforgatás + multiply, így a fekete háttér a
+   világos panelen tűnik el, a lila/ezüst mikrofon viszont megmarad. */
+html.light .scroll-mic {
+  filter: invert(1) hue-rotate(180deg);
+  mix-blend-mode: multiply;
+}
+
+/* Hero-objektumok: sötét módban screen-blendes változat, világosban átlátszó változat. */
+.hero-only-light { display: none; }
+html.light .hero-only-dark { display: none; }
+html.light .hero-only-light { display: block; }
 
 /* Light módban a konvertált szekciókon belüli sötét-utility-k igazítása. */
 html.light .surface-dark .text-surface { color: var(--sd-fg) !important; }
@@ -66,11 +75,6 @@ html.light .surface-dark .pin-city { color: #2a2a33; text-shadow: none; }
 /* A fejléc B&W logója light módban normál (nem invertált). */
 html.light .surface-dark .mix-blend-screen { mix-blend-mode: normal !important; }
 html.light .surface-dark .invert { filter: none !important; }
-
-/* Téma-váltó gomb: nap/hold ikon-csere. */
-.theme-toggle .icon-moon { display: none; }
-html.light .theme-toggle .icon-sun { display: none; }
-html.light .theme-toggle .icon-moon { display: block; }
 
 .font-display {
   font-family: var(--font-display);

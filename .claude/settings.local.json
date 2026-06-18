@@ -17,7 +17,12 @@
       "Read(//c/Users/MSZROS~1/AppData/Local/Temp/**)",
       "Bash(node -e \"process.stdout.write\\(encodeURIComponent\\('count\\(*[_type==\\\\\"slammer\\\\\" && featured==true]\\)'\\)\\)\")",
       "Bash(curl -s \"https://8x0yi65e.api.sanity.io/v2021-10-21/data/query/production?query=$\\(node -e \"process.stdout.write\\(encodeURIComponent\\('count\\(*[_type==\\\\\"slammer\\\\\" && featured==true]\\)'\\)\\)\"\\)\")",
-      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>c&&\\(d+=c\\)\\).on\\('end',\\(\\)=>console.log\\('Kiemelt összesen:',JSON.parse\\(d\\).result\\)\\)\")"
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>c&&\\(d+=c\\)\\).on\\('end',\\(\\)=>console.log\\('Kiemelt összesen:',JSON.parse\\(d\\).result\\)\\)\")",
+      "Bash(nslookup -type=TXT resend._domainkey.slampoetry.hu)",
+      "Bash(nslookup -type=MX send.slampoetry.hu)",
+      "Bash(nslookup -type=TXT send.slampoetry.hu)",
+      "Bash(nslookup -type=TXT _dmarc.slampoetry.hu)",
+      "Bash(nslookup -type=MX slampoetry.hu)"
     ]
   }
 }

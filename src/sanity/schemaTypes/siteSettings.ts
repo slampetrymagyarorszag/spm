@@ -28,6 +28,7 @@ export const siteSettings = defineType({
         defineField({ name: 'facebook', title: 'Facebook', type: 'url' }),
         defineField({ name: 'youtube', title: 'YouTube', type: 'url' }),
         defineField({ name: 'instagram', title: 'Instagram', type: 'url' }),
+        defineField({ name: 'tiktok', title: 'TikTok', type: 'url' }),
       ],
     }),
     defineField({ name: 'contactEmail', title: 'Kapcsolati email (megjelenítéshez)', type: 'string', description: 'Ez a cím látszik a Kapcsolat oldalon és a láblécben. (A form-ok címzettjeit lent, az „Email-címzettek" blokkban állítod.)' }),
