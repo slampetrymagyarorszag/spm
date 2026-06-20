@@ -4,6 +4,7 @@ import { getEmailSettings } from '../../sanity/lib/api';
 import { validateMonthlyContest } from '../../lib/validation';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc, sanitizeHeader } from '../../lib/escape';
+import { writeClient } from '../../sanity/lib/writeClient';
 
 export const prerender = false;
 
@@ -44,6 +45,19 @@ export const POST: APIRoute = async ({ request }) => {
     <p><strong>Email:</strong> ${esc(data.email)}</p>
     <p><strong>Jelentkezés típusa:</strong> ${typeLabel}</p>
     <p><strong>Melyik klub:</strong> ${esc(monthLabel)}</p>`;
+
+  // Időbélyeges napló a Sanityben (export miatt) — best-effort, nem buktatja a beküldést.
+  try {
+    if (writeClient) {
+      await writeClient.create({
+        _type: 'formSubmission', kind: 'havi-klub', submittedAt: new Date().toISOString(),
+        name: String(data.name || '').slice(0, 200),
+        email: String(data.email || '').slice(0, 200),
+        entryType: typeLabel,
+        contextLabel: monthLabel,
+      });
+    }
+  } catch { /* a napló nem kötelező */ }
 
   try {
     await sendMail({

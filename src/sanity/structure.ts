@@ -173,6 +173,40 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
 
+      // Jelentkezés-napló (havi klub + bajnokság) — export a felső „Jelentkezések export” menüből
+      S.listItem()
+        .title('📋 Jelentkezések (napló)')
+        .child(
+          S.list()
+            .title('Jelentkezések')
+            .items([
+              S.listItem()
+                .title('Összes (időrendben)')
+                .child(
+                  S.documentList()
+                    .title('Összes jelentkezés')
+                    .filter('_type == "formSubmission"')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('🎤 Havi klub')
+                .child(
+                  S.documentList()
+                    .title('Havi klub jelentkezések')
+                    .filter('_type == "formSubmission" && kind == "havi-klub"')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('🏆 Országos bajnokság')
+                .child(
+                  S.documentList()
+                    .title('Bajnoki jelentkezések')
+                    .filter('_type == "formSubmission" && kind == "bajnoksag"')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+            ]),
+        ),
+
       S.divider(),
       S.listItem()
         .title('Oldal beállítások')

@@ -4,6 +4,7 @@ import { getEmailSettings } from '../../sanity/lib/api';
 import { validateSubmission, validateChampionship } from '../../lib/validation';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc, sanitizeHeader } from '../../lib/escape';
+import { writeClient } from '../../sanity/lib/writeClient';
 
 export const prerender = false;
 
@@ -54,6 +55,23 @@ export const POST: APIRoute = async ({ request }) => {
       <p><strong>Email:</strong> ${esc(data.email)}</p>
       ${data.phone ? `<p><strong>Telefon:</strong> ${esc(data.phone)}</p>` : ''}
       <p><strong>Üzenet:</strong><br>${esc(data.message).replace(/\n/g, '<br>')}</p>`;
+  }
+
+  // A bajnoki jelentkezéseket időbélyeggel naplózzuk a Sanityben (export miatt).
+  if (isChampionship) {
+    try {
+      if (writeClient) {
+        await writeClient.create({
+          _type: 'formSubmission', kind: 'bajnoksag', submittedAt: new Date().toISOString(),
+          name: String(data.name || '').slice(0, 200),
+          email: String(data.email || '').slice(0, 200),
+          stageName: data.stageName ? String(data.stageName).slice(0, 200) : undefined,
+          contextLabel: ev.title,
+          achievements: data.achievements ? String(data.achievements).slice(0, 3000) : undefined,
+          unavailableDay: data.unavailableDay ? String(data.unavailableDay).slice(0, 1000) : undefined,
+        });
+      }
+    } catch { /* a napló nem kötelező */ }
   }
 
   try {

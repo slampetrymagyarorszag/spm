@@ -4,6 +4,7 @@ import { schemaTypes } from './src/sanity/schemaTypes';
 import { structure } from './src/sanity/structure';
 import { promoteSlammerAction } from './src/sanity/actions/promoteSlammer';
 import { promoteEventTipAction } from './src/sanity/actions/promoteEventTip';
+import { SubmissionsExportTool } from './src/sanity/tools/SubmissionsExportTool';
 
 const projectId =
   (import.meta as any).env?.PUBLIC_SANITY_PROJECT_ID ?? process.env.PUBLIC_SANITY_PROJECT_ID!;
@@ -14,6 +15,10 @@ export default defineConfig({
   projectId,
   dataset,
   plugins: [structureTool({ structure })],
+  tools: (prev) => [
+    ...prev,
+    { name: 'jelentkezesek-export', title: 'Jelentkezések export', component: SubmissionsExportTool },
+  ],
   schema: { types: schemaTypes },
   document: {
     actions: (prev, context) => {
