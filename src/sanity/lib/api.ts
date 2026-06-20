@@ -12,6 +12,8 @@ export type SiteSettings = {
     heroSticker?: string; heroTitle?: string; heroLead?: string;
     primaryCtaLabel?: string; primaryCtaHref?: string;
     secondaryCtaLabel?: string; secondaryCtaHref?: string;
+    heroStickerEn?: string; heroTitleEn?: string; heroLeadEn?: string;
+    primaryCtaLabelEn?: string; secondaryCtaLabelEn?: string;
   };
   monthlyContest?: {
     enabled?: boolean;
@@ -53,9 +55,10 @@ export async function getSiteSettings(client: Fetcher): Promise<SiteSettings | n
 export type PostListItem = {
   _id: string; title: string; slug: string; publishedAt: string;
   author?: string; excerpt?: string; cover?: any;
+  titleEn?: string; excerptEn?: string;
 };
 export type Seo = { metaTitle?: string; metaDescription?: string; shareImage?: any };
-export type Post = PostListItem & { tags?: string[]; body?: any; seo?: Seo };
+export type Post = PostListItem & { tags?: string[]; body?: any; bodyEn?: any; seo?: Seo };
 
 import { POSTS_QUERY, POST_BY_SLUG_QUERY } from './queries';
 
@@ -67,7 +70,7 @@ export async function getPostBySlug(client: Fetcher, slug: string): Promise<Post
 }
 
 export type SlammerListItem = { _id: string; name: string; slug: string; hometown?: string; photo?: any };
-export type Slammer = SlammerListItem & { bio?: any; achievements?: string[]; videos?: string[]; social?: { facebook?: string; instagram?: string } };
+export type Slammer = SlammerListItem & { bio?: any; bioEn?: any; achievements?: string[]; videos?: string[]; social?: { facebook?: string; instagram?: string } };
 
 import { SLAMMERS_QUERY, SLAMMER_BY_SLUG_QUERY, SLAMMERS_FEATURED_QUERY } from './queries';
 
@@ -84,11 +87,13 @@ export async function getSlammerBySlug(client: Fetcher, slug: string): Promise<S
 export type EventListItem = {
   _id: string; title: string; slug: string; startsAt: string;
   cover?: any; accentColor?: string; location?: { name?: string; address?: string; mapUrl?: string };
+  titleEn?: string;
 };
 export type EventDetail = EventListItem & {
   description?: any; ticketUrl?: string; facebookEventUrl?: string;
   registrationEnabled?: boolean; championshipRegistration?: boolean; registrationDeadline?: string;
   performers?: { _id: string; name: string; slug: string; photo?: any }[];
+  descriptionEn?: any;
 };
 
 import { EVENTS_QUERY, EVENT_BY_SLUG_QUERY } from './queries';
@@ -134,7 +139,7 @@ export async function getSlamClubs(client: Fetcher): Promise<SlamClub[]> {
   return (await client.fetch(SLAM_CLUBS_QUERY)) ?? [];
 }
 
-export type PageDoc = { title: string; lead?: string; body?: any; seo?: Seo };
+export type PageDoc = { title: string; lead?: string; body?: any; titleEn?: string; leadEn?: string; bodyEn?: any; seo?: Seo };
 import { PAGE_BY_SLUG_QUERY } from './queries';
 export async function getPageBySlug(client: Fetcher, slug: string): Promise<PageDoc | null> {
   return (await client.fetch(PAGE_BY_SLUG_QUERY, { slug })) ?? null;
