@@ -58,8 +58,8 @@ function youtubeId(u?: string): string | null {
                   {s.photo && <img src={urlForImage(s.photo).width(500).height(667).fit('crop').url()} alt={s.stageName} loading="lazy" decoding="async" width="500" height="667" class="h-full w-full object-cover" />}
                 </div>
                 <div class="p-5">
-                  <h3 class="font-display text-xl leading-tight">{s.stageName}</h3>
-                  {s.realName && s.realName !== s.stageName && <p class="text-sm text-muted">{s.realName}</p>}
+                  <h3 class="font-display text-xl leading-tight">{s.stageName || s.realName}</h3>
+                  {s.stageName && s.realName && s.realName !== s.stageName && <p class="text-sm text-muted">{s.realName}</p>}
                   {s.description && <p class="mt-2 text-sm text-muted line-clamp-3">{s.description}</p>}
                   {yt && (
                     <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">

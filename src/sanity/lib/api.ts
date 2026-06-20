@@ -101,8 +101,8 @@ export async function getEventBySlug(client: Fetcher, slug: string): Promise<Eve
 }
 
 export type MediaItem = {
-  _id: string; title: string; kind: 'video' | 'image' | 'album';
-  youtubeUrl?: string; image?: any; albumUrl?: string; albumCover?: any; year?: number;
+  _id: string; title: string; kind: 'video' | 'playlist' | 'image' | 'album';
+  youtubeUrl?: string; playlistUrl?: string; image?: any; albumUrl?: string; albumCover?: any; year?: number;
 };
 import { MEDIA_QUERY, MEDIA_CONFIG_QUERY } from './queries';
 export async function getMedia(client: Fetcher): Promise<MediaItem[]> {

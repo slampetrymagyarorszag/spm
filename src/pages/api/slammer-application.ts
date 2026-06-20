@@ -59,10 +59,11 @@ export const POST: APIRoute = async ({ request }) => {
       contentType: photo.type,
     });
 
+    const stageName = fields.stageName.trim().slice(0, 200);
     await writeClient.create({
       _type: 'slammerApplication',
       realName: fields.realName.trim().slice(0, 200),
-      stageName: fields.stageName.trim().slice(0, 200),
+      stageName: stageName || undefined,
       description: fields.description.trim().slice(0, 3000),
       youtubeUrl: fields.youtubeUrl.trim().slice(0, 500),
       submitterEmail: fields.email ? fields.email.trim().slice(0, 200) : undefined,
@@ -79,8 +80,8 @@ export const POST: APIRoute = async ({ request }) => {
           to: emails.notifyEmail,
           subject: 'Új slammer-jelentkezés érkezett — elbírálásra',
           html: `<h2>Új slammer-jelentkezés</h2>
-            <p><strong>Művésznév:</strong> ${esc(fields.stageName)}</p>
             <p><strong>Név:</strong> ${esc(fields.realName)}</p>
+            ${stageName ? `<p><strong>Művésznév:</strong> ${esc(stageName)}</p>` : ''}
             <p>Nézd át és hagyd jóvá a Studióban: <em>📥 Beküldött slammerek → Elbírálásra vár</em>.</p>`,
         });
       }

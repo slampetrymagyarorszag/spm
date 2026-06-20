@@ -6,7 +6,7 @@ import MediaCard from '../../components/MediaCard.astro';
 import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
 import MediaFan from '../../components/islands/MediaFan.tsx';
 import { getMedia, getMediaConfig } from '../../sanity/lib/api';
-import { fetchChannelUploads, fetchPlaylistItems } from '../../lib/youtube';
+import { fetchChannelUploads, fetchPlaylistItems, parsePlaylistId } from '../../lib/youtube';
 import { sanityClient } from 'sanity:client';
 
 const env = import.meta.env;
@@ -23,16 +23,22 @@ const [media, config, videos] = await Promise.all([
   }),
 ]);
 
-// A beállított lejátszási listák videói (pl. „Májusi klub"), listánként max 6.
-const playlistDefs = (config.youtubePlaylists ?? []).filter((p) => p.playlistId);
+// Lejátszási listák két forrásból: (1) a médiatár „lejátszási lista" elemei, és
+// (2) a beállításokban megadott listák. Mindkettő elfogad teljes URL-t vagy nyers ID-t.
+const playlistDefs = [
+  ...media.filter((m) => m.kind === 'playlist').map((m) => ({ title: m.title, id: parsePlaylistId(m.playlistUrl) })),
+  ...(config.youtubePlaylists ?? []).map((p) => ({ title: p.title || 'Lejátszási lista', id: parsePlaylistId(p.playlistId) })),
+].filter((p) => p.id);
 const playlists = await Promise.all(
   playlistDefs.map(async (p) => ({
     title: p.title || 'Lejátszási lista',
-    videos: await fetchPlaylistItems(apiKey, p.playlistId, 6),
+    videos: await fetchPlaylistItems(apiKey, p.id!, 6),
   })),
 );
+// A galéria-rácsban a playlist-elemek ne jelenjenek meg (külön szekcióként jönnek).
+const galleryMedia = media.filter((m) => m.kind !== 'playlist');
 const downloads = (config.downloads ?? []).filter((d) => d.fileUrl || d.url);
-const hasAny = media.length > 0 || videos.length > 0 || playlists.some((p) => p.videos.length) || downloads.length > 0;
+const hasAny = galleryMedia.length > 0 || videos.length > 0 || playlists.some((p) => p.videos.length) || downloads.length > 0;
 ---
 <BaseLayout title="Médiatár">
   <PageHero label="Videók és képek" title="Médiatár" lead="Fellépések, versenyek, archív anyagok." object="/hero-clapper.png" objectHover="/hero-clapper-break.png" objectAlt="" />
@@ -60,11 +66,11 @@ const hasAny = media.length > 0 || videos.length > 0 || playlists.some((p) => p.
       </div>
     ))}
 
-    {media.length > 0 && (
+    {galleryMedia.length > 0 && (
       <div class="mb-16">
         <SectionHeader label="Galéria" title="Albumok és képek" />
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {media.map((item) => <MediaCard item={item} />)}
+          {galleryMedia.map((item) => <MediaCard item={item} />)}
         </div>
       </div>
     )}

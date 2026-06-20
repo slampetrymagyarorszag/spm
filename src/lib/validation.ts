@@ -49,7 +49,7 @@ export type SlammerApplicationInput = {
 export function validateSlammerApplication(input: SlammerApplicationInput): ValidationResult {
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.realName || input.realName.trim().length < 2) return { ok: false, error: 'A neved megadása kötelező.' };
-  if (!input.stageName || input.stageName.trim().length < 2) return { ok: false, error: 'A művészneved megadása kötelező.' };
+  // Művésznév opcionális — ha nincs, a valódi név lesz a megjelenített név.
   if (!input.description || input.description.trim().length < 10) return { ok: false, error: 'Kérünk egy rövid bemutatkozást (legalább pár szó).' };
   if (!input.youtubeUrl || !/^https?:\/\/\S+$/i.test(input.youtubeUrl.trim())) return { ok: false, error: 'Érvényes YouTube link szükséges (https://…).' };
   if (input.email && !EMAIL_RE.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };

@@ -27,6 +27,17 @@ export function parsePlaylistItems(json: any): YouTubeVideo[] {
   return out;
 }
 
+// Lejátszási lista ID kinyerése: elfogad teljes URL-t (…?list=ID, akár videó-URL-ből is)
+// vagy nyers ID-t. Hibás bemenetre null.
+export function parsePlaylistId(input?: string): string | null {
+  if (!input) return null;
+  const s = input.trim();
+  const m = s.match(/[?&]list=([A-Za-z0-9_-]+)/);
+  if (m) return m[1];
+  if (/^[A-Za-z0-9_-]{12,}$/.test(s)) return s;
+  return null;
+}
+
 const API = 'https://www.googleapis.com/youtube/v3';
 
 // A csatorna "uploads" playlist ID-jának feloldása (channel ID vagy handle alapján).

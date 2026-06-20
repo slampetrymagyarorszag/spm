@@ -16,7 +16,7 @@ import AnimatedText from './AnimatedText.astro';
         <AnimatedText text="Szeretnél rajta lenni a listán?" />
       </h2>
       <p class="mt-4 max-w-md text-lg text-surface/75">
-        Küldd be a neved, művészneved, egy képet magadról, egy rövid bemutatkozást és egy YouTube linket — átnézzük, és felvehetünk a slammerek közé.
+        Küldd be a neved (művészneved opcionális), egy képet magadról, egy rövid bemutatkozást és egy YouTube linket — átnézzük, és felvehetünk a slammerek közé.
       </p>
       <div class="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-surface/70">
         <strong class="text-surface/90">Mielőtt beküldöd:</strong> kérünk, ne küldj sértő, gyűlöletkeltő vagy jogsértő tartalmat, se valótlan információt. A beérkezett tartalmat moderáljuk — fenntartjuk a jogot, hogy a beküldést indoklás nélkül ne tegyük közzé, vagy később eltávolítsuk.
@@ -29,8 +29,8 @@ import AnimatedText from './AnimatedText.astro';
         <input id="sa-name" type="text" name="realName" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
       <div>
-        <label for="sa-stage" class="mb-1 block text-sm text-surface/70">Művészneved <span class="text-accent">*</span></label>
-        <input id="sa-stage" type="text" name="stageName" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+        <label for="sa-stage" class="mb-1 block text-sm text-surface/70">Művészneved <span class="text-surface/40">(opcionális)</span></label>
+        <input id="sa-stage" type="text" name="stageName" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
       <div>
         <label for="sa-photo" class="mb-1 block text-sm text-surface/70">Kép magadról <span class="text-accent">*</span> <span class="text-surface/40">(max 8 MB)</span></label>
