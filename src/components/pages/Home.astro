@@ -1,0 +1,102 @@
+---
+import ScrollMic from '../ScrollMic.astro';
+import SectionHeader from '../SectionHeader.astro';
+import EventCard from '../EventCard.astro';
+import NewsTicker from '../NewsTicker.astro';
+import FeaturedSlammers from '../islands/FeaturedSlammers.tsx';
+import ChampionshipCta from '../ChampionshipCta.astro';
+import MonthlyContestButton from '../MonthlyContestButton.astro';
+import { localized } from '../../i18n/content';
+import { t } from '../../i18n/ui';
+import { localizedPath, type Lang } from '../../i18n';
+import type { SiteSettings } from '../../sanity/lib/api';
+
+interface Props {
+  upcoming: any[];
+  featuredSlammers: any[];
+  latestPosts: any[];
+  siteSettings: SiteSettings;
+  lang: Lang;
+}
+const { upcoming, featuredSlammers, latestPosts, siteSettings, lang } = Astro.props;
+
+// Szerkeszthető hero-szövegek (siteSettings.home), alapértékekkel.
+const home = siteSettings.home ?? {};
+const heroSticker = localized(home, 'heroSticker', lang) || 'since 2006';
+const heroTitle = localized(home, 'heroTitle', lang) || (lang === 'en' ? 'Slam Poetry Hungary' : 'Slam Poetry Magyarország');
+const heroLead = localized(home, 'heroLead', lang) || (lang === 'en'
+  ? 'The living hub of the Hungarian slam poetry scene — events, slammers, news and media in one place.'
+  : 'A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.');
+const primaryCtaLabel = localized(home, 'primaryCtaLabel', lang) || (lang === 'en' ? 'Upcoming events' : 'Közelgő események');
+const primaryCtaHref = localizedPath(home.primaryCtaHref || '/esemenyek', lang);
+const secondaryCtaLabel = localized(home, 'secondaryCtaLabel', lang) || (lang === 'en' ? 'What is slam poetry?' : 'Mi az a slam poetry?');
+const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-poetry', lang);
+---
+<ScrollMic />
+<!-- Hero -->
+<section data-mic-dark class="surface-dark relative overflow-hidden bg-ink text-surface">
+  <div class="relative z-10 mx-auto max-w-6xl px-4 py-28 md:py-36">
+    <span class="sticker mb-6">{heroSticker}</span>
+    <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">{heroTitle}</h1>
+    <p class="mt-5 max-w-xl text-lg text-surface/80">{heroLead}</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={primaryCtaHref} class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">{primaryCtaLabel}</a>
+      <a href={secondaryCtaHref} class="rounded-lg border border-surface/30 px-6 py-3 font-semibold hover:border-accent hover:text-accent">{secondaryCtaLabel}</a>
+      <ChampionshipCta settings={siteSettings} />
+      <MonthlyContestButton settings={siteSettings} />
+    </div>
+  </div>
+</section>
+
+<!-- Közelgő események -->
+<section class="mx-auto max-w-5xl px-4 py-16 md:py-20">
+  <div class="flex items-end justify-between">
+    <SectionHeader label={t(lang, 'home.calendarLabel')} title={t(lang, 'home.upcomingEventsTitle')} />
+    <a href={localizedPath('/esemenyek', lang)} class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">{t(lang, 'home.allEvents')}</a>
+  </div>
+  {upcoming.length === 0 ? (
+    <p class="text-muted">{t(lang, 'home.eventsSoon')}</p>
+  ) : (
+    <div>{upcoming.map((e: any) => <EventCard event={e} />)}</div>
+  )}
+</section>
+
+<!-- Slammerek -->
+<section data-mic-dark class="surface-dark bg-ink text-surface">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:py-20">
+    <div class="flex items-end justify-between">
+      <SectionHeader label={t(lang, 'home.slammersLabel')} title={t(lang, 'home.slammersTitle')} />
+      <a href={localizedPath('/slammerek', lang)} class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">{t(lang, 'home.allSlammers')}</a>
+    </div>
+    {featuredSlammers.length === 0 ? (
+      <p class="text-surface/60">{t(lang, 'home.slammersSoon')}</p>
+    ) : (
+      <FeaturedSlammers slammers={featuredSlammers} client:load />
+    )}
+  </div>
+</section>
+
+<!-- Friss hírek — folyamatosan futó szalag -->
+<section class="py-16 md:py-20">
+  <div class="mx-auto mb-8 flex max-w-6xl items-end justify-between px-4">
+    <SectionHeader label={t(lang, 'home.newsLabel')} title={t(lang, 'home.newsTitle')} />
+    <a href={localizedPath('/hirek', lang)} class="mb-10 hidden text-sm uppercase tracking-wide text-accent hover:underline sm:block">{t(lang, 'home.allNews')}</a>
+  </div>
+  {latestPosts.length === 0 ? (
+    <p class="mx-auto max-w-6xl px-4 text-muted">{t(lang, 'home.newsSoon')}</p>
+  ) : (
+    <NewsTicker posts={latestPosts} />
+  )}
+</section>
+
+<!-- Közösségi hangulat-band: valódi slam-est fotó + CTA (mindig sötét) -->
+<section class="relative overflow-hidden bg-ink text-surface">
+  <img src="/community.jpg" alt="Telt házas slam est közönsége" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-45" />
+  <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40"></div>
+  <div class="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center md:py-32">
+    <p class="mb-3 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'home.communityEyebrow')}</p>
+    <h2 class="font-display text-4xl leading-[0.95] md:text-6xl">{t(lang, 'home.communityTitle')}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-surface/80">{t(lang, 'home.communityLead')}</p>
+    <a href={localizedPath('/esemenyek', lang)} class="mt-8 inline-block rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'home.communityCta')}</a>
+  </div>
+</section>

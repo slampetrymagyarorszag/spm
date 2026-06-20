@@ -1,0 +1,62 @@
+---
+import AnimatedText from '../AnimatedText.astro';
+import ContactForm from '../ContactForm.astro';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+import type { SiteSettings } from '../../sanity/lib/api';
+
+interface Props { settings: SiteSettings; lang: Lang }
+const { settings, lang } = Astro.props;
+const s = settings.social ?? {};
+const socials = [
+  { label: 'Facebook', url: s.facebook || 'https://www.facebook.com/SlamPoetryHungary' },
+  { label: 'Instagram', url: s.instagram || 'https://www.instagram.com/slampoetry_magyarorszag/' },
+  { label: 'YouTube', url: s.youtube || 'https://www.youtube.com/@slampoetrymagyarorsz' },
+  { label: 'TikTok', url: s.tiktok || 'https://www.tiktok.com/@slampoetrymagyarorszag' },
+];
+const email = settings.contactEmail || 'info@slampoetry.hu';
+---
+<section class="relative overflow-hidden bg-ink text-surface">
+  <!-- füstös, fellépős színpad-háttér + ambient gradiens-orbok -->
+  <img src="/contact-bg.jpg" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35" />
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/80 to-ink"></div>
+  <div class="pointer-events-none absolute -left-40 -top-20 h-[28rem] w-[28rem] rounded-full bg-accent/25 blur-[140px]"></div>
+  <div class="pointer-events-none absolute -bottom-24 right-0 h-[24rem] w-[24rem] rounded-full bg-fuchsia-600/20 blur-[140px]"></div>
+
+  <div class="relative z-10 mx-auto max-w-5xl px-4 py-24 md:py-28">
+    <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+      <span class="h-px w-8 bg-accent"></span><span class="inline-block">{t(lang, 'contact.eyebrow')}</span>
+    </p>
+    <h1 class="font-display text-6xl leading-[0.9] md:text-8xl">
+      <AnimatedText text={t(lang, 'contact.title')} />
+    </h1>
+    <p class="mt-4 max-w-xl text-lg text-surface/70">{t(lang, 'contact.lead')}</p>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-[2fr_3fr]">
+      <!-- info üveg-kártya -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+        <h2 class="font-display text-xl">{t(lang, 'contact.availability')}</h2>
+        <a href={`mailto:${email}`} class="mt-3 block text-accent hover:underline">{email}</a>
+        <ul class="mt-6 space-y-2">
+          {socials.map((soc) => (
+            <li>
+              <a href={soc.url} target="_blank" rel="noopener noreferrer"
+                 class="group flex items-center justify-between rounded-lg border border-white/10 px-4 py-2.5 text-sm transition hover:border-accent hover:bg-white/5">
+                <span>{soc.label}</span>
+                <span class="text-accent transition-transform group-hover:translate-x-0.5">↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- form üveg-kártya (sötét input-felülírások) -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md
+                  [&_button]:w-full
+                  [&_input]:border-white/15 [&_input]:bg-white/5 [&_input]:text-surface [&_input]:placeholder:text-surface/40
+                  [&_textarea]:border-white/15 [&_textarea]:bg-white/5 [&_textarea]:text-surface [&_textarea]:placeholder:text-surface/40">
+        <ContactForm />
+      </div>
+    </div>
+  </div>
+</section>

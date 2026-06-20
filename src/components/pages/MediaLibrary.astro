@@ -1,0 +1,81 @@
+---
+import PageHero from '../PageHero.astro';
+import SectionHeader from '../SectionHeader.astro';
+import MediaCard from '../MediaCard.astro';
+import YouTubeEmbed from '../YouTubeEmbed.astro';
+import MediaFan from '../islands/MediaFan.tsx';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  videos: any[];
+  playlists: { title: string; videos: any[] }[];
+  galleryMedia: any[];
+  downloads: any[];
+  hasAny: boolean;
+  lang: Lang;
+}
+const { videos, playlists, galleryMedia, downloads, hasAny, lang } = Astro.props;
+const mediaFanLabels = { prev: t(lang, 'media.prev'), next: t(lang, 'media.next'), play: t(lang, 'media.play'), close: t(lang, 'media.close') };
+---
+<PageHero label={t(lang, 'media.pageLabel')} title={t(lang, 'media.pageTitle')} lead={t(lang, 'media.pageLead')} object="/hero-clapper.png" objectHover="/hero-clapper-break.png" objectAlt="" />
+<section class="mx-auto max-w-6xl px-4 py-16">
+  {!hasAny && <p class="text-muted">{t(lang, 'media.comingSoon')}</p>}
+
+  {videos.length > 0 && (
+    <div class="mb-16">
+      <SectionHeader label={t(lang, 'media.youtubeLabel')} title={t(lang, 'media.latestVideos')} />
+      <MediaFan videos={videos} labels={mediaFanLabels} client:visible />
+    </div>
+  )}
+
+  {playlists.map((pl) => pl.videos.length > 0 && (
+    <div class="mb-16">
+      <SectionHeader label={t(lang, 'media.playlistLabel')} title={pl.title} />
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {pl.videos.map((v: any) => (
+          <figure>
+            <YouTubeEmbed url={v.url} title={v.title} />
+            <figcaption class="mt-2 font-display">{v.title}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  ))}
+
+  {galleryMedia.length > 0 && (
+    <div class="mb-16">
+      <SectionHeader label={t(lang, 'media.galleryLabel')} title={t(lang, 'media.albumsAndPhotos')} />
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {galleryMedia.map((item: any) => <MediaCard item={item} />)}
+      </div>
+    </div>
+  )}
+
+  {downloads.length > 0 && (
+    <div>
+      <SectionHeader label={t(lang, 'media.documentsLabel')} title={t(lang, 'media.downloads')} />
+      <ul class="grid gap-4 sm:grid-cols-2">
+        {downloads.map((d: any) => (
+          <li>
+            <a
+              href={d.fileUrl || d.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex items-center gap-4 rounded-xl border border-ink/10 bg-surface p-4 transition hover:-translate-y-0.5 hover:border-accent hover:shadow-md"
+            >
+              <span class="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+              </span>
+              <span class="min-w-0">
+                <span class="block font-display text-lg leading-tight group-hover:text-accent">{d.title}</span>
+                {d.description && <span class="block text-sm text-muted">{d.description}</span>}
+              </span>
+              <span class="ml-auto text-accent transition-transform group-hover:translate-x-0.5" aria-hidden="true">↓</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</section>

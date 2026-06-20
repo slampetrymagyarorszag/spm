@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Association from '../../components/pages/Association.astro';
+import { urlForImage } from '../../sanity/lib/image';
+import { getPageBySlug } from '../../sanity/lib/api';
+import { localized } from '../../i18n/content';
+import { sanityClient } from 'sanity:client';
+const page = await getPageBySlug(sanityClient, 'egyesulet');
+const seoDescription = page?.seo?.metaDescription || localized(page, 'lead', 'en');
+const seoImage = page?.seo?.shareImage ? urlForImage(page.seo.shareImage).width(1200).height(630).fit('crop').url() : undefined;
+const title = localized(page, 'title', 'en') ?? 'Association';
+---
+<BaseLayout title={page?.seo?.metaTitle ?? title} description={seoDescription} image={seoImage}>
+  <Association page={page} lang="en" />
+</BaseLayout>

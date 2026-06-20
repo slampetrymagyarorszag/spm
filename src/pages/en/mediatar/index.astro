@@ -1,8 +1,8 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import MediaLibrary from '../../components/pages/MediaLibrary.astro';
-import { getMedia, getMediaConfig } from '../../sanity/lib/api';
-import { fetchChannelUploads, fetchPlaylistItems, parsePlaylistId } from '../../lib/youtube';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import MediaLibrary from '../../../components/pages/MediaLibrary.astro';
+import { getMedia, getMediaConfig } from '../../../sanity/lib/api';
+import { fetchChannelUploads, fetchPlaylistItems, parsePlaylistId } from '../../../lib/youtube';
 import { sanityClient } from 'sanity:client';
 
 const env = import.meta.env;
@@ -36,6 +36,6 @@ const galleryMedia = media.filter((m) => m.kind !== 'playlist');
 const downloads = (config.downloads ?? []).filter((d) => d.fileUrl || d.url);
 const hasAny = galleryMedia.length > 0 || videos.length > 0 || playlists.some((p) => p.videos.length) || downloads.length > 0;
 ---
-<BaseLayout title="Médiatár">
-  <MediaLibrary videos={videos} playlists={playlists} galleryMedia={galleryMedia} downloads={downloads} hasAny={hasAny} lang="hu" />
+<BaseLayout title="Media library">
+  <MediaLibrary videos={videos} playlists={playlists} galleryMedia={galleryMedia} downloads={downloads} hasAny={hasAny} lang="en" />
 </BaseLayout>

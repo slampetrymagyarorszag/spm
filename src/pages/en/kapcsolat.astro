@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Contact from '../../components/pages/Contact.astro';
+import { getSiteSettings } from '../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const settings = (await getSiteSettings(sanityClient)) ?? { title: 'Slam Poetry Magyarország' };
+---
+<BaseLayout title="Contact">
+  <Contact settings={settings} lang="en" />
+</BaseLayout>

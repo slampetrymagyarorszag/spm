@@ -1,9 +1,9 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Home from "../components/pages/Home.astro";
-import { getEvents, getSlammers, getFeaturedSlammers, getPosts, getSiteSettings } from "../sanity/lib/api";
-import { splitEvents } from "../sanity/lib/events";
-import { urlForImage } from "../sanity/lib/image";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Home from "../../components/pages/Home.astro";
+import { getEvents, getSlammers, getFeaturedSlammers, getPosts, getSiteSettings } from "../../sanity/lib/api";
+import { splitEvents } from "../../sanity/lib/events";
+import { urlForImage } from "../../sanity/lib/image";
 import { sanityClient } from "sanity:client";
 
 const [events, slammers, featured, posts, settings] = await Promise.all([
@@ -55,6 +55,6 @@ const siteJsonLd = {
     featuredSlammers={featuredSlammers}
     latestPosts={latestPosts}
     siteSettings={siteSettings}
-    lang="hu"
+    lang="en"
   />
 </BaseLayout>

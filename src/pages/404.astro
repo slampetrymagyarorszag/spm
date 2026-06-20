@@ -1,22 +1,26 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AnimatedText from "../components/AnimatedText.astro";
+import { getLangFromUrl, localizedPath } from "../i18n";
+import { t } from "../i18n/ui";
+
+const lang = getLangFromUrl(Astro.url);
 ---
-<BaseLayout title="Az oldal nem található" noindex>
+<BaseLayout title={t(lang, 'error404.title')} noindex>
   <section class="relative flex min-h-[70vh] items-center overflow-hidden bg-ink text-surface">
     <div class="pointer-events-none absolute -left-24 top-1/4 h-96 w-96 rounded-full bg-accent/20 blur-[120px]"></div>
     <div class="pointer-events-none absolute -right-24 bottom-1/4 h-96 w-96 rounded-full bg-accent/10 blur-[120px]"></div>
     <div class="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center">
       <p class="mb-4 font-display text-7xl text-accent md:text-9xl">404</p>
       <h1 class="font-display text-4xl leading-[0.95] md:text-6xl">
-        <AnimatedText text="Ez a vers nem rímel" />
+        <AnimatedText text={t(lang, 'error404.heading')} />
       </h1>
       <p class="mx-auto mt-5 max-w-md text-lg text-surface/70">
-        A keresett oldal nem található — talán átköltözött, vagy soha nem létezett. De a színpad még áll.
+        {t(lang, 'error404.lead')}
       </p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <a href="/" class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90">Vissza a főoldalra</a>
-        <a href="/esemenyek" class="rounded-lg border border-surface/25 px-6 py-3 font-semibold transition hover:border-accent hover:text-accent">Közelgő események →</a>
+        <a href={localizedPath('/', lang)} class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'error404.home')}</a>
+        <a href={localizedPath('/esemenyek', lang)} class="rounded-lg border border-surface/25 px-6 py-3 font-semibold transition hover:border-accent hover:text-accent">{t(lang, 'home.communityCta')}</a>
       </div>
     </div>
   </section>

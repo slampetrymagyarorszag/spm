@@ -1,0 +1,19 @@
+---
+import PageHero from '../PageHero.astro';
+import RichText from '../RichText.astro';
+import { localized } from '../../i18n/content';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+import type { PageDoc } from '../../sanity/lib/api';
+
+interface Props { page: PageDoc | null; lang: Lang }
+const { page, lang } = Astro.props;
+
+const title = localized(page, 'title', lang) ?? (lang === 'en' ? 'What is slam poetry?' : 'Mi az a slam poetry?');
+const lead = localized(page, 'lead', lang);
+const body = localized(page, 'body', lang);
+---
+<PageHero label={t(lang, 'whatIsSlam.label')} title={title} lead={lead} object="/hero-chair.png" objectHover="/hero-chair-break.png" objectAlt="" />
+<div class="mx-auto max-w-3xl px-4 py-12">
+  {body ? <RichText value={body} /> : <p class="text-muted">{t(lang, 'whatIsSlam.placeholder')}</p>}
+</div>

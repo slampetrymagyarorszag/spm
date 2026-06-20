@@ -21,6 +21,11 @@ const site = PUBLIC_SITE_URL || 'https://slampoetry.hu';
 // https://astro.build/config
 export default defineConfig({
   site,
+  i18n: {
+    locales: ['hu', 'en'],
+    defaultLocale: 'hu',
+    routing: { prefixDefaultLocale: false },
+  },
   integrations: [
     sanity({
       projectId: PUBLIC_SANITY_PROJECT_ID,
