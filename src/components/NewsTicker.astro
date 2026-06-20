@@ -1,8 +1,10 @@
 ---
 import { urlForImage } from '../sanity/lib/image';
+import { localized } from '../i18n/content';
+import { localizedPath, type Lang } from '../i18n';
 import type { PostListItem } from '../sanity/lib/api';
-interface Props { posts: PostListItem[] }
-const { posts } = Astro.props;
+interface Props { posts: PostListItem[]; lang?: Lang }
+const { posts, lang = 'hu' } = Astro.props;
 // A zökkenőmentes loophoz duplikáljuk az elemeket.
 const items = [...posts, ...posts];
 const fmt = (d: string) =>
@@ -16,7 +18,7 @@ const fmt = (d: string) =>
   <div class="ticker-track flex w-max gap-6 px-4 group-hover:[animation-play-state:paused]">
     {items.map((post, idx) => (
       <a
-        href={`/hirek/${post.slug}`}
+        href={localizedPath(`/hirek/${post.slug}`, lang)}
         aria-hidden={idx >= posts.length ? 'true' : undefined}
         tabindex={idx >= posts.length ? -1 : undefined}
         class="group/card block w-[88vw] shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-surface shadow-sm transition hover:-translate-y-1 hover:border-accent hover:shadow-lg sm:w-[46vw] lg:w-[30rem]"
@@ -37,7 +39,7 @@ const fmt = (d: string) =>
         <div class="p-5">
           <p class="text-xs uppercase tracking-wide text-muted">{fmt(post.publishedAt)}</p>
           <h3 class="mt-1 line-clamp-2 font-display text-2xl leading-tight transition-colors group-hover/card:text-accent">
-            {post.title}
+            {localized(post, 'title', lang)}
           </h3>
         </div>
       </a>

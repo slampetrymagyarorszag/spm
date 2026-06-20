@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RichText from '../RichText.astro';
+import EventNeonCard from '../EventNeonCard.astro';
+import RegistrationForm from '../RegistrationForm.astro';
+import ChampionshipRegistrationForm from '../ChampionshipRegistrationForm.astro';
+import { urlForImage } from '../../sanity/lib/image';
+import { localized } from '../../i18n/content';
+import { t } from '../../i18n/ui';
+import { localizedPath, type Lang } from '../../i18n';
+import type { EventDetail as EventDetailType } from '../../sanity/lib/api';
+
+interface Props { event: EventDetailType; lang: Lang }
+const { event: ev, lang } = Astro.props;
+const heroStyle = ev.accentColor ? `--color-accent: ${ev.accentColor}` : undefined;
+const coverUrl = ev.cover ? urlForImage(ev.cover).width(1600).height(720).fit('crop').url() : null;
+const title = localized(ev, 'title', lang);
+const description = localized(ev, 'description', lang);
+
+// OG-leírás: dátum + helyszín tömör összefoglalója.
+const dateLabel = ev.startsAt
+  ? new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(ev.startsAt))
+  : '';
+const metaDescription = [dateLabel, ev.location?.name].filter(Boolean).join(' · ') || undefined;
+
+// schema.org Event strukturált adat (Google "Esemény" rich result).
+const eventJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: title,
+  ...(ev.startsAt ? { startDate: ev.startsAt } : {}),
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  ...(coverUrl ? { image: [coverUrl] } : {}),
+  ...(ev.location?.name
+    ? { location: { '@type': 'Place', name: ev.location.name, address: ev.location.address || ev.location.name } }
+    : {}),
+  ...(ev.ticketUrl
+    ? { offers: { '@type': 'Offer', url: ev.ticketUrl, availability: 'https://schema.org/InStock' } }
+    : {}),
+  organizer: { '@type': 'Organization', name: 'Slam Poetry Magyarország', url: 'https://slampoetry.hu' },
+  url: new URL(localizedPath(`/esemenyek/${ev.slug}`, lang), Astro.site).href,
+};
+---
+<BaseLayout title={title} description={metaDescription} image={coverUrl ?? undefined} ogType="article">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(eventJsonLd)} />
+  <section class="relative overflow-hidden bg-ink text-surface" style={heroStyle}>
+    {coverUrl && <img src={coverUrl} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover opacity-20" />}
+    {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/85 to-ink/60"></div>}
+    <div class="relative z-10 mx-auto max-w-5xl px-4 py-20 md:py-28">
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">{t(lang, 'events.eyebrow')}</span>
+      </p>
+      <h1 class="max-w-3xl font-display text-5xl leading-[0.9] md:text-7xl">{title}</h1>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-3xl px-4 py-12">
+    <EventNeonCard
+      startsAt={ev.startsAt}
+      locationName={ev.location?.name}
+      locationAddress={ev.location?.address}
+      mapUrl={ev.location?.mapUrl}
+      facebookEventUrl={ev.facebookEventUrl}
+    />
+
+    {(ev.facebookEventUrl || ev.ticketUrl) && (
+      <a
+        href={ev.facebookEventUrl || ev.ticketUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-4 inline-flex items-center gap-1 rounded-lg border border-ink/20 px-6 py-3 font-semibold text-ink transition hover:border-accent hover:text-accent"
+      >
+        {t(lang, 'events.watch')} <span aria-hidden="true">↗</span>
+      </a>
+    )}
+
+    {description && <div class="mt-10"><RichText value={description} /></div>}
+
+    {ev.registrationEnabled && (
+      ev.championshipRegistration
+        ? <ChampionshipRegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />
+        : <RegistrationForm eventSlug={ev.slug} deadline={ev.registrationDeadline} />
+    )}
+
+    {ev.performers?.length && (
+      <div class="mt-12">
+        <h2 class="mb-4 font-display text-2xl">{t(lang, 'events.performers')}</h2>
+        <div class="grid grid-cols-2 gap-6 sm:grid-cols-3">
+          {ev.performers.map((p) => (
+            <a href={localizedPath(`/slammerek/${p.slug}`, lang)} class="group">
+              <div class="aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
+                {p.photo && <img src={urlForImage(p.photo).width(300).height(400).url()} alt={p.name} loading="lazy" decoding="async" width="300" height="400" class="h-full w-full object-cover transition group-hover:scale-105" />}
+              </div>
+              <p class="mt-2 font-display group-hover:text-accent">{p.name}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</BaseLayout>

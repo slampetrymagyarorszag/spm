@@ -9,7 +9,7 @@ export type FeaturedItem = {
 
 // Interaktív, vízszintesen kitáruló slammer-galéria (hoverre/fókuszra kinyílik a panel,
 // kattintásra a profilra navigál). A InteractiveSelector ötlet alapján, a brandhez igazítva.
-export default function FeaturedSlammers({ slammers }: { slammers: FeaturedItem[] }) {
+export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: FeaturedItem[]; lang?: 'hu' | 'en' }) {
   const [active, setActive] = useState(0);
   if (!slammers.length) return null;
 
@@ -20,7 +20,7 @@ export default function FeaturedSlammers({ slammers }: { slammers: FeaturedItem[
         return (
           <a
             key={s.slug}
-            href={`/slammerek/${s.slug}`}
+            href={lang === 'en' ? `/en/slammerek/${s.slug}` : `/slammerek/${s.slug}`}
             onMouseEnter={() => setActive(i)}
             onFocus={() => setActive(i)}
             aria-label={s.name}

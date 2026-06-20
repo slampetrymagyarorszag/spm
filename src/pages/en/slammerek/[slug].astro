@@ -1,6 +1,6 @@
 ---
-import SlammerProfile from '../../components/pages/SlammerProfile.astro';
-import { getSlammers, getSlammerBySlug } from '../../sanity/lib/api';
+import SlammerProfile from '../../../components/pages/SlammerProfile.astro';
+import { getSlammers, getSlammerBySlug } from '../../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 
 export async function getStaticPaths() {
@@ -9,6 +9,6 @@ export async function getStaticPaths() {
 }
 const { slug } = Astro.params;
 const slammer = await getSlammerBySlug(sanityClient, slug!);
-if (!slammer) return Astro.redirect('/slammerek');
+if (!slammer) return Astro.redirect('/en/slammerek');
 ---
-<SlammerProfile slammer={slammer} lang="hu" />
+<SlammerProfile slammer={slammer} lang="en" />

@@ -1,6 +1,6 @@
 ---
-import EventDetail from '../../components/pages/EventDetail.astro';
-import { getEvents, getEventBySlug } from '../../sanity/lib/api';
+import EventDetail from '../../../components/pages/EventDetail.astro';
+import { getEvents, getEventBySlug } from '../../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 export async function getStaticPaths() {
   const events = await getEvents(sanityClient);
@@ -8,6 +8,6 @@ export async function getStaticPaths() {
 }
 const { slug } = Astro.params;
 const ev = await getEventBySlug(sanityClient, slug!);
-if (!ev) return Astro.redirect('/esemenyek');
+if (!ev) return Astro.redirect('/en/esemenyek');
 ---
-<EventDetail event={ev} lang="hu" />
+<EventDetail event={ev} lang="en" />

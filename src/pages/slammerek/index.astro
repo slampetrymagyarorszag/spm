@@ -1,11 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHero from '../../components/PageHero.astro';
-import SlammerSearch from '../../components/islands/SlammerSearch.tsx';
-import SlammerApplicationForm from '../../components/SlammerApplicationForm.astro';
-import SlamClubs from '../../components/SlamClubs.astro';
-import HungaryMap from '../../components/HungaryMap.astro';
-import SlamClubForm from '../../components/SlamClubForm.astro';
+import SlammersIndex from '../../components/pages/SlammersIndex.astro';
 import { getSlammers, getSlamClubs } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 const [slammers, clubs] = await Promise.all([
@@ -14,71 +9,5 @@ const [slammers, clubs] = await Promise.all([
 ]);
 ---
 <BaseLayout title="Slammerek">
-  <PageHero label="A színtér arcai" title="Slammerek" lead="Kereshető előadói adatbázis." object="/hero-micstand.png" objectHover="/hero-micstand-break.png" objectAlt="" />
-
-  <!-- Fülek -->
-  <div class="mx-auto max-w-6xl px-4 pt-12">
-    <div role="tablist" aria-label="Slammerek nézetek" class="flex gap-1 border-b border-ink/10">
-      <button type="button" data-tab="slammerek" aria-selected="true" class="tab-btn -mb-px border-b-2 border-accent px-5 py-3 font-display text-lg text-ink">
-        Slammerek
-      </button>
-      <button type="button" data-tab="klubok" aria-selected="false" class="tab-btn -mb-px border-b-2 border-transparent px-5 py-3 font-display text-lg text-muted hover:text-ink">
-        Slam klubok
-      </button>
-    </div>
-  </div>
-
-  <!-- Panel: Slammerek -->
-  <div data-panel="slammerek">
-    <section class="mx-auto max-w-6xl px-4 py-12">
-      {slammers.length === 0
-        ? <p class="text-muted">Hamarosan feltöltjük a slammerek profiljait.</p>
-        : <SlammerSearch slammers={slammers} client:load />}
-    </section>
-
-    <SlammerApplicationForm />
-  </div>
-
-  <!-- Panel: Slam klubok -->
-  <div data-panel="klubok" hidden>
-    <section class="surface-dark relative overflow-hidden bg-ink text-surface">
-      <div class="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-accent/15 blur-[120px]"></div>
-      <div class="relative z-10 mx-auto max-w-6xl px-4 py-14 md:py-16">
-        <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
-          <span class="h-px w-8 bg-accent"></span><span class="inline-block">Hol találsz slamet?</span>
-        </p>
-        <h2 class="mb-2 font-display text-3xl md:text-4xl">Slam klubok országszerte</h2>
-        <p class="mb-8 max-w-xl text-surface/70">Kattints egy városra, és átviszünk a klub oldalára. Hiányzik a tiétek? Küldd be lentebb!</p>
-        <SlamClubs clubs={clubs} />
-
-        <!-- Valódi kattintható Magyarország-térkép -->
-        <div class="mt-12">
-          <p class="mb-4 text-center text-xs uppercase tracking-[0.2em] text-surface/50">Kattints a térképen egy városra a slam klubért</p>
-          <HungaryMap clubs={clubs} />
-        </div>
-
-        <div id="club-form" class="mt-12 max-w-2xl scroll-mt-24">
-          <SlamClubForm />
-        </div>
-      </div>
-    </section>
-  </div>
+  <SlammersIndex slammers={slammers} clubs={clubs} lang="hu" />
 </BaseLayout>
-
-<script>
-  const tabs = Array.from(document.querySelectorAll('.tab-btn')) as HTMLButtonElement[];
-  const panels = new Map<string, HTMLElement>();
-  document.querySelectorAll('[data-panel]').forEach((p) => panels.set((p as HTMLElement).dataset.panel!, p as HTMLElement));
-  function activate(name: string) {
-    tabs.forEach((t) => {
-      const on = t.dataset.tab === name;
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-      t.classList.toggle('border-accent', on);
-      t.classList.toggle('text-ink', on);
-      t.classList.toggle('border-transparent', !on);
-      t.classList.toggle('text-muted', !on);
-    });
-    panels.forEach((p, key) => { p.hidden = key !== name; });
-  }
-  tabs.forEach((t) => t.addEventListener('click', () => activate(t.dataset.tab!)));
-</script>

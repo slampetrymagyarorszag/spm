@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import EventsIndex from '../../../components/pages/EventsIndex.astro';
+import { getEvents, getEventTips } from '../../../sanity/lib/api';
+import { splitEvents } from '../../../sanity/lib/events';
+import { sanityClient } from 'sanity:client';
+const [events, tips] = await Promise.all([getEvents(sanityClient), getEventTips(sanityClient)]);
+const { upcoming, past } = splitEvents(events);
+---
+<BaseLayout title="Events">
+  <EventsIndex events={events} upcoming={upcoming} past={past} tips={tips} lang="en" />
+</BaseLayout>

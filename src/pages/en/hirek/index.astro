@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import NewsIndex from '../../../components/pages/NewsIndex.astro';
+import { getPosts } from '../../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const posts = await getPosts(sanityClient);
+---
+<BaseLayout title="News">
+  <NewsIndex posts={posts} lang="en" />
+</BaseLayout>

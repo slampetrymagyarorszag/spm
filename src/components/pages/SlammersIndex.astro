@@ -1,0 +1,81 @@
+---
+import PageHero from '../PageHero.astro';
+import SlammerSearch from '../islands/SlammerSearch.tsx';
+import SlammerApplicationForm from '../SlammerApplicationForm.astro';
+import SlamClubs from '../SlamClubs.astro';
+import HungaryMap from '../HungaryMap.astro';
+import SlamClubForm from '../SlamClubForm.astro';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+import type { SlammerListItem, SlamClub } from '../../sanity/lib/api';
+
+interface Props { slammers: SlammerListItem[]; clubs: SlamClub[]; lang: Lang }
+const { slammers, clubs, lang } = Astro.props;
+---
+<PageHero label={t(lang, 'home.slammersLabel')} title={t(lang, 'home.slammersTitle')} lead={t(lang, 'slammers.pageLead')} object="/hero-micstand.png" objectHover="/hero-micstand-break.png" objectAlt="" />
+
+<!-- Fülek -->
+<div class="mx-auto max-w-6xl px-4 pt-12">
+  <div role="tablist" aria-label={t(lang, 'slammers.tabsAriaLabel')} class="flex gap-1 border-b border-ink/10">
+    <button type="button" data-tab="slammerek" aria-selected="true" class="tab-btn -mb-px border-b-2 border-accent px-5 py-3 font-display text-lg text-ink">
+      {t(lang, 'slammers.tabSlammers')}
+    </button>
+    <button type="button" data-tab="klubok" aria-selected="false" class="tab-btn -mb-px border-b-2 border-transparent px-5 py-3 font-display text-lg text-muted hover:text-ink">
+      {t(lang, 'slammers.tabClubs')}
+    </button>
+  </div>
+</div>
+
+<!-- Panel: Slammerek -->
+<div data-panel="slammerek">
+  <section class="mx-auto max-w-6xl px-4 py-12">
+    {slammers.length === 0
+      ? <p class="text-muted">{t(lang, 'slammers.profilesSoon')}</p>
+      : <SlammerSearch slammers={slammers} lang={lang} client:load />}
+  </section>
+
+  <SlammerApplicationForm />
+</div>
+
+<!-- Panel: Slam klubok -->
+<div data-panel="klubok" hidden>
+  <section class="surface-dark relative overflow-hidden bg-ink text-surface">
+    <div class="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-accent/15 blur-[120px]"></div>
+    <div class="relative z-10 mx-auto max-w-6xl px-4 py-14 md:py-16">
+      <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">{t(lang, 'slammers.clubsEyebrow')}</span>
+      </p>
+      <h2 class="mb-2 font-display text-3xl md:text-4xl">{t(lang, 'slammers.clubsTitle')}</h2>
+      <p class="mb-8 max-w-xl text-surface/70">{t(lang, 'slammers.clubsLead')}</p>
+      <SlamClubs clubs={clubs} />
+
+      <!-- Valódi kattintható Magyarország-térkép -->
+      <div class="mt-12">
+        <p class="mb-4 text-center text-xs uppercase tracking-[0.2em] text-surface/50">{t(lang, 'slammers.mapHint')}</p>
+        <HungaryMap clubs={clubs} />
+      </div>
+
+      <div id="club-form" class="mt-12 max-w-2xl scroll-mt-24">
+        <SlamClubForm />
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll('.tab-btn')) as HTMLButtonElement[];
+  const panels = new Map<string, HTMLElement>();
+  document.querySelectorAll('[data-panel]').forEach((p) => panels.set((p as HTMLElement).dataset.panel!, p as HTMLElement));
+  function activate(name: string) {
+    tabs.forEach((t) => {
+      const on = t.dataset.tab === name;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.classList.toggle('border-accent', on);
+      t.classList.toggle('text-ink', on);
+      t.classList.toggle('border-transparent', !on);
+      t.classList.toggle('text-muted', !on);
+    });
+    panels.forEach((p, key) => { p.hidden = key !== name; });
+  }
+  tabs.forEach((t) => t.addEventListener('click', () => activate(t.dataset.tab!)));
+</script>

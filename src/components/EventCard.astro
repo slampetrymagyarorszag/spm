@@ -1,19 +1,22 @@
 ---
 import { urlForImage } from '../sanity/lib/image';
+import { localized } from '../i18n/content';
+import { localizedPath, type Lang } from '../i18n';
 import type { EventListItem } from '../sanity/lib/api';
-interface Props { event: EventListItem }
-const { event } = Astro.props;
+interface Props { event: EventListItem; lang?: Lang }
+const { event, lang = 'hu' } = Astro.props;
 const d = new Date(event.startsAt);
 const date = d.toLocaleDateString('hu-HU', { month: 'long', day: 'numeric', weekday: 'long' });
 const time = d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
+const title = localized(event, 'title', lang);
 ---
-<a href={`/esemenyek/${event.slug}`} class="group flex gap-5 border-t border-ink/10 py-6">
+<a href={localizedPath(`/esemenyek/${event.slug}`, lang)} class="group flex gap-5 border-t border-ink/10 py-6">
   <div class="shrink-0 text-center">
     <p class="font-display text-3xl leading-none">{d.getDate()}</p>
     <p class="text-xs uppercase text-muted">{d.toLocaleDateString('hu-HU', { month: 'short' })}</p>
   </div>
   <div class="min-w-0">
-    <h3 class="font-display text-2xl leading-tight group-hover:text-accent">{event.title}</h3>
+    <h3 class="font-display text-2xl leading-tight group-hover:text-accent">{title}</h3>
     <p class="mt-1 text-sm text-muted">{date} · {time}{event.location?.name ? ` · ${event.location.name}` : ''}</p>
   </div>
 </a>

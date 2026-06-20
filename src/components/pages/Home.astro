@@ -57,7 +57,7 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
   {upcoming.length === 0 ? (
     <p class="text-muted">{t(lang, 'home.eventsSoon')}</p>
   ) : (
-    <div>{upcoming.map((e: any) => <EventCard event={e} />)}</div>
+    <div>{upcoming.map((e: any) => <EventCard event={e} lang={lang} />)}</div>
   )}
 </section>
 
@@ -71,7 +71,7 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
     {featuredSlammers.length === 0 ? (
       <p class="text-surface/60">{t(lang, 'home.slammersSoon')}</p>
     ) : (
-      <FeaturedSlammers slammers={featuredSlammers} client:load />
+      <FeaturedSlammers slammers={featuredSlammers} lang={lang} client:load />
     )}
   </div>
 </section>
@@ -85,7 +85,7 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
   {latestPosts.length === 0 ? (
     <p class="mx-auto max-w-6xl px-4 text-muted">{t(lang, 'home.newsSoon')}</p>
   ) : (
-    <NewsTicker posts={latestPosts} />
+    <NewsTicker posts={latestPosts} lang={lang} />
   )}
 </section>
 

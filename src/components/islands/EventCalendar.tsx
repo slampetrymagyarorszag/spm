@@ -12,9 +12,10 @@ const DOW = ['H', 'K', 'Sze', 'Cs', 'P', 'Szo', 'V'];
 const mondayIndex = (jsDay: number) => (jsDay + 6) % 7;
 const keyOf = (y: number, m: number, d: number) => `${y}-${m}-${d}`;
 
-export default function EventCalendar({ events }: { events: CalEvent[] }) {
+export default function EventCalendar({ events, lang = 'hu' }: { events: CalEvent[]; lang?: 'hu' | 'en' }) {
   const now = new Date();
   const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
+  const hrefFor = (slug: string) => (lang === 'en' ? `/en/esemenyek/${slug}` : `/esemenyek/${slug}`);
 
   const byDay = useMemo(() => {
     const map = new Map<string, CalEvent[]>();
@@ -85,7 +86,7 @@ export default function EventCalendar({ events }: { events: CalEvent[] }) {
             </div>
           );
           return has ? (
-            <a key={i} href={`/esemenyek/${cell.evs[0].slug}`} title={cell.evs.map((e) => e.title).join(', ')}>{inner}</a>
+            <a key={i} href={hrefFor(cell.evs[0].slug)} title={cell.evs.map((e) => e.title).join(', ')}>{inner}</a>
           ) : (
             <div key={i}>{inner}</div>
           );
@@ -98,7 +99,7 @@ export default function EventCalendar({ events }: { events: CalEvent[] }) {
             const d = new Date(e.startsAt);
             return (
               <li key={e.slug}>
-                <a href={`/esemenyek/${e.slug}`} className="group flex items-center gap-3 text-sm">
+                <a href={hrefFor(e.slug)} className="group flex items-center gap-3 text-sm">
                   <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-accent/15 font-display text-accent">{d.getDate()}</span>
                   <span className="font-display transition group-hover:text-accent">{e.title}</span>
                   <span className="ml-auto text-xs text-surface/50">{d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}</span>

@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RichText from '../RichText.astro';
+import YouTubeEmbed from '../YouTubeEmbed.astro';
+import SlammerEditRequest from '../SlammerEditRequest.astro';
+import { urlForImage } from '../../sanity/lib/image';
+import { localized } from '../../i18n/content';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+import type { Slammer } from '../../sanity/lib/api';
+
+interface Props { slammer: Slammer; lang: Lang }
+const { slammer, lang } = Astro.props;
+const photoUrl = slammer.photo ? urlForImage(slammer.photo).width(1200).height(630).fit('crop').url() : undefined;
+const metaDescription = [slammer.hometown, 'slammer — Slam Poetry Magyarország'].filter(Boolean).join(' · ');
+const bio = localized(slammer, 'bio', lang);
+---
+<BaseLayout title={slammer.name} description={metaDescription} image={photoUrl} ogType="article">
+  <section class="relative overflow-hidden bg-ink text-surface">
+    <!-- füstös, ambient színpad-háttér (feljebb tolva, erősebb) -->
+    <img src="/slammer-ambient.jpg" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full object-cover object-top opacity-65" />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10"></div>
+    <div class="relative z-10 mx-auto max-w-6xl px-4 py-16 grid gap-8 md:grid-cols-[2fr_3fr] items-end">
+      <div>
+        {slammer.photo && <img src={urlForImage(slammer.photo).width(700).url()} alt={slammer.name} class="rounded-lg shadow-2xl grayscale" />}
+      </div>
+      <div>
+        {slammer.hometown && <p class="text-xs uppercase tracking-[0.2em] text-accent">{slammer.hometown}</p>}
+        <h1 class="mt-2 font-display text-5xl md:text-7xl leading-[0.9]">{slammer.name}</h1>
+        {slammer.achievements?.length && (
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {slammer.achievements.map((a) => <li class="rounded-full border border-surface/25 px-3 py-1 text-sm">{a}</li>)}
+          </ul>
+        )}
+      </div>
+    </div>
+  </section>
+  <div class="mx-auto max-w-3xl px-4 py-12">
+    <RichText value={bio} />
+  </div>
+  {slammer.videos?.length && (
+    <section class="mx-auto max-w-6xl px-4 pb-16">
+      <h2 class="font-display text-2xl mb-4">{t(lang, 'slammers.videosHeading')}</h2>
+      <div class="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-color:var(--color-accent)_transparent] [scrollbar-width:thin]">
+        {slammer.videos.map((v) => (
+          <div class="w-[85%] shrink-0 snap-start sm:w-[60%] lg:w-[45%]">
+            <YouTubeEmbed url={v} />
+          </div>
+        ))}
+      </div>
+      <p class="mt-1 text-xs text-muted md:hidden">{t(lang, 'slammers.scrollHint')}</p>
+    </section>
+  )}
+
+  <SlammerEditRequest slammerName={slammer.name} slammerSlug={slammer.slug} />
+</BaseLayout>

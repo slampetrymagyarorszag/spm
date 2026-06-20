@@ -1,6 +1,6 @@
 ---
-import NewsPost from '../../components/pages/NewsPost.astro';
-import { getPosts, getPostBySlug } from '../../sanity/lib/api';
+import NewsPost from '../../../components/pages/NewsPost.astro';
+import { getPosts, getPostBySlug } from '../../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 
 export async function getStaticPaths() {
@@ -9,6 +9,6 @@ export async function getStaticPaths() {
 }
 const { slug } = Astro.params;
 const post = await getPostBySlug(sanityClient, slug!);
-if (!post) return Astro.redirect('/hirek');
+if (!post) return Astro.redirect('/en/hirek');
 ---
-<NewsPost post={post} lang="hu" />
+<NewsPost post={post} lang="en" />

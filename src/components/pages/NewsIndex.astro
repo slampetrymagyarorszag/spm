@@ -1,0 +1,20 @@
+---
+import PageHero from '../PageHero.astro';
+import PostCard from '../PostCard.astro';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+import type { PostListItem } from '../../sanity/lib/api';
+
+interface Props { posts: PostListItem[]; lang: Lang }
+const { posts, lang } = Astro.props;
+---
+<PageHero label={t(lang, 'home.newsLabel')} title={t(lang, 'nav.news')} lead={t(lang, 'news.pageLead')} object="/hero-typewriter.png" objectHover="/hero-typewriter-break.png" objectAlt="" />
+<section class="mx-auto max-w-6xl px-4 py-16">
+  {posts.length === 0 ? (
+    <p class="text-muted">{t(lang, 'home.newsSoon')}</p>
+  ) : (
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => <PostCard post={post} lang={lang} />)}
+    </div>
+  )}
+</section>
