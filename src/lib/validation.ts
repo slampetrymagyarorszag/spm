@@ -111,6 +111,32 @@ export function validateSlamClub(input: SlamClubInput): ValidationResult {
   return { ok: true };
 }
 
+// Slammer-önszerkesztő kérés a profiloldalról: bio/link módosítás, új fotó, vagy
+// „ne szerepeljek" jelzés. Legalább az egyik értelmes mező kell. Email opcionális.
+export type SlammerEditInput = {
+  slammerSlug?: string;
+  bioChange?: string;
+  linksChange?: string;
+  removeRequest?: unknown;
+  email?: string;
+  website?: string; // honeypot
+  hasPhoto?: boolean; // a szerver tölti ki, ha van feltöltött fájl
+};
+
+export function validateSlammerEdit(input: SlammerEditInput): ValidationResult {
+  if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
+  if (!input.slammerSlug || input.slammerSlug.trim().length < 1) return { ok: false, error: 'Hiányzó slammer-azonosító.' };
+  const remove = isConsented(input.removeRequest);
+  const hasContent =
+    remove ||
+    !!input.hasPhoto ||
+    (input.bioChange && input.bioChange.trim().length >= 3) ||
+    (input.linksChange && input.linksChange.trim().length >= 3);
+  if (!hasContent) return { ok: false, error: 'Írd le, mit módosítanál, tölts fel képet, vagy jelöld a kérést.' };
+  if (input.email && !EMAIL_RE.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };
+  return { ok: true };
+}
+
 // A jelölőnégyzet sokféleképp érkezhet (true, "true", "on", "1") — egységesítjük.
 export function isConsented(v: unknown): boolean {
   return v === true || v === 'true' || v === 'on' || v === '1' || v === 1;

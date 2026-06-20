@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../../components/RichText.astro';
 import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
+import SlammerEditRequest from '../../components/SlammerEditRequest.astro';
 import { urlForImage } from '../../sanity/lib/image';
 import { getSlammers, getSlammerBySlug } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
@@ -52,4 +53,6 @@ const metaDescription = [slammer.hometown, 'slammer — Slam Poetry Magyarorszá
       <p class="mt-1 text-xs text-muted md:hidden">← görgesd oldalra a további videókért →</p>
     </section>
   )}
+
+  <SlammerEditRequest slammerName={slammer.name} slammerSlug={slug!} />
 </BaseLayout>

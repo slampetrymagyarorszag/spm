@@ -121,6 +121,32 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
 
+      // Slammerek saját módosítási kérései a profiljukról
+      S.listItem()
+        .title('✏️ Slammer-módosítási kérések')
+        .child(
+          S.list()
+            .title('Slammer-módosítási kérések')
+            .items([
+              S.listItem()
+                .title('⏳ Nyitott')
+                .child(
+                  S.documentList()
+                    .title('Nyitott kérések')
+                    .filter('_type == "slammerEditRequest" && handled != true')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('✅ Elintézett')
+                .child(
+                  S.documentList()
+                    .title('Elintézett kérések')
+                    .filter('_type == "slammerEditRequest" && handled == true')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+            ]),
+        ),
+
       // Beküldött / kezelt slam klubok
       S.listItem()
         .title('🏙️ Slam klubok')

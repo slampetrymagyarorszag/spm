@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest, validateSlamClub } from '../src/lib/validation';
+import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest, validateSlamClub, validateSlammerEdit } from '../src/lib/validation';
 
 describe('validateSubmission', () => {
   const ok = { name: 'Teszt Elek', email: 'teszt@example.com', message: 'Szeretnék jelentkezni.' };
@@ -56,4 +56,14 @@ describe('validateSlamClub', () => {
   it('honeypot → spam', () => { expect(validateSlamClub({ ...ok, website: 'x' })).toEqual({ ok: false, error: 'spam' }); });
   it('hiányzó város → hiba', () => { expect(validateSlamClub({ ...ok, city: '' }).ok).toBe(false); });
   it('rossz link → hiba', () => { expect(validateSlamClub({ ...ok, facebookUrl: 'nem' }).ok).toBe(false); });
+});
+
+describe('validateSlammerEdit', () => {
+  const base = { slammerSlug: 'teszt-elek' };
+  it('bio-módosítással elfogad', () => { expect(validateSlammerEdit({ ...base, bioChange: 'Új bemutatkozás szöveg.' }).ok).toBe(true); });
+  it('csak törlés-kéréssel elfogad', () => { expect(validateSlammerEdit({ ...base, removeRequest: '1' }).ok).toBe(true); });
+  it('feltöltött fotóval elfogad', () => { expect(validateSlammerEdit({ ...base, hasPhoto: true }).ok).toBe(true); });
+  it('üres kérés → hiba', () => { expect(validateSlammerEdit({ ...base }).ok).toBe(false); });
+  it('hiányzó slug → hiba', () => { expect(validateSlammerEdit({ bioChange: 'valami szöveg' }).ok).toBe(false); });
+  it('honeypot → spam', () => { expect(validateSlammerEdit({ ...base, bioChange: 'x szöveg', website: 'bot' })).toEqual({ ok: false, error: 'spam' }); });
 });
