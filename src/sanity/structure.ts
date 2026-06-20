@@ -73,15 +73,23 @@ export const structure: StructureResolver = (S) =>
                 .child(
                   S.documentList()
                     .title('Elbírálásra vár')
-                    .filter('_type == "eventTip" && approved != true')
+                    .filter('_type == "eventTip" && approved != true && promoted != true')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
                 ),
               S.listItem()
-                .title('✅ Jóváhagyott')
+                .title('✅ „Tőletek érkezett” tipp')
                 .child(
                   S.documentList()
-                    .title('Jóváhagyott')
-                    .filter('_type == "eventTip" && approved == true')
+                    .title('Közösségi tippek')
+                    .filter('_type == "eventTip" && approved == true && promoted != true')
+                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('📅 Eseménnyé alakítva')
+                .child(
+                  S.documentList()
+                    .title('Eseménnyé alakítva')
+                    .filter('_type == "eventTip" && promoted == true')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
                 ),
             ]),
@@ -99,15 +107,15 @@ export const structure: StructureResolver = (S) =>
                 .child(
                   S.documentList()
                     .title('Elbírálásra vár')
-                    .filter('_type == "slammerApplication" && approved != true')
+                    .filter('_type == "slammerApplication" && promoted != true')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
                 ),
               S.listItem()
-                .title('✅ Jóváhagyott')
+                .title('✅ Slammerré alakítva')
                 .child(
                   S.documentList()
-                    .title('Jóváhagyott')
-                    .filter('_type == "slammerApplication" && approved == true')
+                    .title('Slammerré alakítva')
+                    .filter('_type == "slammerApplication" && promoted == true')
                     .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
                 ),
             ]),

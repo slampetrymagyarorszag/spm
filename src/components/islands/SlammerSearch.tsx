@@ -23,7 +23,7 @@ export default function SlammerSearch({ slammers }: { slammers: SlammerListItem[
           {filtered.map((s) => (
             <a key={s._id} href={`/slammerek/${s.slug}`} className="group block">
               <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
-                {s.photo && <img src={urlForImage(s.photo).width(400).height(533).url()} alt={s.name} loading="lazy" decoding="async" width={400} height={533} className="h-full w-full object-cover brightness-90 transition duration-500 group-hover:scale-105 group-hover:brightness-110" />}
+                {s.photo && <img src={urlForImage(s.photo).width(400).height(533).url()} alt={s.name} loading="lazy" decoding="async" width={400} height={533} className="h-full w-full object-cover grayscale brightness-90 transition duration-500 group-hover:scale-105 group-hover:brightness-110" />}
                 <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" style={{ background: '#14b8a6', mixBlendMode: 'color' }} />
               </div>
               <h3 className="mt-2 font-display text-lg group-hover:text-accent">{s.name}</h3>

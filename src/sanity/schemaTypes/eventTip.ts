@@ -14,11 +14,16 @@ export const eventTip = defineType({
     defineField({ name: 'submittedAt', title: 'Beküldve', type: 'datetime', readOnly: true }),
     defineField({
       name: 'approved',
-      title: 'Jóváhagyva — megjelenhet az oldalon',
+      title: 'Jóváhagyva — „Tőletek érkezett” tippként megjelenik',
       type: 'boolean',
       initialValue: false,
-      description: 'Kapcsold BE, hogy a tipp megjelenjen az Események oldalon a „Közösségi tippek" között. Előtte nyugodtan javítsd a nevet/leírást.',
+      description: 'Kapcsold BE, hogy a tipp megjelenjen az Események oldalon a „Közösségi tippek" között (egyszerű kártyaként, naptár nélkül). Ha inkább teljes, naptári eseményt szeretnél belőle, használd az „Eseménnyé alakítás (naptárba)” gombot.',
     }),
+    defineField({
+      name: 'promoted', title: 'Eseménnyé alakítva', type: 'boolean', readOnly: true, initialValue: false,
+      description: 'Az „Eseménnyé alakítás” gomb állítja be. Ha BE van, a tippből már teljes naptári esemény készült.',
+    }),
+    defineField({ name: 'promotedEventId', title: 'Létrehozott esemény azonosító', type: 'string', readOnly: true }),
   ],
   orderings: [{ title: 'Legújabb', name: 'newest', by: [{ field: 'submittedAt', direction: 'desc' }] }],
   preview: {
