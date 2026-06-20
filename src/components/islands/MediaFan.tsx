@@ -44,7 +44,9 @@ function getSlotConfig(totalCards: number, slot: number) {
   };
 }
 
-export default function MediaFan({ videos }: { videos: FanVideo[] }) {
+type MediaFanLabels = { prev?: string; next?: string; play?: string; close?: string };
+
+export default function MediaFan({ videos, labels }: { videos: FanVideo[]; labels?: MediaFanLabels }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
   const hasEntered = useRef(false);
@@ -262,7 +264,7 @@ export default function MediaFan({ videos }: { videos: FanVideo[] }) {
             key={v.videoId + i}
             type="button"
             onClick={() => setLightbox(v)}
-            aria-label={`Lejátszás: ${v.title}`}
+            aria-label={`${labels?.play ?? 'Lejátszás'}: ${v.title}`}
             className="group relative aspect-video w-72 shrink-0 snap-start overflow-hidden rounded-xl border border-ink/10 shadow-sm"
           >
             {cardInner(v, i)}
@@ -287,7 +289,7 @@ export default function MediaFan({ videos }: { videos: FanVideo[] }) {
               key={v.videoId + index}
               type="button"
               onClick={() => setLightbox(v)}
-              aria-label={`Lejátszás: ${v.title}`}
+              aria-label={`${labels?.play ?? 'Lejátszás'}: ${v.title}`}
               className="fan-card group block cursor-pointer"
             >
               {cardInner(v, index)}
@@ -298,13 +300,13 @@ export default function MediaFan({ videos }: { videos: FanVideo[] }) {
 
       {needsPagination && (
         <div className="z-30 mt-6 flex items-center justify-center gap-4">
-          <button type="button" className="fan-arrow" onClick={() => cycle("left")} aria-label="Előző">{chevron("left")}</button>
+          <button type="button" className="fan-arrow" onClick={() => cycle("left")} aria-label={labels?.prev ?? 'Előző'}>{chevron("left")}</button>
           <div className="flex items-center gap-2">
             {videos.map((_, i) => (
               <span key={i} className="rounded-full transition-all duration-300" style={{ width: 8, height: 8, background: i === centerIndex ? "var(--color-accent)" : "rgba(0,0,0,0.15)", transform: i === centerIndex ? "scale(1.3)" : "scale(1)" }} />
             ))}
           </div>
-          <button type="button" className="fan-arrow" onClick={() => cycle("right")} aria-label="Következő">{chevron("right")}</button>
+          <button type="button" className="fan-arrow" onClick={() => cycle("right")} aria-label={labels?.next ?? 'Következő'}>{chevron("right")}</button>
         </div>
       )}
 
@@ -317,7 +319,7 @@ export default function MediaFan({ videos }: { videos: FanVideo[] }) {
           aria-label={lightbox.title}
         >
           <div className="relative w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
-            <button type="button" onClick={() => setLightbox(null)} aria-label="Bezárás" className="absolute -top-10 right-0 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
+            <button type="button" onClick={() => setLightbox(null)} aria-label={labels?.close ?? 'Bezárás'} className="absolute -top-10 right-0 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
             </button>
             <div className="aspect-video w-full overflow-hidden rounded-xl bg-black shadow-2xl">

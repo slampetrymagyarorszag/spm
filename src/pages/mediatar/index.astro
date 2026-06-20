@@ -8,6 +8,11 @@ import MediaFan from '../../components/islands/MediaFan.tsx';
 import { getMedia, getMediaConfig } from '../../sanity/lib/api';
 import { fetchChannelUploads, fetchPlaylistItems, parsePlaylistId } from '../../lib/youtube';
 import { sanityClient } from 'sanity:client';
+import { getLangFromUrl } from '../../i18n';
+import { t } from '../../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const mediaFanLabels = { prev: t(lang, 'media.prev'), next: t(lang, 'media.next'), play: t(lang, 'media.play'), close: t(lang, 'media.close') };
 
 const env = import.meta.env;
 const apiKey = env.YOUTUBE_API_KEY ?? process.env.YOUTUBE_API_KEY;
@@ -48,7 +53,7 @@ const hasAny = galleryMedia.length > 0 || videos.length > 0 || playlists.some((p
     {videos.length > 0 && (
       <div class="mb-16">
         <SectionHeader label="YouTube" title="Legújabb videók" />
-        <MediaFan videos={videos} client:visible />
+        <MediaFan videos={videos} labels={mediaFanLabels} client:visible />
       </div>
     )}
 

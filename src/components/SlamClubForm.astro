@@ -1,32 +1,35 @@
 ---
 // „Vidd fel a saját slam klubodat" űrlap → /api/slam-club (Sanity, jóváhagyással).
+import { t } from '../i18n/ui';
+import { getLangFromUrl, type Lang } from '../i18n';
+const lang: Lang = getLangFromUrl(Astro.url);
 ---
 <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur md:p-7">
-  <h3 class="font-display text-2xl">Van saját slam klubod?</h3>
-  <p class="mt-2 text-sm text-surface/70">Küldd be, melyik városban, milyen néven és milyen linken — átnézzük, és felvesszük a térképre.</p>
+  <h3 class="font-display text-2xl">{t(lang, 'events.haveClubTitle')}</h3>
+  <p class="mt-2 text-sm text-surface/70">{t(lang, 'events.haveClubLead')}</p>
 
-  <form class="js-club-form mt-5 grid gap-4 sm:grid-cols-2" aria-label="Slam klub beküldő űrlap">
+  <form class="js-club-form mt-5 grid gap-4 sm:grid-cols-2" aria-label={t(lang, 'events.clubFormAriaLabel')}>
     <div>
-      <label for="cl-city" class="mb-1 block text-sm text-surface/70">Város <span class="text-accent">*</span></label>
-      <input id="cl-city" type="text" name="city" required placeholder="pl. Szeged" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      <label for="cl-city" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.city')} <span class="text-accent">*</span></label>
+      <input id="cl-city" type="text" name="city" required placeholder={t(lang, 'events.cityPlaceholder')} class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
     </div>
     <div>
-      <label for="cl-name" class="mb-1 block text-sm text-surface/70">Klub neve <span class="text-surface/40">(opcionális)</span></label>
-      <input id="cl-name" type="text" name="name" placeholder="pl. Slam Poetry Szeged" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      <label for="cl-name" class="mb-1 block text-sm text-surface/70">{t(lang, 'events.clubName')} <span class="text-surface/40">({t(lang, 'form.optional')})</span></label>
+      <input id="cl-name" type="text" name="name" placeholder={t(lang, 'events.clubNamePlaceholder')} class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
     </div>
     <div class="sm:col-span-2">
-      <label for="cl-fb" class="mb-1 block text-sm text-surface/70">Facebook (vagy más) link <span class="text-accent">*</span></label>
+      <label for="cl-fb" class="mb-1 block text-sm text-surface/70">{t(lang, 'events.facebookLink')} <span class="text-accent">*</span></label>
       <input id="cl-fb" type="url" name="facebookUrl" required placeholder="https://www.facebook.com/…" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
     </div>
     <div class="sm:col-span-2">
-      <label for="cl-email" class="mb-1 block text-sm text-surface/70">Email <span class="text-surface/40">(opcionális, ha visszajeleznénk)</span></label>
+      <label for="cl-email" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.email')} <span class="text-surface/40">({t(lang, 'form.optionalIfReply')})</span></label>
       <input id="cl-email" type="email" name="email" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
     </div>
 
     <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
 
     <div class="sm:col-span-2">
-      <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Beküldöm a klubot</button>
+      <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'events.submitClub')}</button>
       <p class="js-club-status mt-2 text-sm" role="status" aria-live="polite"></p>
     </div>
   </form>

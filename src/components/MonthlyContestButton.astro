@@ -2,11 +2,14 @@
 // „Jelentkezem a havi versenyre" gomb a hero mellé + felugró űrlap.
 // A láthatóságot (nyitás/zárás) kliensoldalon, pontos időhöz igazítva kezeljük.
 import type { SiteSettings } from '../sanity/lib/api';
+import { t } from '../i18n/ui';
+import { getLangFromUrl, type Lang } from '../i18n';
 interface Props { settings: SiteSettings }
 const { settings } = Astro.props;
+const lang: Lang = getLangFromUrl(Astro.url);
 const mc = settings.monthlyContest;
 const show = !!mc?.enabled;
-const buttonLabel = mc?.buttonLabel || 'Jelentkezem a havi versenyre';
+const buttonLabel = mc?.buttonLabel || t(lang, 'events.applyMonthlyContest');
 const monthLabel = mc?.monthLabel || '';
 const intro = mc?.intro || '';
 ---
@@ -25,33 +28,33 @@ const intro = mc?.intro || '';
     </button>
 
     <!-- Felugró űrlap -->
-    <div class="mc-modal fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Havi klub jelentkezés">
+    <div class="mc-modal fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={t(lang, 'events.monthlyApplyAriaLabel')}>
       <div class="mc-backdrop absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
       <div class="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-ink text-surface shadow-2xl">
         <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/25 blur-[90px]"></div>
         <div class="relative p-6 md:p-7">
-          <button type="button" class="mc-close absolute right-4 top-4 text-surface/60 hover:text-surface" aria-label="Bezárás">✕</button>
-          <p class="mb-1 text-xs uppercase tracking-[0.2em] text-accent">{monthLabel || 'Havi klub'}</p>
-          <h2 class="font-display text-3xl leading-[0.95]">Jelentkezem a havi versenyre</h2>
+          <button type="button" class="mc-close absolute right-4 top-4 text-surface/60 hover:text-surface" aria-label={t(lang, 'common.close')}>✕</button>
+          <p class="mb-1 text-xs uppercase tracking-[0.2em] text-accent">{monthLabel || t(lang, 'events.monthlyClub')}</p>
+          <h2 class="font-display text-3xl leading-[0.95]">{t(lang, 'events.applyMonthlyContest')}</h2>
           {intro && <p class="mt-2 text-sm text-surface/75">{intro}</p>}
 
-          <form class="mc-form mt-5 grid gap-3" aria-label="Havi klub jelentkezési űrlap">
+          <form class="mc-form mt-5 grid gap-3" aria-label={t(lang, 'events.monthlyFormAriaLabel')}>
             <div>
-              <label for="mc-name" class="mb-1 block text-sm text-surface/70">Neved / művészneved <span class="text-accent">*</span></label>
+              <label for="mc-name" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.nameOrStageName')} <span class="text-accent">*</span></label>
               <input id="mc-name" type="text" name="name" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
             </div>
             <div>
-              <label for="mc-email" class="mb-1 block text-sm text-surface/70">Email <span class="text-accent">*</span></label>
+              <label for="mc-email" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.email')} <span class="text-accent">*</span></label>
               <input id="mc-email" type="email" name="email" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
             </div>
             <fieldset class="mt-1">
-              <legend class="mb-2 text-sm text-surface/70">Mire jelentkezel? <span class="text-accent">*</span></legend>
+              <legend class="mb-2 text-sm text-surface/70">{t(lang, 'events.whatAreYouApplyingFor')} <span class="text-accent">*</span></legend>
               <div class="flex gap-3">
                 <label class="flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent/10">
-                  <input type="radio" name="entryType" value="verseny" required class="accent-[var(--color-accent)]" /> Verseny
+                  <input type="radio" name="entryType" value="verseny" required class="accent-[var(--color-accent)]" /> {t(lang, 'events.entryContest')}
                 </label>
                 <label class="flex flex-1 cursor-pointer items-center gap-2 rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent/10">
-                  <input type="radio" name="entryType" value="openmic" class="accent-[var(--color-accent)]" /> Open mic
+                  <input type="radio" name="entryType" value="openmic" class="accent-[var(--color-accent)]" /> {t(lang, 'events.entryOpenMic')}
                 </label>
               </div>
             </fieldset>
@@ -59,7 +62,7 @@ const intro = mc?.intro || '';
             <!-- honeypot -->
             <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
 
-            <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Jelentkezés elküldése</button>
+            <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'events.submitApplication')}</button>
             <p class="mc-status text-sm" role="status" aria-live="polite"></p>
           </form>
         </div>

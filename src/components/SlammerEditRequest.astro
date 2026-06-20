@@ -2,42 +2,45 @@
 // „Ez te vagy?" — a slammer a saját profiljáról módosítást kérhet (bio, linkek, új fotó),
 // vagy jelezheti, hogy ne szerepeljen az oldalon. A /api/slammer-edit végpontra megy,
 // és a Studióban várja az elbírálást.
+import { t } from '../i18n/ui';
+import { getLangFromUrl, type Lang } from '../i18n';
 interface Props { slammerName: string; slammerSlug: string }
 const { slammerName, slammerSlug } = Astro.props;
+const lang: Lang = getLangFromUrl(Astro.url);
 ---
 <section class="mx-auto max-w-6xl px-4 pb-16">
   <div class="rounded-2xl border border-ink/10 bg-ink/[0.03] p-5 md:p-6">
     <button type="button" class="se-toggle flex w-full items-center justify-between gap-4 text-left" aria-expanded="false" aria-controls={`se-panel-${slammerSlug}`}>
       <span>
-        <span class="block font-display text-lg leading-tight">Ez te vagy? Módosítanál valamit?</span>
-        <span class="mt-1 block text-sm text-muted">Kérhetsz változtatást a bemutatkozásodon vagy a linkjeiden, beküldhetsz új képet — vagy jelezheted, ha nem szeretnél szerepelni az oldalon.</span>
+        <span class="block font-display text-lg leading-tight">{t(lang, 'slammers.editToggleTitle')}</span>
+        <span class="mt-1 block text-sm text-muted">{t(lang, 'slammers.editToggleLead')}</span>
       </span>
       <span class="se-chevron shrink-0 text-accent transition-transform" aria-hidden="true">▾</span>
     </button>
 
     <div id={`se-panel-${slammerSlug}`} class="se-panel mt-5 hidden">
-      <form class="js-se-form grid gap-4" aria-label="Módosítási kérés">
+      <form class="js-se-form grid gap-4" aria-label={t(lang, 'slammers.editFormAriaLabel')}>
         <input type="hidden" name="slammerSlug" value={slammerSlug} />
         <input type="hidden" name="slammerName" value={slammerName} />
 
         <div>
-          <label class="mb-1 block text-sm text-muted" for="se-bio">Mit módosítanál a bemutatkozásodban?</label>
-          <textarea id="se-bio" name="bioChange" rows="4" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" placeholder="Írd le az új/javított szöveget…"></textarea>
+          <label class="mb-1 block text-sm text-muted" for="se-bio">{t(lang, 'slammers.editBioLabel')}</label>
+          <textarea id="se-bio" name="bioChange" rows="4" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" placeholder={t(lang, 'slammers.editBioPlaceholder')}></textarea>
         </div>
         <div>
-          <label class="mb-1 block text-sm text-muted" for="se-links">Linkek (YouTube, Instagram, Facebook…)</label>
-          <textarea id="se-links" name="linksChange" rows="2" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" placeholder="Új vagy javított linkek…"></textarea>
+          <label class="mb-1 block text-sm text-muted" for="se-links">{t(lang, 'slammers.editLinksLabel')}</label>
+          <textarea id="se-links" name="linksChange" rows="2" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" placeholder={t(lang, 'slammers.editLinksPlaceholder')}></textarea>
         </div>
         <div>
-          <label class="mb-1 block text-sm text-muted" for="se-photo">Új fotó magadról <span class="text-ink/40">(opcionális, max 8 MB)</span></label>
+          <label class="mb-1 block text-sm text-muted" for="se-photo">{t(lang, 'slammers.editPhotoLabel')} <span class="text-ink/40">({t(lang, 'form.optionalMax8mb')})</span></label>
           <input id="se-photo" type="file" name="photo" accept="image/*" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-3 file:py-1.5 file:font-semibold file:text-ink" />
         </div>
         <label class="flex items-start gap-3 text-sm">
           <input type="checkbox" name="removeRequest" value="1" class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
-          <span>Inkább <strong>ne szerepeljek</strong> az oldalon — kérlek, vegyétek le a profilom.</span>
+          <span set:html={t(lang, 'slammers.removeRequestText')} />
         </label>
         <div>
-          <label class="mb-1 block text-sm text-muted" for="se-email">Email <span class="text-ink/40">(opcionális, ha visszajeleznénk)</span></label>
+          <label class="mb-1 block text-sm text-muted" for="se-email">{t(lang, 'form.email')} <span class="text-ink/40">({t(lang, 'form.optionalIfReply')})</span></label>
           <input id="se-email" type="email" name="email" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
         </div>
 
@@ -45,7 +48,7 @@ const { slammerName, slammerSlug } = Astro.props;
         <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
 
         <div class="flex items-center gap-3">
-          <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Kérés beküldése</button>
+          <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'slammers.submitEditRequest')}</button>
           <p class="js-se-status text-sm" role="status" aria-live="polite"></p>
         </div>
       </form>
