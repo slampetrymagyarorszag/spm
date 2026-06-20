@@ -17,6 +17,7 @@ export const slammer = defineType({
     defineField({ name: 'featured', title: 'Kiemelt a főoldalon', type: 'boolean', initialValue: false, description: 'Bekapcsolva megjelenik a főoldal kiemelt slammer-galériájában (max 10).' }),
     defineField({ name: 'featuredOrder', title: 'Kiemelés sorrendje', type: 'number', description: 'Kisebb szám = előrébb. Üresen hagyva név szerint rendeződik.' }),
     defineField({ name: 'bio', title: 'Bemutatkozás', type: 'blockContent' }),
+    defineField({ name: 'bioEn', title: 'Bemutatkozás (English)', type: 'blockContent', description: 'Opcionális. Ha üres, az angol oldalon a magyar bio jelenik meg.' }),
     defineField({ name: 'achievements', title: 'Eredmények', type: 'array', of: [{ type: 'string' }] }),
     defineField({ name: 'videos', title: 'Videók (YouTube URL)', type: 'array', of: [{ type: 'url' }] }),
     defineField({

@@ -56,6 +56,11 @@ export const siteSettings = defineType({
         defineField({ name: 'primaryCtaHref', title: 'Elsődleges gomb linkje', type: 'string', initialValue: '/esemenyek' }),
         defineField({ name: 'secondaryCtaLabel', title: 'Másodlagos gomb felirata', type: 'string', initialValue: 'Mi az a slam poetry?' }),
         defineField({ name: 'secondaryCtaHref', title: 'Másodlagos gomb linkje', type: 'string', initialValue: '/mi-az-a-slam-poetry' }),
+        defineField({ name: 'heroStickerEn', title: 'Hero matrica (English)', type: 'string' }),
+        defineField({ name: 'heroTitleEn', title: 'Hero cím (English)', type: 'string' }),
+        defineField({ name: 'heroLeadEn', title: 'Hero alcím (English)', type: 'text', rows: 2 }),
+        defineField({ name: 'primaryCtaLabelEn', title: 'Elsődleges gomb szövege (English)', type: 'string' }),
+        defineField({ name: 'secondaryCtaLabelEn', title: 'Másodlagos gomb szövege (English)', type: 'string' }),
       ],
     }),
     defineField({

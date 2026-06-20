@@ -27,6 +27,8 @@ export const event = defineType({
     defineField({ name: 'cover', title: 'Borítókép', type: 'image', group: 'details', options: { hotspot: true, metadata: ['blurhash', 'lqip', 'palette'] }, fields: [{ name: 'alt', type: 'string', title: 'Alt szöveg' }], description: 'Opcionális. Ha üresen hagyod, a FB-beágyazás viszi a borítót.' }),
     defineField({ name: 'location', title: 'Helyszín', type: 'location', group: 'details' }),
     defineField({ name: 'description', title: 'Leírás', type: 'blockContent', group: 'details', description: 'Opcionális saját leírás. A FB-beágyazás amúgy is mutatja a FB-leírást.' }),
+    defineField({ name: 'titleEn', title: 'Cím (English)', type: 'string', group: 'details' }),
+    defineField({ name: 'descriptionEn', title: 'Leírás (English)', type: 'blockContent', group: 'details' }),
     defineField({ name: 'performers', title: 'Fellépők', type: 'array', group: 'details', of: [{ type: 'reference', to: [{ type: 'slammer' }] }] }),
     defineField({ name: 'ticketUrl', title: 'Jegy URL', type: 'url', group: 'details' }),
     defineField({ name: 'accentColor', title: 'Esemény accent szín (hex)', type: 'string', group: 'details', description: 'Opcionális, pl. #b13bd6 — felülírja az oldal accent színét ennél az eseménynél.' }),
