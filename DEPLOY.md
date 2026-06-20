@@ -32,6 +32,8 @@ A változókat a **Vercel dashboard → a projekt → Settings → Environment V
 | `MAIL_FROM` | `Slam Poetry <no-reply@slampoetry.hu>` (a Resend-nél hitelesített domain) |
 | `RESEND_API_KEY` | **később**, amikor megvan (a kapcsolat/jelentkezés űrlapokhoz; az esemény-tipp NEM ezt használja) |
 | `SANITY_FORM_TOKEN` | az esemény-tipp űrlaphoz: egy **külön, írásra jogosult** Sanity token. A beküldés ezzel hoz létre „Beküldött esemény" dokumentumot a Studióban. |
+| `FB_PAGE_ACCESS_TOKEN` | **opcionális** — a Facebook hír-importhoz (Studio → „Facebook hír import”). Hosszú élettartamú **Page access token** a Slam Poetry Magyarország oldalhoz (Facebook fejlesztői app, `pages_read_engagement`). Token nélkül az import nem működik, de minden más igen. |
+| `FB_PAGE_ID` | **opcionális** — a Slam Poetry Magyarország Facebook-oldal numerikus azonosítója (a hír-import poszt-feloldásához). |
 
 > NE tedd fel a `SANITY_WRITE_TOKEN`-t — az csak a migrációs szkripthez kellett, futásidőben nem.
 > A `SANITY_FORM_TOKEN` ettől KÜLÖN token: hozz létre a Sanity → API → Tokens alatt egy új,

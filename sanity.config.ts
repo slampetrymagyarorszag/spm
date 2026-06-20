@@ -5,6 +5,7 @@ import { structure } from './src/sanity/structure';
 import { promoteSlammerAction } from './src/sanity/actions/promoteSlammer';
 import { promoteEventTipAction } from './src/sanity/actions/promoteEventTip';
 import { SubmissionsExportTool } from './src/sanity/tools/SubmissionsExportTool';
+import { FacebookImportTool } from './src/sanity/tools/FacebookImportTool';
 
 const projectId =
   (import.meta as any).env?.PUBLIC_SANITY_PROJECT_ID ?? process.env.PUBLIC_SANITY_PROJECT_ID!;
@@ -18,6 +19,7 @@ export default defineConfig({
   tools: (prev) => [
     ...prev,
     { name: 'jelentkezesek-export', title: 'Jelentkezések export', component: SubmissionsExportTool },
+    { name: 'facebook-import', title: 'Facebook hír import', component: FacebookImportTool },
   ],
   schema: { types: schemaTypes },
   document: {
