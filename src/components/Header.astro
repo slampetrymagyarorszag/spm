@@ -1,16 +1,19 @@
 ---
 import type { SiteSettings } from "../sanity/lib/api";
 import ThemeToggle from "./ThemeToggle.astro";
-interface Props { settings: SiteSettings; }
-const { settings } = Astro.props;
-const nav = settings.nav?.length ? settings.nav : [
-  { label: "Mi az a slam?", href: "/mi-az-a-slam-poetry" },
-  { label: "Események", href: "/esemenyek" },
-  { label: "Slammerek", href: "/slammerek" },
-  { label: "Hírek", href: "/hirek" },
-  { label: "Médiatár", href: "/mediatar" },
-  { label: "Egyesület", href: "/egyesulet" },
-  { label: "Kapcsolat", href: "/kapcsolat" },
+import LangToggle from "./LangToggle.astro";
+import { t } from "../i18n/ui";
+import { localizedPath, type Lang } from "../i18n";
+interface Props { settings: SiteSettings; lang: Lang; }
+const { settings, lang } = Astro.props;
+const navItems = [
+  { key: 'nav.whatIsSlam', href: '/mi-az-a-slam-poetry' },
+  { key: 'nav.events', href: '/esemenyek' },
+  { key: 'nav.slammers', href: '/slammerek' },
+  { key: 'nav.news', href: '/hirek' },
+  { key: 'nav.media', href: '/mediatar' },
+  { key: 'nav.association', href: '/egyesulet' },
+  { key: 'nav.contact', href: '/kapcsolat' },
 ];
 const s = settings.social ?? {};
 const socials = [
@@ -23,7 +26,7 @@ const socials = [
 <header class="surface-dark sticky top-0 z-50 bg-ink text-surface">
   <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
     <div class="flex items-center gap-4">
-      <a href="/" class="flex items-center gap-3">
+      <a href={localizedPath('/', lang)} class="flex items-center gap-3">
         {settings.logoUrl
           ? <img src={settings.logoUrl} alt={settings.title} class="h-10 w-auto" />
           : (
@@ -68,10 +71,11 @@ const socials = [
 
     <div class="flex items-center gap-3">
       <ul class="hidden gap-5 lg:flex">
-        {nav.map((item) => (
-          <li><a href={item.href} class="whitespace-nowrap text-sm uppercase tracking-wide hover:text-accent">{item.label}</a></li>
+        {navItems.map((item) => (
+          <li><a href={localizedPath(item.href, lang)} class="whitespace-nowrap text-sm uppercase tracking-wide hover:text-accent">{t(lang, item.key)}</a></li>
         ))}
       </ul>
+      <LangToggle />
       <ThemeToggle />
       <!-- Hamburger (lg alatt) -->
       <button
@@ -91,8 +95,8 @@ const socials = [
   <!-- Mobil/tablet menü (lg alatt) -->
   <div id="mobile-nav" class="hidden border-t border-white/10 lg:hidden">
     <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
-      {nav.map((item) => (
-        <li><a href={item.href} class="block rounded-lg px-3 py-2.5 text-sm uppercase tracking-wide hover:bg-white/10 hover:text-accent">{item.label}</a></li>
+      {navItems.map((item) => (
+        <li><a href={localizedPath(item.href, lang)} class="block rounded-lg px-3 py-2.5 text-sm uppercase tracking-wide hover:bg-white/10 hover:text-accent">{t(lang, item.key)}</a></li>
       ))}
     </ul>
     <div class="mx-auto flex max-w-6xl items-center gap-2 border-t border-white/10 px-4 py-3">

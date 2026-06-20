@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { getSiteSettings, type SiteSettings } from "../sanity/lib/api";
 import { sanityClient } from "sanity:client";
+import { getLangFromUrl, alternatePath, LOCALES, type Lang } from '../i18n';
 
 interface Props {
   title?: string;
@@ -33,6 +34,12 @@ const metaDescription = description || SITE_DESCRIPTION;
 // Kanonikus és abszolút URL-ek a megfelelő megosztáshoz/indexeléshez.
 // (Astro.site az astro.config-ban beállított nyilvános domain.)
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const lang: Lang = getLangFromUrl(Astro.url);
+// hreflang alternatívák: ugyanaz az oldal minden nyelven (abszolút URL).
+const hreflangs = LOCALES.map((l) => ({
+  lang: l,
+  href: new URL(alternatePath(Astro.url.pathname, l), Astro.site).href,
+}));
 const ogImage = new URL(image, Astro.site).href;
 
 // A CMS-ben megadott alap accent szín felülírja a design-token alapértéket (a Tailwind
@@ -41,7 +48,7 @@ const ogImage = new URL(image, Astro.site).href;
 const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor}` : undefined;
 ---
 <!doctype html>
-<html lang="hu">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -56,6 +63,9 @@ const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor
     <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
+    {hreflangs.map((h) => <link rel="alternate" hreflang={h.lang} href={h.href} />)}
+    <link rel="alternate" hreflang="x-default" href={hreflangs.find((h) => h.lang === 'hu')!.href} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'hu_HU'} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- Favicon / ikon -->
@@ -66,7 +76,6 @@ const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor
     <!-- OpenGraph (Facebook, Messenger, LinkedIn) -->
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={settings.title} />
-    <meta property="og:locale" content="hu_HU" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />
@@ -84,8 +93,8 @@ const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor
     <slot name="head" />
   </head>
   <body class="min-h-screen flex flex-col" style={bodyStyle}>
-    <Header settings={settings} />
+    <Header settings={settings} lang={lang} />
     <main class="flex-1"><slot /></main>
-    <Footer settings={settings} />
+    <Footer settings={settings} lang={lang} />
   </body>
 </html>

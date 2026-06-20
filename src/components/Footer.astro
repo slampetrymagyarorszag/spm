@@ -1,7 +1,9 @@
 ---
 import type { SiteSettings } from "../sanity/lib/api";
-interface Props { settings: SiteSettings; }
-const { settings } = Astro.props;
+import { t } from "../i18n/ui";
+import { localizedPath, type Lang } from "../i18n";
+interface Props { settings: SiteSettings; lang: Lang; }
+const { settings, lang } = Astro.props;
 const s = settings.social ?? {};
 const year = new Date().getFullYear();
 const imp = settings.impressum ?? {};
@@ -60,21 +62,21 @@ const socials = [
     <!-- Impresszum -->
     <div class="mt-10 grid gap-6 border-t border-white/10 pt-8 text-sm text-surface/70 sm:grid-cols-2 lg:grid-cols-3">
       <div>
-        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">Impresszum</p>
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.impressum')}</p>
         <p class="font-display text-surface">{orgName}</p>
         {imp.address && <p class="mt-1 whitespace-pre-line">{imp.address}</p>}
         {imp.taxNumber && <p class="mt-1 text-xs text-surface/50">{imp.taxNumber}</p>}
       </div>
       <div>
-        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">Kapcsolat</p>
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.contact')}</p>
         {settings.contactEmail && <a href={`mailto:${settings.contactEmail}`} class="block hover:text-accent">{settings.contactEmail}</a>}
-        <a href="/kapcsolat" class="mt-1 inline-block hover:text-accent">Lépj kapcsolatba velünk →</a>
+        <a href={localizedPath('/kapcsolat', lang)} class="mt-1 inline-block hover:text-accent">{t(lang, 'footer.getInTouch')}</a>
       </div>
       <div>
-        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">Átláthatóság</p>
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.transparency')}</p>
         {imp.annualReportsUrl
-          ? <a href={imp.annualReportsUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-accent">Éves beszámolók ↗</a>
-          : <span class="text-surface/40">Éves beszámolók (hamarosan)</span>}
+          ? <a href={imp.annualReportsUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-accent">{t(lang, 'footer.annualReports')} ↗</a>
+          : <span class="text-surface/40">{t(lang, 'footer.annualReportsSoon')}</span>}
       </div>
     </div>
 
