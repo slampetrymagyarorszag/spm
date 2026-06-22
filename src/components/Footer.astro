@@ -65,6 +65,7 @@ const socials = [
         <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.impressum')}</p>
         <p class="font-display text-surface">{orgName}</p>
         {imp.address && <p class="mt-1 whitespace-pre-line">{imp.address}</p>}
+        {imp.email && <a href={`mailto:${imp.email}`} class="mt-1 block hover:text-accent">{imp.email}</a>}
         {imp.taxNumber && <p class="mt-1 text-xs text-surface/50">{imp.taxNumber}</p>}
       </div>
       <div>

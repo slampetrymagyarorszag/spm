@@ -6,7 +6,8 @@ import AnimatedText from '../AnimatedText.astro';
 import { localized } from '../../i18n/content';
 import { t } from '../../i18n/ui';
 import type { Lang } from '../../i18n';
-import type { PageDoc } from '../../sanity/lib/api';
+import { getSiteSettings, type PageDoc } from '../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
 
 interface Props { page: PageDoc | null; lang: Lang }
 const { page, lang } = Astro.props;
@@ -14,11 +15,40 @@ const { page, lang } = Astro.props;
 const title = localized(page, 'title', lang) ?? (lang === 'en' ? 'Association' : 'Egyesület');
 const lead = localized(page, 'lead', lang);
 const body = localized(page, 'body', lang);
+
+// Éves beszámolók (PDF-ek) a beállításokból — letölthető lista.
+const settings = await getSiteSettings(sanityClient);
+const reports = (settings?.impressum?.annualReports ?? []).filter((r) => r.fileUrl);
 ---
 <PageHero label={t(lang, 'association.label')} title={title} lead={lead} object="/hero-beer.png" objectHover="/hero-beer-break.png" objectAlt="" />
 <div class="mx-auto max-w-3xl px-4 py-12">
   {body ? <RichText value={body} /> : <p class="text-muted">{t(lang, 'association.placeholder')}</p>}
 </div>
+
+{reports.length > 0 && (
+  <section class="mx-auto max-w-3xl px-4 pb-12">
+    <h2 class="font-display text-2xl">{t(lang, 'association.annualReportsTitle')}</h2>
+    <p class="mt-1 text-sm text-muted">{t(lang, 'association.annualReportsLead')}</p>
+    <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+      {reports.map((r) => (
+        <li>
+          <a
+            href={r.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-center gap-4 rounded-xl border border-ink/10 bg-surface p-4 transition hover:-translate-y-0.5 hover:border-accent hover:shadow-md"
+          >
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+            </span>
+            <span class="min-w-0 font-display text-lg leading-tight group-hover:text-accent">{r.label}</span>
+            <span class="ml-auto text-accent transition-transform group-hover:translate-x-0.5" aria-hidden="true">↓</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
 
 <section class="bg-ink text-surface">
   <div class="mx-auto max-w-3xl px-4 py-16">

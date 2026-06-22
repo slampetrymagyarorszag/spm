@@ -2,7 +2,9 @@ export const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   title, accentColor, contactEmail,
   "logoUrl": logo.asset->url,
   nav[]{ label, href },
-  social, impressum, home, monthlyContest, emails,
+  social,
+  impressum{ orgName, address, email, taxNumber, annualReportsUrl, annualReports[]{ label, "fileUrl": file.asset->url } },
+  home, monthlyContest, emails,
   championshipCtaEnabled, championshipCtaLabel, championshipCtaUrl, championshipCtaFrom, championshipCtaTo
 }`;
 

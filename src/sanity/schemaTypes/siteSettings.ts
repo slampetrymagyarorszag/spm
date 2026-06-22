@@ -107,9 +107,22 @@ export const siteSettings = defineType({
       description: 'A lábléc impresszum blokkja.',
       fields: [
         defineField({ name: 'orgName', title: 'Egyesület neve', type: 'string', initialValue: 'Slam Poetry Magyarország Egyesület' }),
-        defineField({ name: 'address', title: 'Székhely / cím', type: 'text', rows: 2, description: 'Hol található az egyesület (székhely).' }),
+        defineField({ name: 'address', title: 'Székhely / cím', type: 'text', rows: 2, description: 'Hol található az egyesület (székhely). Megjelenik a lábléc impresszumában.' }),
+        defineField({ name: 'email', title: 'Egyesületi email', type: 'string', description: 'Az egyesület elérhetősége (megjelenik a lábléc impresszumában). Pl. egyesulet@slampoetry.hu' }),
         defineField({ name: 'taxNumber', title: 'Adószám / nyilvántartási szám (opcionális)', type: 'string' }),
-        defineField({ name: 'annualReportsUrl', title: 'Éves beszámolók linkje', type: 'url', description: 'Link az egyesület éves beszámolóihoz.' }),
+        defineField({ name: 'annualReportsUrl', title: 'Éves beszámolók linkje (régi, opcionális)', type: 'url', description: 'Egyetlen külső link. Inkább az alábbi „Éves beszámolók (PDF-ek)" listát használd — oda fájlokat tölthetsz fel.' }),
+        defineField({
+          name: 'annualReports', title: 'Éves beszámolók (PDF-ek)', type: 'array',
+          description: 'Töltsd fel ide az éves beszámolókat PDF-ben. Minden évhez egy elem: adj egy címet (pl. „2021") és tölts fel egy fájlt. Az Egyesület oldalon letölthető listaként jelennek meg.',
+          of: [{
+            type: 'object',
+            fields: [
+              defineField({ name: 'label', title: 'Cím / év', type: 'string', description: 'Pl. „2021-es beszámoló" vagy „2021".', validation: (r) => r.required() }),
+              defineField({ name: 'file', title: 'PDF fájl', type: 'file', options: { accept: '.pdf' } }),
+            ],
+            preview: { select: { title: 'label' } },
+          }],
+        }),
       ],
     }),
     defineField({ name: 'championshipCtaEnabled', title: 'Országos bajnokság CTA — bekapcsolva', type: 'boolean', initialValue: false }),
