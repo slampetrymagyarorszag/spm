@@ -31,7 +31,7 @@ A változókat a **Vercel dashboard → a projekt → Settings → Environment V
 | `CONTACT_EMAIL` | `contest@slampoetry.hu` (opcionális, ez az alap) |
 | `MAIL_FROM` | `Slam Poetry <no-reply@slampoetry.hu>` (a Resend-nél hitelesített domain) |
 | `RESEND_API_KEY` | **később**, amikor megvan (a kapcsolat/jelentkezés űrlapokhoz; az esemény-tipp NEM ezt használja) |
-| `SANITY_FORM_TOKEN` | az esemény-tipp űrlaphoz: egy **külön, írásra jogosult** Sanity token. A beküldés ezzel hoz létre „Beküldött esemény" dokumentumot a Studióban. |
+| `SANITY_FORM_TOKEN` | **kötelező a beküldős űrlapokhoz**: egy **külön, írásra jogosult (Editor)** Sanity token. EZ írja a Sanitybe az összes látogatói beküldést (esemény-tipp, slammer-jelentkezés, slammer-módosítási kérés, slam klub), a jelentkezés-naplót (havi klub / bajnokság), és ezzel hoz létre hírt a Facebook-import is. Nélküle ezek az űrlapok nem működnek (az emailes értesítés igen). |
 | `FB_PAGE_ACCESS_TOKEN` | **opcionális** — a Facebook hír-importhoz (Studio → „Facebook hír import”). Hosszú élettartamú **Page access token** a Slam Poetry Magyarország oldalhoz (Facebook fejlesztői app, `pages_read_engagement`). Token nélkül az import nem működik, de minden más igen. |
 | `FB_PAGE_ID` | **opcionális** — a Slam Poetry Magyarország Facebook-oldal numerikus azonosítója (a hír-import poszt-feloldásához). |
 
