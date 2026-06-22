@@ -75,9 +75,21 @@ const socials = [
       </div>
       <div>
         <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.transparency')}</p>
-        {imp.annualReportsUrl
-          ? <a href={imp.annualReportsUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-accent">{t(lang, 'footer.annualReports')} ↗</a>
-          : <span class="text-surface/40">{t(lang, 'footer.annualReportsSoon')}</span>}
+        {imp.annualReports?.some((r) => r.fileUrl) ? (
+          <ul class="space-y-1">
+            {imp.annualReports.filter((r) => r.fileUrl).map((r) => (
+              <li>
+                <a href={r.fileUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-accent">
+                  <span aria-hidden="true">↓</span> {r.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : imp.annualReportsUrl ? (
+          <a href={imp.annualReportsUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-accent">{t(lang, 'footer.annualReports')} ↗</a>
+        ) : (
+          <span class="text-surface/40">{t(lang, 'footer.annualReportsSoon')}</span>
+        )}
       </div>
     </div>
 
