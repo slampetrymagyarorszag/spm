@@ -2,6 +2,9 @@
 // Esemény-tipp űrlap: a látogató jelez egy slam eseményt, ami nincs a naptárban.
 // Kötelező: rendezvény neve, rövid leírás, Facebook esemény link. Email opcionális.
 import AnimatedText from './AnimatedText.astro';
+import { t } from '../i18n/ui';
+import { getLangFromUrl, type Lang } from '../i18n';
+const lang: Lang = getLangFromUrl(Astro.url);
 ---
 <section class="surface-dark relative overflow-hidden bg-ink text-surface">
   <!-- hangulati fény -->
@@ -11,51 +14,51 @@ import AnimatedText from './AnimatedText.astro';
   <div class="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2 md:items-center md:py-20">
     <div>
       <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
-        <span class="h-px w-8 bg-accent"></span><span class="inline-block">Hiányzik egy esemény?</span>
+        <span class="h-px w-8 bg-accent"></span><span class="inline-block">{t(lang, 'eventTip.missingEventEyebrow')}</span>
       </p>
       <h2 class="font-display text-4xl leading-[0.95] md:text-5xl">
-        <AnimatedText text="Van egy slam eseményed?" />
+        <AnimatedText text={t(lang, 'eventTip.heading')} />
       </h2>
       <p class="mt-4 max-w-md text-lg text-surface/75">
-        Láttál olyat, ami nincs fent a naptárban? Küldd el nekünk — átnézzük, és felvesszük a többi közé.
+        {t(lang, 'eventTip.lead')}
       </p>
       <div class="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-surface/70">
-        <strong class="text-surface/90">Mielőtt beküldöd:</strong> kérünk, ne adj meg sértő vagy valótlan tartalmat, és csak valódi, nyilvános eseményt linkelj. A beküldéseket moderáljuk — fenntartjuk a jogot, hogy indoklás nélkül ne tegyük közzé.
+        <strong class="text-surface/90">{t(lang, 'eventTip.beforeSubmit')}</strong> {t(lang, 'eventTip.moderationNotice')}
       </div>
     </div>
 
-    <form class="js-tip-form grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur md:p-7" aria-label="Esemény-tipp űrlap">
+    <form class="js-tip-form grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur md:p-7" aria-label={t(lang, 'eventTip.formAriaLabel')}>
       <div>
-        <label for="tip-name" class="mb-1 block text-sm text-surface/70">Rendezvény neve <span class="text-accent">*</span></label>
-        <input id="tip-name" type="text" name="eventName" required placeholder="pl. Slam Poetry Budapest — januári forduló"
+        <label for="tip-name" class="mb-1 block text-sm text-surface/70">{t(lang, 'eventTip.nameLabel')} <span class="text-accent">*</span></label>
+        <input id="tip-name" type="text" name="eventName" required placeholder={t(lang, 'eventTip.namePlaceholder')}
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
       <div>
-        <label for="tip-desc" class="mb-1 block text-sm text-surface/70">Mini leírás <span class="text-accent">*</span></label>
-        <textarea id="tip-desc" name="description" rows="3" required placeholder="Pár mondat: hol, mikor, miről szól?"
+        <label for="tip-desc" class="mb-1 block text-sm text-surface/70">{t(lang, 'eventTip.descLabel')} <span class="text-accent">*</span></label>
+        <textarea id="tip-desc" name="description" rows="3" required placeholder={t(lang, 'eventTip.descPlaceholder')}
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent"></textarea>
       </div>
       <div>
-        <label for="tip-fb" class="mb-1 block text-sm text-surface/70">Facebook esemény link <span class="text-accent">*</span></label>
-        <input id="tip-fb" type="url" name="facebookUrl" required placeholder="https://www.facebook.com/events/…"
+        <label for="tip-fb" class="mb-1 block text-sm text-surface/70">{t(lang, 'eventTip.fbLabel')} <span class="text-accent">*</span></label>
+        <input id="tip-fb" type="url" name="facebookUrl" required placeholder={t(lang, 'eventTip.fbPlaceholder')}
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
       <div>
-        <label for="tip-email" class="mb-1 block text-sm text-surface/70">Email <span class="text-surface/40">(opcionális, ha visszajeleznénk)</span></label>
-        <input id="tip-email" type="email" name="email" placeholder="te@example.hu"
+        <label for="tip-email" class="mb-1 block text-sm text-surface/70">{t(lang, 'eventTip.emailLabel')} <span class="text-surface/40">{t(lang, 'eventTip.emailOptional')}</span></label>
+        <input id="tip-email" type="email" name="email" placeholder={t(lang, 'eventTip.emailPlaceholder')}
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
 
       <label class="flex items-start gap-3 text-sm text-surface/75">
         <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
-        <span>Valódi, nyilvános eseményt küldök be, nem sértő vagy valótlan tartalommal. Tudomásul veszem, hogy a szervezők dönthetnek a közzétételről.</span>
+        <span>{t(lang, 'eventTip.consentText')}</span>
       </label>
 
       <!-- honeypot -->
       <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
 
-      <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Beküldöm az eseményt</button>
-      <p class="js-tip-status text-sm" role="status" aria-live="polite"></p>
+      <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'eventTip.submit')}</button>
+      <p class="js-tip-status text-sm" role="status" aria-live="polite" data-sending={t(lang, 'form.statusSending')} data-ok={t(lang, 'form.successEventTip')} data-err={t(lang, 'form.statusError')} data-neterr={t(lang, 'form.statusNetworkError')}></p>
     </form>
   </div>
 </section>
@@ -69,7 +72,7 @@ import AnimatedText from './AnimatedText.astro';
       e.preventDefault();
       const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
       btn.disabled = true;
-      status.textContent = 'Küldés…';
+      status.textContent = status.dataset.sending ?? 'Küldés…';
       status.style.color = '';
       const payload: Record<string, any> = Object.fromEntries(new FormData(f).entries());
       try {
@@ -80,15 +83,15 @@ import AnimatedText from './AnimatedText.astro';
         });
         const json = await res.json();
         if (res.ok && json.ok) {
-          status.textContent = 'Köszönjük a tippet! Hamarosan átnézzük.';
+          status.textContent = status.dataset.ok ?? 'Köszönjük a tippet! Hamarosan átnézzük.';
           status.style.color = '#7CFFB2';
           f.reset();
         } else {
-          status.textContent = json.error ?? 'Hiba történt.';
+          status.textContent = json.error ?? status.dataset.err ?? 'Hiba történt.';
           status.style.color = '#ff8da1';
         }
       } catch {
-        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.textContent = status.dataset.neterr ?? 'Hálózati hiba. Próbáld újra.';
         status.style.color = '#ff8da1';
       } finally {
         btn.disabled = false;

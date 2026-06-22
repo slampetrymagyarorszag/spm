@@ -1,54 +1,55 @@
 ---
 // Országos bajnokság jelentkezés. Mezők: név, email, művésznév, eddigi eredmények,
 // és melyik előválogató nap nem megfelelő. A beosztás sorsolással alakul.
+import { t } from '../i18n/ui';
+import { getLangFromUrl, type Lang } from '../i18n';
 interface Props { eventSlug: string; deadline?: string }
 const { eventSlug, deadline } = Astro.props;
+const lang: Lang = getLangFromUrl(Astro.url);
 ---
 <div class="my-8 rounded-2xl border border-accent/40 bg-accent/5 p-6 md:p-7">
-  <h2 class="font-display text-2xl">Jelentkezés az országos bajnokságra</h2>
-  {deadline && <p class="mt-1 text-sm text-muted">Jelentkezési határidő: {new Date(deadline).toLocaleDateString('hu-HU')}</p>}
+  <h2 class="font-display text-2xl">{t(lang, 'championship.heading')}</h2>
+  {deadline && <p class="mt-1 text-sm text-muted">{t(lang, 'championship.deadline')}: {new Date(deadline).toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'en-GB')}</p>}
 
-  <form class="js-champ-form mt-5 grid gap-4" aria-label="Bajnoki jelentkezési űrlap" data-event={eventSlug}>
+  <form class="js-champ-form mt-5 grid gap-4" aria-label={t(lang, 'championship.formAriaLabel')} data-event={eventSlug}>
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
-        <label for="ch-name" class="mb-1 block text-sm text-ink/70">Név <span class="text-accent">*</span></label>
+        <label for="ch-name" class="mb-1 block text-sm text-ink/70">{t(lang, 'championship.nameLabel')} <span class="text-accent">*</span></label>
         <input id="ch-name" type="text" name="name" required class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
       </div>
       <div>
-        <label for="ch-email" class="mb-1 block text-sm text-ink/70">Email <span class="text-accent">*</span></label>
+        <label for="ch-email" class="mb-1 block text-sm text-ink/70">{t(lang, 'championship.emailLabel')} <span class="text-accent">*</span></label>
         <input id="ch-email" type="email" name="email" required class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
       </div>
     </div>
 
     <div>
-      <label for="ch-stage" class="mb-1 block text-sm text-ink/70">Művésznév <span class="text-accent">*</span></label>
+      <label for="ch-stage" class="mb-1 block text-sm text-ink/70">{t(lang, 'championship.stageNameLabel')} <span class="text-accent">*</span></label>
       <input id="ch-stage" type="text" name="stageName" required class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
     </div>
 
     <div>
-      <label for="ch-ach" class="mb-1 block text-sm text-ink/70">Eddigi eredményeid <span class="text-ink/40">(ha vannak)</span></label>
-      <textarea id="ch-ach" name="achievements" rows="3" placeholder="pl. helyezések, döntők, fellépések…" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent"></textarea>
+      <label for="ch-ach" class="mb-1 block text-sm text-ink/70">{t(lang, 'championship.achievementsLabel')} <span class="text-ink/40">{t(lang, 'championship.achievementsOptional')}</span></label>
+      <textarea id="ch-ach" name="achievements" rows="3" placeholder={t(lang, 'championship.achievementsPlaceholder')} class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent"></textarea>
     </div>
 
     <div>
-      <label for="ch-day" class="mb-1 block text-sm text-ink/70">Van olyan előválogató nap, ami számodra megoldhatatlan? <span class="text-ink/40">(opcionális)</span></label>
-      <textarea id="ch-day" name="unavailableDay" rows="2" placeholder="Csak akkor írd ide, ha tényleg nincs rá mód — pl. „a hétfői időpont nem fér bele”." class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent"></textarea>
+      <label for="ch-day" class="mb-1 block text-sm text-ink/70">{t(lang, 'championship.unavailableDayLabel')} <span class="text-ink/40">{t(lang, 'championship.unavailableDayOptional')}</span></label>
+      <textarea id="ch-day" name="unavailableDay" rows="2" placeholder={t(lang, 'championship.unavailableDayPlaceholder')} class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent"></textarea>
     </div>
 
-    <div class="rounded-xl border border-ink/10 bg-ink/[0.03] p-4 text-sm text-ink/70">
-      Az előválogató napokra a végleges beosztást <strong>sorsolással</strong> alakítjuk ki. Ha valamelyik nap számodra teljesen megoldhatatlan, kérjük jelezd fent — de csak akkor, ha tényleg nincs rá mód. A jelzéseket lehetőség szerint figyelembe vesszük, a sorsolás eredménye azonban a mérvadó.
-    </div>
+    <div class="rounded-xl border border-ink/10 bg-ink/[0.03] p-4 text-sm text-ink/70" set:html={t(lang, 'championship.drawNotice')} />
 
     <label class="flex items-start gap-3 text-sm text-ink/75">
       <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
-      <span>A megadott adataim valósak, és tudomásul veszem a sorsolásos beosztás feltételeit.</span>
+      <span>{t(lang, 'championship.consentText')}</span>
     </label>
 
     <!-- honeypot -->
     <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
 
-    <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">Jelentkezem a bajnokságra</button>
-    <p class="js-champ-status text-sm" role="status" aria-live="polite"></p>
+    <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'championship.submit')}</button>
+    <p class="js-champ-status text-sm" role="status" aria-live="polite" data-sending={t(lang, 'form.statusSending')} data-ok={t(lang, 'form.successChampionship')} data-err={t(lang, 'form.statusError')} data-neterr={t(lang, 'form.statusNetworkError')}></p>
   </form>
 </div>
 <script>
@@ -61,7 +62,7 @@ const { eventSlug, deadline } = Astro.props;
       e.preventDefault();
       const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
       btn.disabled = true;
-      status.textContent = 'Küldés…';
+      status.textContent = status.dataset.sending ?? 'Küldés…';
       status.style.color = '';
       const payload: Record<string, any> = {
         ...Object.fromEntries(new FormData(f).entries()),
@@ -76,15 +77,15 @@ const { eventSlug, deadline } = Astro.props;
         });
         const json = await res.json();
         if (res.ok && json.ok) {
-          status.textContent = 'Köszönjük a jelentkezést! Hamarosan jelentkezünk a részletekkel.';
+          status.textContent = status.dataset.ok ?? 'Köszönjük a jelentkezést! Hamarosan jelentkezünk a részletekkel.';
           status.style.color = 'green';
           f.reset();
         } else {
-          status.textContent = json.error ?? 'Hiba történt.';
+          status.textContent = json.error ?? status.dataset.err ?? 'Hiba történt.';
           status.style.color = 'crimson';
         }
       } catch {
-        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.textContent = status.dataset.neterr ?? 'Hálózati hiba. Próbáld újra.';
         status.style.color = 'crimson';
       } finally {
         btn.disabled = false;

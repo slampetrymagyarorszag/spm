@@ -30,7 +30,7 @@ const lang: Lang = getLangFromUrl(Astro.url);
 
     <div class="sm:col-span-2">
       <button type="submit" class="rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'events.submitClub')}</button>
-      <p class="js-club-status mt-2 text-sm" role="status" aria-live="polite"></p>
+      <p class="js-club-status mt-2 text-sm" role="status" aria-live="polite" data-sending={t(lang, 'form.statusSending')} data-ok={t(lang, 'form.successClub')} data-err={t(lang, 'form.statusError')} data-neterr={t(lang, 'form.statusNetworkError')}></p>
     </div>
   </form>
 </div>
@@ -43,21 +43,21 @@ const lang: Lang = getLangFromUrl(Astro.url);
     f.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = f.querySelector('button[type=submit]') as HTMLButtonElement;
-      btn.disabled = true; status.textContent = 'Küldés…'; status.style.color = '';
+      btn.disabled = true; status.textContent = status.dataset.sending ?? 'Küldés…'; status.style.color = '';
       const payload: Record<string, any> = Object.fromEntries(new FormData(f).entries());
       try {
         const res = await fetch('/api/slam-club', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const json = await res.json();
         if (res.ok && json.ok) {
-          status.textContent = 'Köszönjük! Átnézzük, és hamarosan felkerül.';
+          status.textContent = status.dataset.ok ?? 'Köszönjük! Átnézzük, és hamarosan felkerül.';
           status.style.color = '#7CFFB2';
           f.reset();
         } else {
-          status.textContent = json.error ?? 'Hiba történt.';
+          status.textContent = json.error ?? status.dataset.err ?? 'Hiba történt.';
           status.style.color = '#ff8da1';
         }
       } catch {
-        status.textContent = 'Hálózati hiba. Próbáld újra.';
+        status.textContent = status.dataset.neterr ?? 'Hálózati hiba. Próbáld újra.';
         status.style.color = '#ff8da1';
       } finally {
         btn.disabled = false;
