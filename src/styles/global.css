@@ -41,7 +41,31 @@ html {
   font-family: var(--font-sans);
   color: var(--page-fg);
   background: var(--page-bg);
+  /* Mobilon semmi ne lógjon ki vízszintesen (a `clip` nem töri a sticky fejlécet). */
+  overflow-x: clip;
 }
+
+/* A natív szürke koppintás-villanás helyett saját, tisztább visszajelzés. */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Érintőképernyőn nincs hover, ezért az :active ad azonnali „lenyomás" visszajelzést
+   minden kattintható elemen — így a felület élőnek, reszponzívnak érződik. */
+@media (hover: none) {
+  a:active, button:active, [role="button"]:active, summary:active {
+    opacity: 0.6;
+    transition: opacity 0.05s ease;
+  }
+}
+
+/* iOS biztonságos zónák (notch / home indicator) — a viewport-fit=cover-rel együtt:
+   a lábléc alja ne csússzon a home indicator alá. */
+@supports (padding: env(safe-area-inset-bottom)) {
+  footer { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* A mobil hero sötét füst-háttere csak sötét módban — világos módban a hero
+   szövege sötét, így a sötét háttér olvashatatlan lenne. */
+html.light .mobile-hero-bg { display: none !important; }
 
 /* Téma-aware dramatikus szekció: sötétben sötét, világosban világos. */
 .surface-dark { background-color: var(--sd-bg); color: var(--sd-fg); }

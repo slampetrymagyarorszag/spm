@@ -58,10 +58,19 @@ export default function MediaFan({ videos, labels }: { videos: FanVideo[]; label
   const [centerIndex, setCenterIndex] = useState(needsPagination ? HALF : totalCards >> 1);
   const [lightbox, setLightbox] = useState<FanVideo | null>(null);
   const [reduced, setReduced] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
+
+  // Mobilon és reduced-motion esetén nincs legyező — ujjal lapozható kártyasor.
+  const simpleRow = reduced || isMobile;
 
   const getVisibleMap = useCallback(
     (center: number) => {
@@ -91,7 +100,7 @@ export default function MediaFan({ videos, labels }: { videos: FanVideo[]; label
   );
 
   useEffect(() => {
-    if (reduced) return;
+    if (simpleRow) return;
     const container = containerRef.current;
     if (!container || !totalCards) return;
 
@@ -230,7 +239,7 @@ export default function MediaFan({ videos, labels }: { videos: FanVideo[]; label
       window.removeEventListener("resize", onResize);
       if (leaveTimer) clearTimeout(leaveTimer);
     };
-  }, [centerIndex, totalCards, getVisibleMap, needsPagination, reduced]);
+  }, [centerIndex, totalCards, getVisibleMap, needsPagination, simpleRow]);
 
   // Esc zárja a lightboxot.
   useEffect(() => {
@@ -255,8 +264,8 @@ export default function MediaFan({ videos, labels }: { videos: FanVideo[]; label
     </>
   );
 
-  // Reduced-motion / hozzáférhető fallback: vízszintesen görgethető kártyasor.
-  if (reduced) {
+  // Mobilon / reduced-motion esetén: ujjal görgethető (snap) kártyasor a legyező helyett.
+  if (simpleRow) {
     return (
       <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4">
         {videos.map((v, i) => (

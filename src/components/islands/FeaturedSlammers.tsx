@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type FeaturedItem = {
   name: string;
@@ -7,10 +7,15 @@ export type FeaturedItem = {
   photoUrl?: string;
 };
 
-// Interaktív, vízszintesen kitáruló slammer-galéria (hoverre/fókuszra kinyílik a panel,
-// kattintásra a profilra navigál). A InteractiveSelector ötlet alapján, a brandhez igazítva.
+// Interaktív, vízszintesen kitáruló slammer-galéria. Desktopon hoverre nyílik és
+// kattintásra a profilra navigál. Érintőképernyőn KÉT lépés: az első koppintás
+// kibontja a panelt (megmutatja az arcot + nevet), a második megnyitja a profilt.
 export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: FeaturedItem[]; lang?: 'hu' | 'en' }) {
   const [active, setActive] = useState(0);
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(hover: none)').matches);
+  }, []);
   if (!slammers.length) return null;
 
   return (
@@ -21,8 +26,9 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
           <a
             key={s.slug}
             href={lang === 'en' ? `/en/slammerek/${s.slug}` : `/slammerek/${s.slug}`}
-            onMouseEnter={() => setActive(i)}
+            onMouseEnter={() => { if (!isTouch) setActive(i); }}
             onFocus={() => setActive(i)}
+            onClick={(e) => { if (isTouch && !isActive) { e.preventDefault(); setActive(i); } }}
             aria-label={s.name}
             className="group relative block overflow-hidden rounded-xl outline-none ring-accent transition-[flex-grow] duration-700 ease-out focus-visible:ring-2"
             style={{ flex: isActive ? '7 1 0%' : '1 1 0%', minWidth: 56 }}
@@ -66,6 +72,11 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
                 >
                   {s.hometown}
                 </p>
+              )}
+              {isTouch && isActive && (
+                <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-xs font-semibold text-ink">
+                  {lang === 'en' ? 'Open profile →' : 'Megnyitom →'}
+                </span>
               )}
             </div>
 

@@ -35,9 +35,13 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
 <ScrollMic />
 <!-- Hero -->
 <section data-mic-dark class="surface-dark relative overflow-hidden bg-ink text-surface">
-  <div class="relative z-10 mx-auto max-w-6xl px-4 py-28 md:py-36">
+  <!-- Mobil hangulat-háttér (Higgsfield-füst). Csak SÖTÉT módban + mobilon: világos
+       módban a hero szövege sötét, ezért ott nem mutatjuk (olvashatóság). -->
+  <img src="/hero-mobile-bg.webp" alt="" aria-hidden="true" loading="eager" fetchpriority="high" class="mobile-hero-bg pointer-events-none absolute inset-0 h-full w-full object-cover opacity-70 md:hidden" />
+  <div class="mobile-hero-bg pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-ink/30 md:hidden"></div>
+  <div class="relative z-10 mx-auto max-w-6xl px-4 py-20 sm:py-28 md:py-36">
     <span class="sticker mb-6">{heroSticker}</span>
-    <h1 class="font-display text-6xl md:text-8xl leading-[0.9] max-w-3xl">{heroTitle}</h1>
+    <h1 class="font-display text-5xl sm:text-6xl md:text-8xl leading-[0.9] max-w-3xl">{heroTitle}</h1>
     <p class="mt-5 max-w-xl text-lg text-surface/80">{heroLead}</p>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href={primaryCtaHref} class="rounded-lg bg-accent px-6 py-3 font-semibold text-ink hover:opacity-90">{primaryCtaLabel}</a>
@@ -59,6 +63,7 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
   ) : (
     <div>{upcoming.map((e: any) => <EventCard event={e} lang={lang} />)}</div>
   )}
+  <a href={localizedPath('/esemenyek', lang)} class="mt-8 block text-center text-sm uppercase tracking-wide text-accent hover:underline sm:hidden">{t(lang, 'home.allEvents')}</a>
 </section>
 
 <!-- Slammerek -->
@@ -73,6 +78,7 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
     ) : (
       <FeaturedSlammers slammers={featuredSlammers} lang={lang} client:load />
     )}
+    <a href={localizedPath('/slammerek', lang)} class="mt-8 block text-center text-sm uppercase tracking-wide text-accent hover:underline sm:hidden">{t(lang, 'home.allSlammers')}</a>
   </div>
 </section>
 
@@ -87,6 +93,7 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
   ) : (
     <NewsTicker posts={latestPosts} lang={lang} />
   )}
+  <a href={localizedPath('/hirek', lang)} class="mx-auto mt-8 block max-w-6xl px-4 text-center text-sm uppercase tracking-wide text-accent hover:underline sm:hidden">{t(lang, 'home.allNews')}</a>
 </section>
 
 <!-- Közösségi hangulat-band: valódi slam-est fotó + CTA (mindig sötét) -->

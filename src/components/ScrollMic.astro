@@ -22,8 +22,12 @@
     -webkit-mask-image: radial-gradient(60% 56% at 60% 50%, #000 20%, rgba(0,0,0,0.35) 60%, transparent 88%);
     mask-image: radial-gradient(60% 56% at 60% 50%, #000 20%, rgba(0,0,0,0.35) 60%, transparent 88%);
   }
-  @media (max-width: 768px) {
-    .scroll-mic { display: none; }
+  /* Mobilon is megjelenik a görgő mikrofon — de diszkréten (a JS halványítja),
+     a jobb szélre húzva, hogy ne menjen a szöveg olvashatóságának rovására. */
+  @media (max-width: 767px) {
+    /* Kisebb, feljebb húzott akcentus — a hero jobb oldalán marad, nem lóg az alatta
+       lévő (világos) szekcióba, és nem rontja az olvashatóságot. */
+    .scroll-mic { width: 62vw; height: 72vh; }
   }
 </style>
 <script>
@@ -62,6 +66,10 @@
     }
 
     const darks = Array.from(document.querySelectorAll('[data-mic-dark]'));
+
+    // Mobilon a mikrofon halványabb (háttér-akcentus, nem dominál) — az olvashatóságért.
+    const mqMobile = window.matchMedia('(max-width: 767px)');
+    const onOpacity = () => (mqMobile.matches ? '0.32' : '1');
 
     // A canvas belső felbontása a megjelenített mérethez + devicePixelRatio.
     function sizeCanvas() {
@@ -107,7 +115,7 @@
         draw(idx);
         lastIdx = idx;
       }
-      canvas.style.opacity = darkVisible() ? '1' : '0';
+      canvas.style.opacity = darkVisible() ? onOpacity() : '0';
     }
     function onScroll() {
       if (!raf) raf = requestAnimationFrame(update);
