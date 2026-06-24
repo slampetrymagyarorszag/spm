@@ -18,9 +18,14 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
   }, []);
   if (!slammers.length) return null;
 
+  // Mobilon az akkordeon zsúfolt: 11 csempéből az aktív panel alig kap helyet, és a
+  // „Megnyitom" levágódik. Érintőn ezért csak az első néhányat mutatjuk — a többi az
+  // „Összes slammer" oldalon érhető el. Desktopon marad a teljes sor.
+  const list = isTouch ? slammers.slice(0, 4) : slammers;
+
   return (
     <div className="flex h-[360px] w-full gap-2 overflow-hidden md:h-[440px]">
-      {slammers.map((s, i) => {
+      {list.map((s, i) => {
         const isActive = active === i;
         return (
           <a
@@ -35,7 +40,7 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
               // Érintőn az aktív panel domináns (hogy a teljes arc + név + „Megnyitom" elférjen),
               // a többi vékony sliver. Desktopon a finomabb 7:1 arány marad.
               flex: isActive ? (isTouch ? '22 1 0%' : '7 1 0%') : '1 1 0%',
-              minWidth: isActive ? undefined : (isTouch ? 20 : 56),
+              minWidth: isActive ? undefined : (isTouch ? 38 : 56),
             }}
           >
             {s.photoUrl && (
