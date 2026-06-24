@@ -1,6 +1,9 @@
 ---
+// astro-portabletext a link-annotációt `node.markDef`-ben adja át (nem `node.href`-ben).
+// Régről maradt egy `node.href` olvasás, ami mindig undefined volt → minden inline link
+// `#`-re esett vissza (nem volt kattintható). A markDef.href a helyes forrás.
 const { node } = Astro.props;
-const href = node?.href ?? '#';
+const href = node?.markDef?.href ?? node?.href ?? '#';
 const external = /^https?:/i.test(href);
 ---
 <a
