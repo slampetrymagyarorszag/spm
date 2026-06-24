@@ -21,7 +21,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     'common.readMore': 'Tovább',
     'common.watchOnYoutube': 'Megnézem YouTube-on',
     'error404.title': 'Az oldal nem található',
-    'error404.heading': 'Ez a vers nem rímel',
+    'error404.heading': 'Ez még slamnek is rossz',
     'error404.lead': 'A keresett oldal nem található — talán átköltözött, vagy soha nem létezett. De a színpad még áll.',
     'error404.home': 'Vissza a főoldalra',
     'common.close': 'Bezárás',
