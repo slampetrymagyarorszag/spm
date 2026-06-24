@@ -59,7 +59,7 @@ const fmt = (d: string) =>
   /* Mobilon: nincs automatikus futás — ujjal lapozható (snap), a duplikátumok és a
      szél-fade elrejtve. */
   @media (max-width: 767px) {
-    .ticker { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .ticker { overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .ticker::-webkit-scrollbar { display: none; }
     .ticker-track { animation: none !important; }
     .ticker-dup { display: none; }

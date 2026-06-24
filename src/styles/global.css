@@ -44,6 +44,16 @@ html {
   /* Mobilon semmi ne lógjon ki vízszintesen (a `clip` nem töri a sticky fejlécet). */
   overflow-x: clip;
 }
+/* iOS Safarin a `html` önmagában nem mindig fogja meg a vízszintes görgetést — a body-t is
+   lezárjuk, és semmi ne legyen szélesebb a látómezőnél. */
+body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+/* Cikk-törzs (Portable Text): a beágyazott médiák sose lógjanak ki a tartalom szélén túl. */
+.prose-spm :is(img, iframe, video, table, pre) {
+  max-width: 100%;
+}
 
 /* A natív szürke koppintás-villanás helyett saját, tisztább visszajelzés. */
 * { -webkit-tap-highlight-color: transparent; }

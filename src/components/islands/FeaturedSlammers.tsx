@@ -31,7 +31,12 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
             onClick={(e) => { if (isTouch && !isActive) { e.preventDefault(); setActive(i); } }}
             aria-label={s.name}
             className="group relative block overflow-hidden rounded-xl outline-none ring-accent transition-[flex-grow] duration-700 ease-out focus-visible:ring-2"
-            style={{ flex: isActive ? '7 1 0%' : '1 1 0%', minWidth: 56 }}
+            style={{
+              // Érintőn az aktív panel domináns (hogy a teljes arc + név + „Megnyitom" elférjen),
+              // a többi vékony sliver. Desktopon a finomabb 7:1 arány marad.
+              flex: isActive ? (isTouch ? '22 1 0%' : '7 1 0%') : '1 1 0%',
+              minWidth: isActive ? undefined : (isTouch ? 20 : 56),
+            }}
           >
             {s.photoUrl && (
               <img
@@ -74,7 +79,7 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
                 </p>
               )}
               {isTouch && isActive && (
-                <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-xs font-semibold text-ink">
+                <span className="mt-2 inline-block whitespace-nowrap rounded-full bg-accent px-3 py-1 text-xs font-semibold text-ink">
                   {lang === 'en' ? 'Open profile →' : 'Megnyitom →'}
                 </span>
               )}
