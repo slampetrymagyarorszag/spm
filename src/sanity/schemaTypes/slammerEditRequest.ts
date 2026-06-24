@@ -12,6 +12,10 @@ export const slammerEditRequest = defineType({
     defineField({
       name: 'removeRequest', title: '❗ Kéri, hogy ne szerepeljen az oldalon', type: 'boolean', readOnly: true, initialValue: false,
     }),
+    defineField({
+      name: 'activeRequest', title: 'Aktív slammernek jelölte magát', type: 'boolean', readOnly: true, initialValue: false,
+      description: 'A slammer bejelölte, hogy aktív. Ha igen, kapcsold BE az „Aktív slammer” mezőt a profilján — így az „Aktív slammerek” közé kerül.',
+    }),
     defineField({ name: 'bioChange', title: 'Kért bio-módosítás', type: 'text', rows: 5, readOnly: true }),
     defineField({ name: 'linksChange', title: 'Kért link-módosítás', type: 'text', rows: 3, readOnly: true }),
     defineField({ name: 'newPhoto', title: 'Beküldött új fotó', type: 'image', readOnly: true }),

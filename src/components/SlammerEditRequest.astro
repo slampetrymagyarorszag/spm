@@ -23,6 +23,15 @@ const lang: Lang = getLangFromUrl(Astro.url);
         <input type="hidden" name="slammerSlug" value={slammerSlug} />
         <input type="hidden" name="slammerName" value={slammerName} />
 
+        <!-- Hangsúlyos: aktív slammer jelölés (ez vezérli a Slammerek oldal „Aktív” csoportját) -->
+        <label class="flex items-start gap-3 rounded-xl border-2 border-accent bg-accent/10 p-4">
+          <input type="checkbox" name="activeSlammer" value="1" class="mt-0.5 h-5 w-5 accent-[var(--color-accent)]" />
+          <span>
+            <span class="block font-display text-base leading-tight">{t(lang, 'slammers.activeSelfLabel')}</span>
+            <span class="mt-1 block text-sm text-muted">{t(lang, 'slammers.activeSelfLead')}</span>
+          </span>
+        </label>
+
         <div>
           <label class="mb-1 block text-sm text-muted" for="se-bio">{t(lang, 'slammers.editBioLabel')}</label>
           <textarea id="se-bio" name="bioChange" rows="4" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" placeholder={t(lang, 'slammers.editBioPlaceholder')}></textarea>

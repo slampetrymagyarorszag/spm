@@ -9,6 +9,10 @@ export const slammerApplication = defineType({
   fields: [
     defineField({ name: 'realName', title: 'Név', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'stageName', title: 'Művésznév', type: 'string' }),
+    defineField({
+      name: 'isActive', title: 'Aktív slammernek jelölte magát', type: 'boolean', readOnly: true, initialValue: false,
+      description: 'A beküldő bejelölte, hogy jelenleg is aktívan slammel. Slammerré alakításkor az „Aktív slammer” jelölés átkerül a profilra.',
+    }),
     defineField({ name: 'photo', title: 'Fotó', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'description', title: 'Bemutatkozás', type: 'text', rows: 4 }),
     defineField({ name: 'youtubeUrl', title: 'YouTube link', type: 'url' }),

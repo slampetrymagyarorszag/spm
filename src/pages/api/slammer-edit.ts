@@ -31,6 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
     bioChange: String(form.get('bioChange') ?? ''),
     linksChange: String(form.get('linksChange') ?? ''),
     removeRequest: form.get('removeRequest'),
+    activeRequest: form.get('activeSlammer'),
     email: String(form.get('email') ?? ''),
     website: String(form.get('website') ?? ''),
     hasPhoto,
@@ -63,11 +64,13 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const remove = isConsented(fields.removeRequest);
+    const activeRequest = isConsented(fields.activeRequest);
     await writeClient.create({
       _type: 'slammerEditRequest',
       slammerName: fields.slammerName.trim().slice(0, 200),
       slammerSlug: fields.slammerSlug.trim().slice(0, 200),
       removeRequest: remove,
+      activeRequest,
       bioChange: fields.bioChange ? fields.bioChange.trim().slice(0, 3000) : undefined,
       linksChange: fields.linksChange ? fields.linksChange.trim().slice(0, 1000) : undefined,
       newPhoto: photoRef,
@@ -85,6 +88,7 @@ export const POST: APIRoute = async ({ request }) => {
           subject: `Slammer-módosítási kérés — ${fields.slammerName}`,
           html: `<h2>Módosítási kérés: ${esc(fields.slammerName)}</h2>
             ${remove ? '<p><strong>❗ A slammer kéri, hogy ne szerepeljen az oldalon.</strong></p>' : ''}
+            ${activeRequest ? '<p>✅ Aktív slammernek jelölte magát.</p>' : ''}
             ${fields.bioChange ? `<p><strong>Bio:</strong><br>${esc(fields.bioChange).replace(/\n/g, '<br>')}</p>` : ''}
             ${fields.linksChange ? `<p><strong>Linkek:</strong><br>${esc(fields.linksChange).replace(/\n/g, '<br>')}</p>` : ''}
             ${hasPhoto ? '<p>Új fotót is csatolt.</p>' : ''}

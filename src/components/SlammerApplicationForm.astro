@@ -52,6 +52,11 @@ const lang: Lang = getLangFromUrl(Astro.url);
         <input id="sa-email" type="email" name="email" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
 
+      <label class="flex items-start gap-3 rounded-xl border-2 border-accent bg-accent/10 p-4 text-surface">
+        <input type="checkbox" name="isActive" value="1" class="mt-0.5 h-5 w-5 accent-[var(--color-accent)]" />
+        <span class="font-display text-base leading-tight">{t(lang, 'slammers.activeSelfLabel')}</span>
+      </label>
+
       <label class="flex items-start gap-3 text-sm text-surface/75">
         <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
         <span>{t(lang, 'slammers.consentText')}</span>

@@ -9,6 +9,17 @@ const year = new Date().getFullYear();
 const imp = settings.impressum ?? {};
 const orgName = imp.orgName || 'Slam Poetry Magyarország Egyesület';
 
+// Ugyanazok a menüpontok, mint a fejlécben — a láblécben is elérhetők.
+const navItems = [
+  { key: 'nav.whatIsSlam', href: '/mi-az-a-slam-poetry' },
+  { key: 'nav.events', href: '/esemenyek' },
+  { key: 'nav.slammers', href: '/slammerek' },
+  { key: 'nav.news', href: '/hirek' },
+  { key: 'nav.media', href: '/mediatar' },
+  { key: 'nav.association', href: '/egyesulet' },
+  { key: 'nav.contact', href: '/kapcsolat' },
+];
+
 // A megadott alap-linkek; a Studio siteSettings.social felülírhatja őket.
 const socials = [
   { key: "facebook", label: "Facebook", url: s.facebook || "https://www.facebook.com/SlamPoetryHungary" },
@@ -58,6 +69,18 @@ const socials = [
         ))}
       </ul>
     </div>
+
+    <!-- Oldal-navigáció (a fejléc menüpontjai a láblécben is) -->
+    <nav aria-label={t(lang, 'footer.navHeading')} class="mt-10 border-t border-white/10 pt-8">
+      <p class="mb-3 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.navHeading')}</p>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2.5">
+        {navItems.map((item) => (
+          <li>
+            <a href={localizedPath(item.href, lang)} class="text-sm text-surface/70 transition hover:text-accent">{t(lang, item.key)}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
 
     <!-- Impresszum -->
     <div class="mt-10 grid gap-6 border-t border-white/10 pt-8 text-sm text-surface/70 sm:grid-cols-2 lg:grid-cols-3">

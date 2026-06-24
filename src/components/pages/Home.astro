@@ -6,7 +6,6 @@ import NewsTicker from '../NewsTicker.astro';
 import FeaturedSlammers from '../islands/FeaturedSlammers.tsx';
 import ChampionshipCta from '../ChampionshipCta.astro';
 import MonthlyContestButton from '../MonthlyContestButton.astro';
-import { localized } from '../../i18n/content';
 import { t } from '../../i18n/ui';
 import { localizedPath, type Lang } from '../../i18n';
 import type { SiteSettings } from '../../sanity/lib/api';
@@ -21,15 +20,20 @@ interface Props {
 const { upcoming, featuredSlammers, latestPosts, siteSettings, lang } = Astro.props;
 
 // Szerkeszthető hero-szövegek (siteSettings.home), alapértékekkel.
+// FONTOS: a heronál NEM a tartalmi magyar-fallbacket használjuk — ott az angol oldalon a
+// kitöltött magyar CMS-érték „nyerne" az üres `*En` mező miatt (ezért maradt magyar a hero).
+// Helyette: EN-en a `*En` mezőt nézzük, és ha üres, az ANGOL alapértéket mutatjuk (nem a magyart).
 const home = siteSettings.home ?? {};
-const heroSticker = localized(home, 'heroSticker', lang) || 'since 2006';
-const heroTitle = localized(home, 'heroTitle', lang) || (lang === 'en' ? 'Slam Poetry Hungary' : 'Slam Poetry Magyarország');
-const heroLead = localized(home, 'heroLead', lang) || (lang === 'en'
-  ? 'The living hub of the Hungarian slam poetry scene — events, slammers, news and media in one place.'
-  : 'A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.');
-const primaryCtaLabel = localized(home, 'primaryCtaLabel', lang) || (lang === 'en' ? 'Upcoming events' : 'Közelgő események');
+const pick = (field: string, en: string, hu: string) =>
+  (lang === 'en' ? ((home as any)[field + 'En'] || en) : ((home as any)[field] || hu));
+const heroSticker = pick('heroSticker', 'since 2006', 'since 2006');
+const heroTitle = pick('heroTitle', 'Slam Poetry Hungary', 'Slam Poetry Magyarország');
+const heroLead = pick('heroLead',
+  'The living hub of the Hungarian slam poetry scene — events, slammers, news and media in one place.',
+  'A magyar slam poetry színtér élő központja — események, slammerek, hírek és média egy helyen.');
+const primaryCtaLabel = pick('primaryCtaLabel', 'Upcoming events', 'Közelgő események');
 const primaryCtaHref = localizedPath(home.primaryCtaHref || '/esemenyek', lang);
-const secondaryCtaLabel = localized(home, 'secondaryCtaLabel', lang) || (lang === 'en' ? 'What is slam poetry?' : 'Mi az a slam poetry?');
+const secondaryCtaLabel = pick('secondaryCtaLabel', 'What is slam poetry?', 'Mi az a slam poetry?');
 const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-poetry', lang);
 ---
 <ScrollMic />

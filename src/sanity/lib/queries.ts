@@ -20,7 +20,7 @@ export const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0
 }`;
 
 export const SLAMMERS_QUERY = `*[_type == "slammer" && defined(slug.current)] | order(name asc){
-  _id, name, "slug": slug.current, hometown, photo
+  _id, name, "slug": slug.current, hometown, photo, active
 }`;
 export const SLAMMER_BY_SLUG_QUERY = `*[_type == "slammer" && slug.current == $slug][0]{
   _id, name, "slug": slug.current, hometown, photo, bio, achievements, videos, social,

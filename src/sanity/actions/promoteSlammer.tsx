@@ -36,6 +36,7 @@ export function promoteSlammerAction(props: any) {
           name,
           slug: { _type: 'slug', current: slug },
           featured: false,
+          active: !!doc.isActive,
         };
         if (doc.photo?.asset) {
           slammer.photo = {

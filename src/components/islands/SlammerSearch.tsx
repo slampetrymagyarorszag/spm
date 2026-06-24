@@ -9,6 +9,37 @@ export default function SlammerSearch({ slammers, lang = 'hu' }: { slammers: Sla
   const [q, setQ] = useState('');
   const filtered = filterSlammers(slammers, q);
   const hrefFor = (slug: string) => (lang === 'en' ? `/en/slammerek/${slug}` : `/slammerek/${slug}`);
+
+  // Két csoport: az „aktív” slammerek elöl (ABC sorrendben — a lekérdezés már név szerint
+  // rendez), utánuk a többi. Ha még senki sincs aktívnak jelölve, sima rácsot mutatunk.
+  const active = filtered.filter((s) => s.active);
+  const others = filtered.filter((s) => !s.active);
+  const grouped = active.length > 0;
+
+  const Card = (s: SlammerListItem) => (
+    <a key={s._id} href={hrefFor(s.slug)} className="group block">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
+        {s.photo && <img src={urlForImage(s.photo).width(400).height(533).url()} alt={s.name} loading="lazy" decoding="async" width={400} height={533} className="h-full w-full object-cover grayscale brightness-90 transition duration-500 group-hover:scale-105 group-hover:brightness-110" />}
+        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" style={{ background: '#14b8a6', mixBlendMode: 'color' }} />
+      </div>
+      <h3 className="mt-2 font-display text-lg group-hover:text-accent">{s.name}</h3>
+      {s.hometown && <p className="text-sm text-muted">{s.hometown}</p>}
+    </a>
+  );
+
+  const Grid = ({ items }: { items: SlammerListItem[] }) => (
+    <div className="grid gap-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {items.map(Card)}
+    </div>
+  );
+
+  const Heading = ({ text }: { text: string }) => (
+    <h2 className="mb-6 flex items-center gap-3 font-display text-2xl md:text-3xl">
+      <span className="h-px w-8 bg-accent" aria-hidden="true" />
+      {text}
+    </h2>
+  );
+
   return (
     <div>
       <input
@@ -21,19 +52,21 @@ export default function SlammerSearch({ slammers, lang = 'hu' }: { slammers: Sla
       />
       {filtered.length === 0 ? (
         <p className="text-muted">{t(lang, 'slammers.noResults')}</p>
-      ) : (
-        <div className="grid gap-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((s) => (
-            <a key={s._id} href={hrefFor(s.slug)} className="group block">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-ink/5">
-                {s.photo && <img src={urlForImage(s.photo).width(400).height(533).url()} alt={s.name} loading="lazy" decoding="async" width={400} height={533} className="h-full w-full object-cover grayscale brightness-90 transition duration-500 group-hover:scale-105 group-hover:brightness-110" />}
-                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-60" style={{ background: '#14b8a6', mixBlendMode: 'color' }} />
-              </div>
-              <h3 className="mt-2 font-display text-lg group-hover:text-accent">{s.name}</h3>
-              {s.hometown && <p className="text-sm text-muted">{s.hometown}</p>}
-            </a>
-          ))}
+      ) : grouped ? (
+        <div className="space-y-14">
+          <section>
+            <Heading text={t(lang, 'slammers.activeHeading')} />
+            <Grid items={active} />
+          </section>
+          {others.length > 0 && (
+            <section>
+              <Heading text={t(lang, 'slammers.otherHeading')} />
+              <Grid items={others} />
+            </section>
+          )}
         </div>
+      ) : (
+        <Grid items={others} />
       )}
     </div>
   );

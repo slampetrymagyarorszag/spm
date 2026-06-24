@@ -14,6 +14,10 @@ export const slammer = defineType({
       fields: [{ name: 'alt', type: 'string', title: 'Alt szöveg (akadálymentesség)' }],
     }),
     defineField({ name: 'hometown', title: 'Város', type: 'string' }),
+    defineField({
+      name: 'active', title: 'Aktív slammer', type: 'boolean', initialValue: false,
+      description: 'Ha BE van kapcsolva, a Slammerek oldalon az „Aktív slammerek” csoportba kerül (ABC sorrendben, elöl). A slammer maga is jelezheti a profilján a „módosítás” űrlapon.',
+    }),
     defineField({ name: 'featured', title: 'Kiemelt a főoldalon', type: 'boolean', initialValue: false, description: 'Bekapcsolva megjelenik a főoldal kiemelt slammer-galériájában (max 10).' }),
     defineField({ name: 'featuredOrder', title: 'Kiemelés sorrendje', type: 'number', description: 'Kisebb szám = előrébb. Üresen hagyva név szerint rendeződik.' }),
     defineField({ name: 'bio', title: 'Bemutatkozás', type: 'blockContent' }),

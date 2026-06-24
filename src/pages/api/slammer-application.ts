@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { sanityClient } from 'sanity:client';
-import { validateSlammerApplication } from '../../lib/validation';
+import { validateSlammerApplication, isConsented } from '../../lib/validation';
 import { getEmailSettings } from '../../sanity/lib/api';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc } from '../../lib/escape';
@@ -67,6 +67,7 @@ export const POST: APIRoute = async ({ request }) => {
       description: fields.description.trim().slice(0, 3000),
       youtubeUrl: fields.youtubeUrl.trim().slice(0, 500),
       submitterEmail: fields.email ? fields.email.trim().slice(0, 200) : undefined,
+      isActive: isConsented(form.get('isActive')),
       photo: { _type: 'image', asset: { _type: 'reference', _ref: asset._id } },
       submittedAt: new Date().toISOString(),
       approved: false,

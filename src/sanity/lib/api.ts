@@ -69,7 +69,7 @@ export async function getPostBySlug(client: Fetcher, slug: string): Promise<Post
   return (await client.fetch(POST_BY_SLUG_QUERY, { slug })) ?? null;
 }
 
-export type SlammerListItem = { _id: string; name: string; slug: string; hometown?: string; photo?: any };
+export type SlammerListItem = { _id: string; name: string; slug: string; hometown?: string; photo?: any; active?: boolean };
 export type Slammer = SlammerListItem & { bio?: any; bioEn?: any; achievements?: string[]; videos?: string[]; social?: { facebook?: string; instagram?: string } };
 
 import { SLAMMERS_QUERY, SLAMMER_BY_SLUG_QUERY, SLAMMERS_FEATURED_QUERY } from './queries';
