@@ -28,6 +28,7 @@ describe('validateSlammerApplication', () => {
   it('hiányzó művésznév is elfogadható (opcionális)', () => { expect(validateSlammerApplication({ ...ok, stageName: '' }).ok).toBe(true); });
   it('túl rövid bemutatkozás → hiba', () => { expect(validateSlammerApplication({ ...ok, description: 'hi' }).ok).toBe(false); });
   it('rossz YouTube link → hiba', () => { expect(validateSlammerApplication({ ...ok, youtubeUrl: 'nem' }).ok).toBe(false); });
+  it('hiányzó YouTube link is elfogadható (opcionális)', () => { expect(validateSlammerApplication({ ...ok, youtubeUrl: '' }).ok).toBe(true); });
   it('hiányzó consent → hiba', () => { expect(validateSlammerApplication({ ...ok, consent: false }).ok).toBe(false); });
 });
 

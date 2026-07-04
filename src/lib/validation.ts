@@ -51,7 +51,8 @@ export function validateSlammerApplication(input: SlammerApplicationInput): Vali
   if (!input.realName || input.realName.trim().length < 2) return { ok: false, error: 'A neved megadása kötelező.' };
   // Művésznév opcionális — ha nincs, a valódi név lesz a megjelenített név.
   if (!input.description || input.description.trim().length < 10) return { ok: false, error: 'Kérünk egy rövid bemutatkozást (legalább pár szó).' };
-  if (!input.youtubeUrl || !/^https?:\/\/\S+$/i.test(input.youtubeUrl.trim())) return { ok: false, error: 'Érvényes YouTube link szükséges (https://…).' };
+  // YouTube link opcionális — de ha megadják, legyen érvényes URL.
+  if (input.youtubeUrl && input.youtubeUrl.trim() !== '' && !/^https?:\/\/\S+$/i.test(input.youtubeUrl.trim())) return { ok: false, error: 'A YouTube link nem érvényes (https://…).' };
   if (input.email && !EMAIL_RE.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };
   if (!isConsented(input.consent)) return { ok: false, error: 'A beküldéshez el kell fogadnod a moderációs feltételeket.' };
   return { ok: true };

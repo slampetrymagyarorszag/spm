@@ -44,8 +44,8 @@ const lang: Lang = getLangFromUrl(Astro.url);
         <textarea id="sa-desc" name="description" rows="3" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent"></textarea>
       </div>
       <div>
-        <label for="sa-yt" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.youtubeLink')} <span class="text-accent">*</span></label>
-        <input id="sa-yt" type="url" name="youtubeUrl" required placeholder="https://youtu.be/…" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+        <label for="sa-yt" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.youtubeLink')} <span class="text-surface/40">({t(lang, 'form.optional')})</span></label>
+        <input id="sa-yt" type="url" name="youtubeUrl" placeholder="https://youtu.be/…" class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
       <div>
         <label for="sa-email" class="mb-1 block text-sm text-surface/70">{t(lang, 'form.email')} <span class="text-surface/40">({t(lang, 'form.optionalIfReply')})</span></label>
