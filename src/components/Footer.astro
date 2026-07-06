@@ -85,7 +85,8 @@ const socials = [
     <!-- Impresszum -->
     <div class="mt-10 grid gap-6 border-t border-white/10 pt-8 text-sm text-surface/70 sm:grid-cols-2 lg:grid-cols-3">
       <div>
-        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'footer.impressum')}</p>
+        <!-- Easter egg: a felirat egy rejtett impresszum-oldalra visz (csak innen elérhető). -->
+        <a href="/impresszum" class="mb-2 inline-block text-xs uppercase tracking-[0.2em] text-accent transition hover:text-surface">{t(lang, 'footer.impressum')}</a>
         <p class="font-display text-surface">{orgName}</p>
         {imp.address && <p class="mt-1 whitespace-pre-line">{imp.address}</p>}
         {imp.email && <a href={`mailto:${imp.email}`} class="mt-1 block hover:text-accent">{imp.email}</a>}

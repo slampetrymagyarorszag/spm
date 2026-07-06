@@ -1,0 +1,125 @@
+---
+// Rejtett easter egg: CSAK a lábléc „Impresszum" feliratából érhető el. Nincs a menüben,
+// nincs a sitemapben, noindex. Aki ideér, az szándékosan rákattintott.
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Egy átlagos hét a slampoetry.hu mögött. Valós(nak tűnő) kérések, enyhén kikerekítve.
+const panaszok = [
+  'Túl aktív slammer vagyok. Ne kerüljek ABC-sorrendben a lista aljára.',
+  'Én már nem slammelek. De azért rakj föl. És írd oda, hogy nem slammelek. De amúgy mégis.',
+  'Csinálok egy klubot. Igaz, csak félig slam. A másik fele mi? Ne foglalkozz vele.',
+  'Engem miért nem raktál föl? Felírhatnám magam a jelentkezőn keresztül, de az ciki. Küldd te. De ne úgy nézzek ki, mint aki jelentkezett.',
+  'A művészneveket tedd idézőjelbe. De az enyémet ne, mert az a rendes nevem. Amit egyébként művésznévként használok.',
+  'A fotóm ne legyen fekete-fehér. Tudom, hogy mindenkié az. Az enyém ne.',
+  'Beírtam egy linket a bemutatkozásomba. Ott van, lila, kerek. Nem visz sehova. Javítsd.',
+  'Nálam a régi oldal jön be. Nem néztem meg másik böngészőben. Nem törlöm a cache-t. Te csináld meg.',
+  'Mobilon ide-oda csúszik. Hol? Mindenhol. Melyik telefonon? Az enyémen.',
+  'A YouTube-linket miért kötelező? Nincs videóm. Sosem volt. De felírnám magam.',
+  'Két ember van a profilképemen. Igen, a másik a párom. Nem, másik képet nem küldök.',
+  'A 404-oldal szövege legyen viccesebb. De ne túl. De vicces. De komoly.',
+];
+
+const stab = [
+  {
+    nev: 'Hangyás Eszter',
+    szerep: 'Aki harmadszor is elolvassa',
+    leiras: 'Ő az, aki türelemmel szétszálazza, miért lehet valaki egyszerre aktív és nem aktív slammer. Amíg a türelem tart.',
+    betuk: 'HE',
+  },
+  {
+    nev: 'Mészáros Péter',
+    szerep: 'Aki hajnali kettőkor átnevez egy mezőt',
+    leiras: 'Ha a neved most idézőjelben van, valószínűleg ő tette oda. Bocsi. Vissza tudja venni, ha nagyon kell.',
+    betuk: 'MP',
+  },
+];
+---
+<BaseLayout title="Impresszum" noindex={true}>
+  <section class="surface-dark relative overflow-hidden bg-ink text-surface">
+    <!-- Robbanó agy háttér (Higgsfield) -->
+    <img
+      src="/impresszum-brain.webp"
+      alt=""
+      aria-hidden="true"
+      loading="eager"
+      class="pointer-events-none absolute left-1/2 top-0 w-[130%] max-w-none -translate-x-1/2 opacity-40 sm:w-[90%] md:w-[70%]"
+    />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/70 to-ink"></div>
+
+    <div class="relative z-10 mx-auto max-w-3xl px-4 pb-16 pt-24 text-center md:pt-32">
+      <p class="mb-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent">
+        <span class="h-px w-8 bg-accent"></span> A stáblista, amit senki sem kért
+      </p>
+      <h1 class="font-display text-6xl leading-[0.9] md:text-8xl">Impresszum</h1>
+      <p class="mx-auto mt-6 max-w-xl text-lg text-surface/80">
+        Egy komoly impresszumot kerestél, adószámmal meg székhellyel. Az fent van a láblécben.
+        Ez itt a másik. Amiről a slammereknek nem szólunk.
+      </p>
+    </div>
+  </section>
+
+  <!-- A sztori -->
+  <section class="mx-auto max-w-3xl px-4 py-16 md:py-20">
+    <div class="prose-spm max-w-none">
+      <p>
+        Ezt az oldalt ketten csináljuk. Eszter és Peti. És tényleg szeretjük, nehogy félreértsd.
+        De mielőtt egy új slammer felkerül a listára, elég sok minden történik a színfalak mögött.
+      </p>
+      <p>
+        Kép kell. Bio kell. El kell dönteni, hogy a becenév a keresztnév vagy egy külön művésznév,
+        és hogy a kettő közül melyik kerül idézőjelbe. Aztán jön a visszajelzés. Aztán a visszajelzés
+        visszajelzése. Aztán valaki azt írja, hogy mégse.
+      </p>
+    </div>
+
+    <h2 class="mt-12 mb-6 font-display text-2xl md:text-3xl">Egy átlagos hét, kérésekben</h2>
+    <ul class="grid gap-3 sm:grid-cols-2">
+      {panaszok.map((p) => (
+        <li class="rounded-2xl border border-ink/10 bg-ink/[0.03] p-4 text-[0.98rem] leading-snug">
+          <span class="mr-1 select-none font-display text-accent">„</span>{p}<span class="select-none font-display text-accent">”</span>
+        </li>
+      ))}
+    </ul>
+
+    <div class="prose-spm mt-12 max-w-none">
+      <p>
+        Szóval ha legközelebb betöltöd az oldalt és minden a helyén van, a név, a kép, a sorrend,
+        a kattintható link, akkor tudd: valahol Eszter épp harmadszor olvassa el ugyanazt a mondatot,
+        Peti meg átnevez egy mezőt a Sanityben, hajnali kettőkor.
+      </p>
+      <p>
+        Nem panaszkodunk. Jó, egy kicsit. De imádjuk csinálni. Most viszont menj vissza a színpadhoz,
+        és legközelebb inkább ne az impresszumra kattints.
+      </p>
+    </div>
+  </section>
+
+  <!-- A stáb -->
+  <section class="surface-dark bg-ink text-surface">
+    <div class="mx-auto max-w-4xl px-4 py-16 md:py-20">
+      <p class="mb-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent">
+        <span class="h-px w-8 bg-accent"></span> Akik szétrobbant aggyal, de csinálják
+      </p>
+      <div class="grid gap-6 sm:grid-cols-2">
+        {stab.map((s) => (
+          <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+            <div class="flex items-center gap-4">
+              <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent font-display text-xl text-ink">{s.betuk}</span>
+              <div>
+                <p class="font-display text-xl leading-tight">{s.nev}</p>
+                <p class="text-sm text-accent">{s.szerep}</p>
+              </div>
+            </div>
+            <p class="mt-4 text-surface/75">{s.leiras}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-12 text-center">
+        <a href="/" class="inline-block rounded-lg bg-accent px-6 py-3 font-semibold text-ink transition hover:opacity-90">
+          Vissza a színpadhoz
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -35,8 +35,8 @@ export default defineConfig({
       studioRouterHistory: 'hash',
     }),
     react(),
-    // A beágyazott Studio (/admin) ne kerüljön a sitemapbe.
-    sitemap({ filter: (page) => !page.includes('/admin') }),
+    // A beágyazott Studio (/admin) és a rejtett impresszum-easter-egg ne kerüljön a sitemapbe.
+    sitemap({ filter: (page) => !page.includes('/admin') && !page.includes('/impresszum') }),
   ],
 
   vite: { plugins: [tailwindcss()] },
