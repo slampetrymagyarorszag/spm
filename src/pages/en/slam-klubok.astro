@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClubsIndex from '../../components/pages/ClubsIndex.astro';
+import { getSlamClubs } from '../../sanity/lib/api';
+import { sanityClient } from 'sanity:client';
+const clubs = await getSlamClubs(sanityClient);
+---
+<BaseLayout title="Slam clubs">
+  <ClubsIndex clubs={clubs} lang="en" />
+</BaseLayout>

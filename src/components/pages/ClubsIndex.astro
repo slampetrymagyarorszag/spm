@@ -1,0 +1,30 @@
+---
+import PageHero from '../PageHero.astro';
+import SlamClubs from '../SlamClubs.astro';
+import HungaryMap from '../HungaryMap.astro';
+import SlamClubForm from '../SlamClubForm.astro';
+import { t } from '../../i18n/ui';
+import type { Lang } from '../../i18n';
+import type { SlamClub } from '../../sanity/lib/api';
+
+interface Props { clubs: SlamClub[]; lang: Lang }
+const { clubs, lang } = Astro.props;
+---
+<PageHero label={t(lang, 'slammers.clubsEyebrow')} title={t(lang, 'slammers.clubsTitle')} lead={t(lang, 'slammers.clubsLead')} />
+
+<section class="surface-dark relative overflow-hidden bg-ink text-surface">
+  <div class="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-accent/15 blur-[120px]"></div>
+  <div class="relative z-10 mx-auto max-w-6xl px-4 py-14 md:py-16">
+    <SlamClubs clubs={clubs} />
+
+    <!-- Valódi kattintható Magyarország-térkép -->
+    <div class="mt-12">
+      <p class="mb-4 text-center text-xs uppercase tracking-[0.2em] text-surface/50">{t(lang, 'slammers.mapHint')}</p>
+      <HungaryMap clubs={clubs} />
+    </div>
+
+    <div id="club-form" class="mt-12 max-w-2xl scroll-mt-24">
+      <SlamClubForm />
+    </div>
+  </div>
+</section>

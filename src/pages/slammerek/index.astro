@@ -1,13 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SlammersIndex from '../../components/pages/SlammersIndex.astro';
-import { getSlammers, getSlamClubs } from '../../sanity/lib/api';
+import { getSlammers } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
-const [slammers, clubs] = await Promise.all([
-  getSlammers(sanityClient),
-  getSlamClubs(sanityClient),
-]);
+const slammers = await getSlammers(sanityClient);
 ---
 <BaseLayout title="Slammerek">
-  <SlammersIndex slammers={slammers} clubs={clubs} lang="hu" />
+  <SlammersIndex slammers={slammers} lang="hu" />
 </BaseLayout>
