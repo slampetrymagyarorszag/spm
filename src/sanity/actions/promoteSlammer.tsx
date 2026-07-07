@@ -53,7 +53,10 @@ export function promoteSlammerAction(props: any) {
             children: [{ _type: 'span', _key: key(), text: String(doc.description), marks: [] }],
           }];
         }
-        if (doc.youtubeUrl) slammer.videos = [doc.youtubeUrl];
+        const vids = Array.isArray(doc.youtubeUrls) && doc.youtubeUrls.length
+          ? doc.youtubeUrls
+          : (doc.youtubeUrl ? [doc.youtubeUrl] : []);
+        if (vids.length) slammer.videos = vids;
 
         const created = await client.create(slammer);
         await client

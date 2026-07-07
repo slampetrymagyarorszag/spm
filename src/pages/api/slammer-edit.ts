@@ -5,7 +5,7 @@ import { getEmailSettings } from '../../sanity/lib/api';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc } from '../../lib/escape';
 import { writeClient } from '../../sanity/lib/writeClient';
-import { isConsented } from '../../lib/validation';
+import { isConsented, collectValidUrls } from '../../lib/validation';
 
 export const prerender = false;
 
@@ -43,6 +43,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: result.error }, 400);
   }
 
+  // Több (ismételhető) YouTube-link összegyűjtése és ellenőrzése.
+  const vids = collectValidUrls(form.getAll('videoLink'));
+  if (!vids.ok) return json({ ok: false, error: vids.error }, 400);
+
   if (hasPhoto) {
     if (!(photo as File).type.startsWith('image/')) return json({ ok: false, error: 'A feltöltött fájl nem kép.' }, 400);
     if ((photo as File).size > MAX_PHOTO_BYTES) return json({ ok: false, error: 'A kép túl nagy (max 8 MB).' }, 400);
@@ -73,6 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
       activeRequest,
       bioChange: fields.bioChange ? fields.bioChange.trim().slice(0, 3000) : undefined,
       linksChange: fields.linksChange ? fields.linksChange.trim().slice(0, 1000) : undefined,
+      videoLinks: vids.urls.length ? vids.urls : undefined,
       newPhoto: photoRef,
       submitterEmail: fields.email ? fields.email.trim().slice(0, 200) : undefined,
       submittedAt: new Date().toISOString(),
@@ -91,6 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
             ${activeRequest ? '<p>✅ Aktív slammernek jelölte magát.</p>' : ''}
             ${fields.bioChange ? `<p><strong>Bio:</strong><br>${esc(fields.bioChange).replace(/\n/g, '<br>')}</p>` : ''}
             ${fields.linksChange ? `<p><strong>Linkek:</strong><br>${esc(fields.linksChange).replace(/\n/g, '<br>')}</p>` : ''}
+            ${vids.urls.length ? `<p><strong>Videó-linkek:</strong><br>${vids.urls.map(esc).join('<br>')}</p>` : ''}
             ${hasPhoto ? '<p>Új fotót is csatolt.</p>' : ''}
             <p>Nézd át a Studióban: <em>✏️ Slammer-módosítási kérések</em>.</p>`,
         });

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { sanityClient } from 'sanity:client';
-import { validateSlammerApplication, isConsented } from '../../lib/validation';
+import { validateSlammerApplication, isConsented, collectValidUrls } from '../../lib/validation';
 import { getEmailSettings } from '../../sanity/lib/api';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc } from '../../lib/escape';
@@ -37,6 +37,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: result.error }, 400);
   }
 
+  // Több (ismételhető) YouTube-link összegyűjtése és ellenőrzése.
+  const yt = collectValidUrls(form.getAll('youtubeUrl'));
+  if (!yt.ok) return json({ ok: false, error: yt.error }, 400);
+
   const photo = form.get('photo');
   if (!(photo instanceof File) || photo.size === 0) {
     return json({ ok: false, error: 'Tölts fel egy képet magadról.' }, 400);
@@ -65,7 +69,7 @@ export const POST: APIRoute = async ({ request }) => {
       realName: fields.realName.trim().slice(0, 200),
       stageName: stageName || undefined,
       description: fields.description.trim().slice(0, 3000),
-      youtubeUrl: fields.youtubeUrl.trim().slice(0, 500),
+      youtubeUrls: yt.urls.length ? yt.urls : undefined,
       submitterEmail: fields.email ? fields.email.trim().slice(0, 200) : undefined,
       isActive: isConsented(form.get('isActive')),
       photo: { _type: 'image', asset: { _type: 'reference', _ref: asset._id } },

@@ -15,7 +15,8 @@ export const slammerApplication = defineType({
     }),
     defineField({ name: 'photo', title: 'Fotó', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'description', title: 'Bemutatkozás', type: 'text', rows: 4 }),
-    defineField({ name: 'youtubeUrl', title: 'YouTube link', type: 'url' }),
+    defineField({ name: 'youtubeUrls', title: 'YouTube linkek', type: 'array', of: [{ type: 'url' }], description: 'A beküldő egy vagy több videót adhat meg.' }),
+    defineField({ name: 'youtubeUrl', title: 'YouTube link (régi)', type: 'url', readOnly: true, hidden: ({ value }: any) => !value }),
     defineField({ name: 'submitterEmail', title: 'Beküldő email', type: 'string', readOnly: true }),
     defineField({ name: 'submittedAt', title: 'Beküldve', type: 'datetime', readOnly: true }),
     defineField({

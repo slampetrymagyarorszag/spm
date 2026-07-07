@@ -18,6 +18,7 @@ export const slammerEditRequest = defineType({
     }),
     defineField({ name: 'bioChange', title: 'Kért bio-módosítás', type: 'text', rows: 5, readOnly: true }),
     defineField({ name: 'linksChange', title: 'Kért link-módosítás', type: 'text', rows: 3, readOnly: true }),
+    defineField({ name: 'videoLinks', title: 'Beküldött YouTube-linkek', type: 'array', of: [{ type: 'url' }], readOnly: true }),
     defineField({ name: 'newPhoto', title: 'Beküldött új fotó', type: 'image', readOnly: true }),
     defineField({ name: 'submitterEmail', title: 'Beküldő email', type: 'string', readOnly: true }),
     defineField({ name: 'submittedAt', title: 'Beküldve', type: 'datetime', readOnly: true }),

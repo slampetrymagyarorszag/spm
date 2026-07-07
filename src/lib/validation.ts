@@ -5,6 +5,24 @@ export type SubmissionInput = {
 };
 export type ValidationResult = { ok: true } | { ok: false; error: string };
 
+// Több (ismételhető) URL-mező összegyűjtése és ellenőrzése — pl. a slammer-űrlapokon a
+// „további YouTube-link hozzáadása" mezőkből. Az üreseket kihagyja, a többit validálja,
+// levágja a hosszt, és max `max` darabot ad vissza.
+export function collectValidUrls(
+  values: unknown[],
+  max = 8,
+): { ok: true; urls: string[] } | { ok: false; error: string } {
+  const urls: string[] = [];
+  for (const v of values) {
+    const s = String(v ?? '').trim();
+    if (!s) continue;
+    if (!/^https?:\/\/\S+$/i.test(s)) return { ok: false, error: 'Az egyik link nem érvényes (https://…).' };
+    if (!urls.includes(s)) urls.push(s.slice(0, 500));
+    if (urls.length >= max) break;
+  }
+  return { ok: true, urls };
+}
+
 export function validateSubmission(input: SubmissionInput): ValidationResult {
   if (input.website && input.website.trim() !== '') return { ok: false, error: 'spam' };
   if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A név megadása kötelező.' };

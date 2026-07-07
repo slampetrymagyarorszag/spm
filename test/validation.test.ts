@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest, validateSlamClub, validateSlammerEdit } from '../src/lib/validation';
+import { validateSubmission, validateEventTip, validateSlammerApplication, validateChampionship, validateMonthlyContest, validateSlamClub, validateSlammerEdit, collectValidUrls } from '../src/lib/validation';
 
 describe('validateSubmission', () => {
   const ok = { name: 'Teszt Elek', email: 'teszt@example.com', message: 'Szeretnék jelentkezni.' };
@@ -30,6 +30,18 @@ describe('validateSlammerApplication', () => {
   it('rossz YouTube link → hiba', () => { expect(validateSlammerApplication({ ...ok, youtubeUrl: 'nem' }).ok).toBe(false); });
   it('hiányzó YouTube link is elfogadható (opcionális)', () => { expect(validateSlammerApplication({ ...ok, youtubeUrl: '' }).ok).toBe(true); });
   it('hiányzó consent → hiba', () => { expect(validateSlammerApplication({ ...ok, consent: false }).ok).toBe(false); });
+});
+
+describe('collectValidUrls', () => {
+  it('több érvényes linket összegyűjt, üreseket kihagy', () => {
+    const r = collectValidUrls(['https://youtu.be/a', '', '  https://youtu.be/b  ']);
+    expect(r).toEqual({ ok: true, urls: ['https://youtu.be/a', 'https://youtu.be/b'] });
+  });
+  it('üres lista → üres tömb, ok', () => { expect(collectValidUrls([])).toEqual({ ok: true, urls: [] }); });
+  it('csak üresek → üres tömb, ok', () => { expect(collectValidUrls(['', '   '])).toEqual({ ok: true, urls: [] }); });
+  it('érvénytelen link → hiba', () => { expect((collectValidUrls(['nem-url']) as any).ok).toBe(false); });
+  it('duplikátumot kiszűr', () => { expect((collectValidUrls(['https://x.hu/1', 'https://x.hu/1']) as any).urls).toEqual(['https://x.hu/1']); });
+  it('a max darabszámot betartja', () => { expect((collectValidUrls(['https://a.hu','https://b.hu','https://c.hu'], 2) as any).urls.length).toBe(2); });
 });
 
 describe('validateChampionship', () => {

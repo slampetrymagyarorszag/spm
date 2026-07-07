@@ -41,6 +41,16 @@ const lang: Lang = getLangFromUrl(Astro.url);
           <textarea id="se-links" name="linksChange" rows="2" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" placeholder={t(lang, 'slammers.editLinksPlaceholder')}></textarea>
         </div>
         <div>
+          <label class="mb-1 block text-sm text-muted">{t(lang, 'slammers.editVideosLabel')} <span class="text-ink/40">({t(lang, 'form.optional')})</span></label>
+          <div class="grid gap-2" data-repeat>
+            <div class="js-repeat-item flex gap-2">
+              <input type="url" name="videoLink" placeholder="https://youtu.be/…" class="w-full rounded-lg border border-ink/15 px-4 py-3 outline-none focus:border-accent" />
+              <button type="button" class="js-repeat-remove hidden shrink-0 rounded-lg border border-ink/15 px-3 text-lg text-muted transition hover:border-accent hover:text-accent" aria-label={t(lang, 'form.removeField')}>×</button>
+            </div>
+          </div>
+          <button type="button" class="js-repeat-add mt-2 text-sm font-semibold text-accent hover:underline" data-max="8">{t(lang, 'form.addAnotherVideo')}</button>
+        </div>
+        <div>
           <label class="mb-1 block text-sm text-muted" for="se-photo">{t(lang, 'slammers.editPhotoLabel')} <span class="text-ink/40">({t(lang, 'form.optionalMax8mb')})</span></label>
           <input id="se-photo" type="file" name="photo" accept="image/*" class="w-full rounded-lg border border-ink/15 px-4 py-2.5 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-3 file:py-1.5 file:font-semibold file:text-ink" />
         </div>
@@ -105,6 +115,36 @@ const lang: Lang = getLangFromUrl(Astro.url);
         status.style.color = '#dc2626';
       } finally {
         btn.disabled = false;
+      }
+    });
+  });
+
+  // Ismételhető mezők: a „+ Még egy…" gomb klónozza a sorát, hogy több linket lehessen megadni.
+  document.querySelectorAll('.js-repeat-add').forEach((node) => {
+    const btn = node as HTMLButtonElement;
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    const container = btn.parentElement?.querySelector('[data-repeat]') as HTMLElement | null;
+    if (!container) return;
+    const max = parseInt(btn.dataset.max || '6', 10);
+    btn.addEventListener('click', () => {
+      const items = container.querySelectorAll('.js-repeat-item');
+      if (items.length >= max) return;
+      const clone = items[0].cloneNode(true) as HTMLElement;
+      const input = clone.querySelector('input') as HTMLInputElement;
+      if (input) input.value = '';
+      clone.querySelector('.js-repeat-remove')?.classList.remove('hidden');
+      container.appendChild(clone);
+      input?.focus();
+      if (items.length + 1 >= max) btn.classList.add('hidden');
+    });
+    container.addEventListener('click', (e) => {
+      const rm = (e.target as HTMLElement).closest('.js-repeat-remove');
+      if (!rm) return;
+      const items = container.querySelectorAll('.js-repeat-item');
+      if (items.length > 1) {
+        rm.closest('.js-repeat-item')?.remove();
+        btn.classList.remove('hidden');
       }
     });
   });
