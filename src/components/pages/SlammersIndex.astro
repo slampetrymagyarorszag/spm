@@ -18,3 +18,41 @@ const { slammers, lang } = Astro.props;
 </section>
 
 <SlammerApplicationForm />
+
+<!-- Sticky gyorsgomb: bárhonnan a „felviszem magam" formhoz ugrat (csak a slammerek oldalon).
+     Görgetéskor is a jobb szélen marad; eltűnik, ha a form már látszik. -->
+<a
+  href="#jelentkezes"
+  id="slammer-cta"
+  class="slammer-cta fixed right-3 top-1/2 z-40 flex items-center gap-2 rounded-full bg-accent px-4 py-3 font-semibold text-ink shadow-lg shadow-accent/40 ring-1 ring-black/10 md:right-5"
+  aria-label={t(lang, 'slammers.stickyCtaLabel')}
+>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0">
+    <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Zm7 9a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V21H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-3.08A7 7 0 0 0 19 11Z"/>
+  </svg>
+  <span class="hidden text-sm md:inline">{t(lang, 'slammers.stickyCtaLabel')}</span>
+</a>
+
+<script>
+  const cta = document.getElementById('slammer-cta');
+  const target = document.getElementById('jelentkezes');
+  if (cta && target) {
+    cta.addEventListener('click', (e) => {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    // Ha a form már látszik, elrejtjük a gombot (nincs értelme odaugrasztani).
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((en) => cta.classList.toggle('cta-hidden', en.isIntersecting)),
+      { threshold: 0.15 },
+    );
+    io.observe(target);
+  }
+</script>
+
+<style>
+  .slammer-cta { transform: translateY(-50%); transition: transform .25s ease, opacity .3s ease; }
+  .slammer-cta:hover { transform: translateY(-50%) scale(1.06); }
+  .slammer-cta.cta-hidden { transform: translateY(-50%) translateX(150%); opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .slammer-cta { transition: opacity .3s ease; } }
+</style>
