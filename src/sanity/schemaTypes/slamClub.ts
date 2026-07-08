@@ -1,11 +1,11 @@
 import { defineField, defineType } from 'sanity';
 
-// Slam klub egy városban (pl. Slam Poetry Szeged) — a Slammerek oldal „Slam klubok"
+// Slamklub egy városban (pl. Slam Poetry Szeged) — a Slammerek oldal „Slamklubok"
 // fülén jelenik meg, kattintható Facebook-linkkel. Látogatók is beküldhetnek újat;
 // a szerkesztő a Studióban hagyja jóvá.
 export const slamClub = defineType({
   name: 'slamClub',
-  title: 'Slam klub',
+  title: 'Slamklub',
   type: 'document',
   fields: [
     defineField({ name: 'city', title: 'Város', type: 'string', validation: (r) => r.required() }),
@@ -15,14 +15,14 @@ export const slamClub = defineType({
     defineField({ name: 'submittedAt', title: 'Beküldve', type: 'datetime', readOnly: true }),
     defineField({
       name: 'approved', title: 'Jóváhagyva — megjelenhet az oldalon', type: 'boolean', initialValue: false,
-      description: 'Kapcsold BE, hogy a klub megjelenjen a Slammerek → Slam klubok fülön.',
+      description: 'Kapcsold BE, hogy a klub megjelenjen a Slammerek → Slamklubok fülön.',
     }),
   ],
   orderings: [{ title: 'Város szerint', name: 'city', by: [{ field: 'city', direction: 'asc' }] }],
   preview: {
     select: { title: 'city', name: 'name', approved: 'approved' },
     prepare: ({ title, name, approved }: any) => ({
-      title: name || title || 'Slam klub',
+      title: name || title || 'Slamklub',
       subtitle: (approved ? '✅ Jóváhagyva' : '⏳ Elbírálásra vár') + (title ? ` · ${title}` : ''),
     }),
   },

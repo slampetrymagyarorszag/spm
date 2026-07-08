@@ -33,7 +33,7 @@ const pins = Object.entries(CITY).map(([key, coords]) => {
 });
 ---
 <div class="hu-map relative mx-auto w-full max-w-4xl" style={`aspect-ratio:${HU_MAP.width}/${HU_MAP.height}`}>
-  <svg viewBox={HU_MAP.viewBox} preserveAspectRatio="xMidYMid meet" class="absolute inset-0 h-full w-full" role="img" aria-label="Magyarország térkép a slam klubokkal">
+  <svg viewBox={HU_MAP.viewBox} preserveAspectRatio="xMidYMid meet" class="absolute inset-0 h-full w-full" role="img" aria-label="Magyarország térkép a slamklubokkal">
     <path d={HU_MAP.path} fill="rgba(255,255,255,0.04)" stroke="var(--color-accent)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
   </svg>
 
@@ -46,7 +46,7 @@ const pins = Object.entries(CITY).map(([key, coords]) => {
         {pin.clubs.length > 0 && (
           <div class="pin-sec">
             {pin.clubs.map((c) => (
-              <a href={c.facebookUrl} target="_blank" rel="noopener noreferrer" class="pin-link"><span>🎤 {c.name || 'Slam klub'}</span><span aria-hidden="true">↗</span></a>
+              <a href={c.facebookUrl} target="_blank" rel="noopener noreferrer" class="pin-link"><span>🎤 {c.name || 'Slamklub'}</span><span aria-hidden="true">↗</span></a>
             ))}
           </div>
         )}

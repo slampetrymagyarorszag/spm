@@ -11,22 +11,21 @@ interface Props { clubs: SlamClub[]; lang: Lang }
 const { clubs, lang } = Astro.props;
 ---
 <!-- Kétfázisú „robbanó" hero: alapállapot Magyarország pink körvonala pinekkel; hoverre
-     (érintőn koppintásra) szétrobban, és kiugranak a városobjektumok (Országház, szegedi dóm).
-     Átlátszó PNG-k, ezért sötét és világos módban is jól néznek ki. Csak md+ jelenik meg. -->
-<section class="clubs-hero group/obj relative overflow-hidden bg-ink text-surface">
+     (érintőn koppintásra) szétrobban, kiugranak a városobjektumok (Országház, szegedi dóm).
+     Téma-érzékeny: SÖTÉT módban neon (fekete háttér + screen-blend), VILÁGOS módban magenta
+     vonalrajz (fehér háttér + multiply-blend). Csak md+ jelenik meg. -->
+<section class="clubs-hero group/obj surface-dark relative overflow-hidden">
   <div class="pointer-events-none absolute -right-10 top-0 h-full w-[60%] max-w-none opacity-0 md:opacity-100">
-    <img
-      src="/clubs-map-base.webp"
-      alt=""
-      aria-hidden="true"
-      class="absolute inset-0 h-full w-full object-contain object-right opacity-90 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-110 group-hover/obj:opacity-0"
-    />
-    <img
-      src="/clubs-map-explode.webp"
-      alt=""
-      aria-hidden="true"
-      class="absolute inset-0 h-full w-full scale-95 object-contain object-right opacity-0 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-110 group-hover/obj:opacity-100"
-    />
+    <!-- ALAP fázis -->
+    <img src="/clubs-map-base.webp" alt="" aria-hidden="true"
+      class="clubs-base hero-only-dark absolute inset-0 h-full w-full object-contain object-right opacity-90 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-110 group-hover/obj:opacity-0" />
+    <img src="/clubs-map-base-light.webp" alt="" aria-hidden="true"
+      class="clubs-base hero-only-light absolute inset-0 h-full w-full object-contain object-right opacity-90 mix-blend-multiply transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-110 group-hover/obj:opacity-0" />
+    <!-- ROBBANÁS fázis -->
+    <img src="/clubs-map-explode.webp" alt="" aria-hidden="true"
+      class="clubs-explode hero-only-dark absolute inset-0 h-full w-full scale-95 object-contain object-right opacity-0 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-110 group-hover/obj:opacity-100" />
+    <img src="/clubs-map-explode-light.webp" alt="" aria-hidden="true"
+      class="clubs-explode hero-only-light absolute inset-0 h-full w-full scale-95 object-contain object-right opacity-0 mix-blend-multiply transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-110 group-hover/obj:opacity-100" />
   </div>
   <div class="relative z-10 mx-auto max-w-6xl px-4 py-20 md:py-28 md:pr-[42%]">
     <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
@@ -38,8 +37,7 @@ const { clubs, lang } = Astro.props;
 </section>
 
 <script>
-  // Érintőn nincs hover: koppintásra kapcsoljuk a robbanást (a .obj-hover osztály ugyanazt
-  // a hatást adja, mint a group-hover).
+  // Érintőn nincs hover: koppintásra kapcsoljuk a robbanást (ugyanazt adja, mint a group-hover).
   const hero = document.querySelector('.clubs-hero');
   if (hero && window.matchMedia('(hover: none)').matches) {
     hero.addEventListener('click', () => hero.classList.toggle('obj-on'));
@@ -47,9 +45,9 @@ const { clubs, lang } = Astro.props;
 </script>
 
 <style>
-  /* Érintős koppintás-állapot: ugyanaz, mint a hover. */
-  .clubs-hero.obj-on :global(img:first-of-type) { opacity: 0; transform: scale(1.1); }
-  .clubs-hero.obj-on :global(img:last-of-type) { opacity: 1; transform: scale(1.1); }
+  /* Érintős koppintás-állapot: ugyanaz, mint a hover (téma-független, osztály-alapú). */
+  .clubs-hero.obj-on :global(.clubs-base) { opacity: 0; transform: scale(1.1); }
+  .clubs-hero.obj-on :global(.clubs-explode) { opacity: 1; transform: scale(1.1); }
 </style>
 
 <section class="surface-dark relative overflow-hidden bg-ink text-surface">

@@ -147,12 +147,12 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
 
-      // Beküldött / kezelt slam klubok
+      // Beküldött / kezelt slamklubok
       S.listItem()
-        .title('🏙️ Slam klubok')
+        .title('🏙️ Slamklubok')
         .child(
           S.list()
-            .title('Slam klubok')
+            .title('Slamklubok')
             .items([
               S.listItem()
                 .title('⏳ Elbírálásra vár')

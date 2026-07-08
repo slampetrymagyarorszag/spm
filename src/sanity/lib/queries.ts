@@ -61,7 +61,7 @@ export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && ap
   _id, realName, stageName, description, youtubeUrl, photo
 }`;
 
-// Jóváhagyott slam klubok (Slammerek → Slam klubok fül).
+// Jóváhagyott slamklubok (Slammerek → Slamklubok fül).
 export const SLAM_CLUBS_QUERY = `*[_type == "slamClub" && approved == true] | order(city asc){
   _id, city, name, facebookUrl
 }`;
