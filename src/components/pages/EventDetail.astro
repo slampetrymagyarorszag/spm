@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../RichText.astro';
-import EventNeonCard from '../EventNeonCard.astro';
 import RegistrationForm from '../RegistrationForm.astro';
 import ChampionshipRegistrationForm from '../ChampionshipRegistrationForm.astro';
 import { urlForImage } from '../../sanity/lib/image';
@@ -13,15 +12,33 @@ import type { EventDetail as EventDetailType } from '../../sanity/lib/api';
 interface Props { event: EventDetailType; lang: Lang }
 const { event: ev, lang } = Astro.props;
 const heroStyle = ev.accentColor ? `--color-accent: ${ev.accentColor}` : undefined;
-const coverUrl = ev.cover ? urlForImage(ev.cover).width(1600).height(720).fit('crop').url() : null;
+const coverUrl = ev.cover ? urlForImage(ev.cover).width(1600).height(900).fit('crop').url() : null;
 const title = localized(ev, 'title', lang);
 const description = localized(ev, 'description', lang);
 
+// Dátum-részek a megjelenítéshez (nyelv-helyes locale-lal).
+const locale = lang === 'en' ? 'en-GB' : 'hu-HU';
+const d = ev.startsAt ? new Date(ev.startsAt) : null;
+const weekday = d ? d.toLocaleDateString(locale, { weekday: 'long' }) : '';
+const dateLong = d ? d.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+const time = d ? d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : '';
+const day = d ? d.getDate() : '';
+const monthShort = d ? d.toLocaleDateString(locale, { month: 'short' }).replace('.', '') : '';
+
+// Helyszín + térkép.
+const locName = ev.location?.name;
+const locAddr = ev.location?.address;
+const venue = [locName, locAddr].filter(Boolean).join(' · ');
+const mapQuery = (locAddr || locName) ? encodeURIComponent(locAddr || locName!) : null;
+// Google Térkép beágyazás API-kulcs nélkül (output=embed).
+const mapEmbedSrc = mapQuery ? `https://www.google.com/maps?q=${mapQuery}&z=15&hl=${lang}&output=embed` : null;
+const mapLink = ev.location?.mapUrl || (mapQuery ? `https://www.google.com/maps/search/?api=1&query=${mapQuery}` : null);
+
 // OG-leírás: dátum + helyszín tömör összefoglalója.
-const dateLabel = ev.startsAt
-  ? new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(ev.startsAt))
+const dateLabel = d
+  ? new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(d)
   : '';
-const metaDescription = [dateLabel, ev.location?.name].filter(Boolean).join(' · ') || undefined;
+const metaDescription = [dateLabel, locName].filter(Boolean).join(' · ') || undefined;
 
 // schema.org Event strukturált adat (Google "Esemény" rich result).
 const eventJsonLd = {
@@ -32,8 +49,8 @@ const eventJsonLd = {
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   ...(coverUrl ? { image: [coverUrl] } : {}),
-  ...(ev.location?.name
-    ? { location: { '@type': 'Place', name: ev.location.name, address: ev.location.address || ev.location.name } }
+  ...(locName
+    ? { location: { '@type': 'Place', name: locName, address: locAddr || locName } }
     : {}),
   ...(ev.ticketUrl
     ? { offers: { '@type': 'Offer', url: ev.ticketUrl, availability: 'https://schema.org/InStock' } }
@@ -44,36 +61,80 @@ const eventJsonLd = {
 ---
 <BaseLayout title={title} description={metaDescription} image={coverUrl ?? undefined} ogType="article">
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(eventJsonLd)} />
+
+  <!-- Hero: a borítókép jól látszik (teljes fényerő), csak alul sötétített sáv a cím olvashatóságáért. -->
   <section class="relative overflow-hidden bg-ink text-surface" style={heroStyle}>
-    {coverUrl && <img src={coverUrl} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover opacity-20" />}
-    {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/85 to-ink/60"></div>}
-    <div class="relative z-10 mx-auto max-w-5xl px-4 py-20 md:py-28">
+    {coverUrl && <img src={coverUrl} alt={title} class="absolute inset-0 h-full w-full object-cover" />}
+    {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/5"></div>}
+    <div class={`relative z-10 mx-auto flex max-w-5xl flex-col justify-end px-4 ${coverUrl ? 'min-h-[52vh] py-12 md:min-h-[58vh]' : 'py-20 md:py-28'}`}>
       <p class="mb-3 inline-flex items-center gap-2 pt-1 text-xs uppercase leading-[1.6] tracking-[0.2em] text-accent">
         <span class="h-px w-8 bg-accent"></span><span class="inline-block">{t(lang, 'events.eyebrow')}</span>
       </p>
       <h1 class="max-w-3xl font-display text-5xl leading-[0.9] md:text-7xl">{title}</h1>
+      {(dateLong || venue) && (
+        <p class="mt-4 max-w-2xl text-lg text-surface/85">
+          {dateLong}{time ? `, ${time}` : ''}{venue ? ` · ${venue}` : ''}
+        </p>
+      )}
     </div>
   </section>
 
   <div class="mx-auto max-w-3xl px-4 py-12">
-    <EventNeonCard
-      startsAt={ev.startsAt}
-      locationName={ev.location?.name}
-      locationAddress={ev.location?.address}
-      mapUrl={ev.location?.mapUrl}
-      facebookEventUrl={ev.facebookEventUrl}
-    />
+    <!-- Normál részletek + Google Térkép -->
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="space-y-6 rounded-2xl border border-ink/10 bg-ink/[0.02] p-6">
+        {d && (
+          <div class="flex items-center gap-4">
+            <div class="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border border-accent/50 text-center">
+              <span class="font-display text-2xl leading-none">{day}</span>
+              <span class="text-[0.65rem] uppercase tracking-widest text-accent">{monthShort}</span>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'events.whenLabel')}</p>
+              <p class="font-display text-xl leading-tight">{dateLong}</p>
+              <p class="text-sm text-muted">{weekday}{time ? ` · ${time}` : ''}</p>
+            </div>
+          </div>
+        )}
 
-    {(ev.facebookEventUrl || ev.ticketUrl) && (
-      <a
-        href={ev.facebookEventUrl || ev.ticketUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-4 inline-flex items-center gap-1 rounded-lg border border-ink/20 px-6 py-3 font-semibold text-ink transition hover:border-accent hover:text-accent"
-      >
-        {t(lang, 'events.watch')} <span aria-hidden="true">↗</span>
-      </a>
-    )}
+        {venue && (
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'events.venueLabel')}</p>
+            {locName && <p class="font-display text-lg leading-tight">{locName}</p>}
+            {locAddr && <p class="text-sm text-muted">{locAddr}</p>}
+            {mapLink && (
+              <a href={mapLink} target="_blank" rel="noopener noreferrer" class="mt-1 inline-flex items-center gap-1 text-sm text-accent hover:underline">
+                {t(lang, 'events.openInMaps')} <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        )}
+
+        <div class="flex flex-wrap gap-3">
+          {ev.facebookEventUrl && (
+            <a href={ev.facebookEventUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">
+              {t(lang, 'events.viewOnFacebook')} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          {ev.ticketUrl && (
+            <a href={ev.ticketUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-lg border border-ink/20 px-5 py-3 font-semibold text-ink transition hover:border-accent hover:text-accent">
+              {t(lang, 'events.watch')} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      </div>
+
+      {mapEmbedSrc && (
+        <iframe
+          src={mapEmbedSrc}
+          title={t(lang, 'events.mapTitle')}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+          class="h-64 w-full rounded-2xl border border-ink/10 md:h-full md:min-h-[16rem]"
+        ></iframe>
+      )}
+    </div>
 
     {description && <div class="mt-10"><RichText value={description} /></div>}
 
