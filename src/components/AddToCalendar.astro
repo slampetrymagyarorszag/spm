@@ -1,0 +1,70 @@
+---
+// „Naptárba mentés" gomb: lenyíló menü Google Naptár linkkel és .ics letöltéssel
+// (Apple Naptár / Outlook / stb.). Minden build-időben generálódik az esemény
+// időpontja és neve alapján — nincs hozzá kliens-oldali API vagy kulcs.
+import { t } from '../i18n/ui';
+import type { Lang } from '../i18n';
+
+interface Props { title: string; startsAt: string; endsAt?: string; location?: string; url?: string; lang: Lang }
+const { title, startsAt, endsAt, location, url, lang } = Astro.props;
+
+const start = new Date(startsAt);
+// Végidőpont: ha nincs megadva, alapból +2 óra.
+const end = endsAt ? new Date(endsAt) : new Date(start.getTime() + 2 * 60 * 60 * 1000);
+// UTC „basic" formátum: YYYYMMDDTHHMMSSZ
+const z = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+const details = url ? `Slam Poetry Magyarország — ${url}` : 'Slam Poetry Magyarország';
+
+const gcal =
+  'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+  `&text=${encodeURIComponent(title)}` +
+  `&dates=${z(start)}/${z(end)}` +
+  `&details=${encodeURIComponent(details)}` +
+  (location ? `&location=${encodeURIComponent(location)}` : '');
+
+// .ics tartalom (RFC 5545). Speciális karakterek escapelése.
+const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+const uid = `${z(start)}-${Math.abs([...title].reduce((a, c) => a + c.charCodeAt(0), 0))}@slampoetry.hu`;
+const ics = [
+  'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//slampoetry.hu//event//HU', 'CALSCALE:GREGORIAN',
+  'BEGIN:VEVENT', `UID:${uid}`, `DTSTAMP:${z(new Date())}`, `DTSTART:${z(start)}`, `DTEND:${z(end)}`,
+  `SUMMARY:${esc(title)}`,
+  location ? `LOCATION:${esc(location)}` : '',
+  `DESCRIPTION:${esc(details)}`,
+  url ? `URL:${url}` : '',
+  'END:VEVENT', 'END:VCALENDAR',
+].filter(Boolean).join('\r\n');
+const icsHref = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
+const fileName = (title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'esemeny') + '.ics';
+---
+<div class="atc relative inline-block">
+  <button type="button" class="atc-toggle inline-flex items-center gap-2 rounded-lg border border-ink/20 px-5 py-3 font-semibold text-ink transition hover:border-accent hover:text-accent" aria-haspopup="true" aria-expanded="false">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></svg>
+    {t(lang, 'events.addToCalendar')}
+    <span class="text-xs" aria-hidden="true">▾</span>
+  </button>
+  <div class="atc-menu absolute left-0 z-20 mt-2 hidden w-56 overflow-hidden rounded-xl border border-ink/10 bg-surface shadow-xl">
+    <a href={gcal} target="_blank" rel="noopener noreferrer" class="block px-4 py-3 text-sm text-ink transition hover:bg-ink/5">{t(lang, 'events.calGoogle')}</a>
+    <a href={icsHref} download={fileName} class="block px-4 py-3 text-sm text-ink transition hover:bg-ink/5">{t(lang, 'events.calIcs')}</a>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.atc').forEach((node) => {
+    const wrap = node as HTMLElement;
+    const btn = wrap.querySelector('.atc-toggle') as HTMLButtonElement | null;
+    const menu = wrap.querySelector('.atc-menu') as HTMLElement | null;
+    if (!btn || !menu || btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    const close = () => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); };
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle('hidden') === false;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // A menüből választva zárjuk be.
+    menu.addEventListener('click', () => close());
+    document.addEventListener('click', (e) => { if (!wrap.contains(e.target as Node)) close(); });
+    document.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Escape') close(); });
+  });
+</script>
