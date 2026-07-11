@@ -37,6 +37,7 @@ export type EventTipInput = {
   eventName?: string;
   description?: string;
   facebookUrl?: string;
+  ticketUrl?: string; // opcionális jegyvásárlási link
   email?: string; // opcionális — ha vissza akarunk jelezni
   website?: string; // honeypot
 };
@@ -46,6 +47,7 @@ export function validateEventTip(input: EventTipInput): ValidationResult {
   if (!input.eventName || input.eventName.trim().length < 2) return { ok: false, error: 'A rendezvény nevének megadása kötelező.' };
   if (!input.description || input.description.trim().length < 5) return { ok: false, error: 'Kérünk egy rövid leírást az eseményről.' };
   if (!input.facebookUrl || !/^https?:\/\/\S+$/i.test(input.facebookUrl.trim())) return { ok: false, error: 'Érvényes esemény-link szükséges (https://…).' };
+  if (input.ticketUrl && input.ticketUrl.trim() !== '' && !/^https?:\/\/\S+$/i.test(input.ticketUrl.trim())) return { ok: false, error: 'A jegylink nem érvényes (https://…).' };
   if (input.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.email)) return { ok: false, error: 'Az email cím nem érvényes.' };
   return { ok: true };
 }

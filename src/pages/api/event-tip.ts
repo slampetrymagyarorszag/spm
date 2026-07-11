@@ -33,6 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
       eventName: String(data.eventName).trim().slice(0, 200),
       description: String(data.description).trim().slice(0, 2000),
       facebookUrl: String(data.facebookUrl).trim().slice(0, 500),
+      ticketUrl: data.ticketUrl ? String(data.ticketUrl).trim().slice(0, 500) : undefined,
       submitterEmail: data.email ? String(data.email).trim().slice(0, 200) : undefined,
       submittedAt: new Date().toISOString(),
       approved: false,

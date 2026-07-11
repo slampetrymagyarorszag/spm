@@ -44,6 +44,11 @@ const lang: Lang = getLangFromUrl(Astro.url);
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
       </div>
       <div>
+        <label for="tip-ticket" class="mb-1 block text-sm text-surface/70">{t(lang, 'eventTip.ticketLabel')} <span class="text-surface/40">({t(lang, 'form.optional')})</span></label>
+        <input id="tip-ticket" type="url" name="ticketUrl" placeholder="https://…"
+          class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+      </div>
+      <div>
         <label for="tip-email" class="mb-1 block text-sm text-surface/70">{t(lang, 'eventTip.emailLabel')} <span class="text-surface/40">{t(lang, 'eventTip.emailOptional')}</span></label>
         <input id="tip-email" type="email" name="email" placeholder={t(lang, 'eventTip.emailPlaceholder')}
           class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />

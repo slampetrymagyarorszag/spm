@@ -10,6 +10,7 @@ export const eventTip = defineType({
     defineField({ name: 'eventName', title: 'Rendezvény neve', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'description', title: 'Leírás', type: 'text', rows: 3 }),
     defineField({ name: 'facebookUrl', title: 'Facebook esemény link', type: 'url' }),
+    defineField({ name: 'ticketUrl', title: 'Jegylink (opcionális)', type: 'url', description: 'A beküldő által megadott jegyvásárlási link, ha volt.' }),
     defineField({ name: 'submitterEmail', title: 'Beküldő email', type: 'string', readOnly: true, description: 'A beküldő által megadott email (opcionális volt).' }),
     defineField({ name: 'submittedAt', title: 'Beküldve', type: 'datetime', readOnly: true }),
     defineField({

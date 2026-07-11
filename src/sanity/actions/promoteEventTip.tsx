@@ -39,6 +39,7 @@ export function promoteEventTipAction(props: any) {
           startsAt: new Date().toISOString(),
         };
         if (doc.facebookUrl) event.facebookEventUrl = doc.facebookUrl;
+        if (doc.ticketUrl) event.ticketUrl = doc.ticketUrl;
         if (doc.description) {
           event.description = [{
             _type: 'block', _key: key(), style: 'normal', markDefs: [],
