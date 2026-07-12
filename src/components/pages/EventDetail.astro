@@ -120,7 +120,7 @@ const eventUrl = eventJsonLd.url;
           )}
           {ev.ticketUrl && (
             <a href={ev.ticketUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-lg border border-ink/20 px-5 py-3 font-semibold text-ink transition hover:border-accent hover:text-accent">
-              {t(lang, 'events.watch')} <span aria-hidden="true">↗</span>
+              {t(lang, 'events.buyTickets')} <span aria-hidden="true">↗</span>
             </a>
           )}
           {d && (
@@ -148,6 +148,18 @@ const eventUrl = eventJsonLd.url;
     </div>
 
     {description && <div class="mt-10"><RichText value={description} /></div>}
+
+    {ev.ticketUrl && (
+      <a
+        href={ev.ticketUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-10 flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-6 py-4 font-display text-lg uppercase tracking-wide text-ink transition hover:opacity-90"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 0-2-2H4Zm11 2 2 2-8 8-2-2 8-8Zm-6 .5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6 6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
+        {t(lang, 'events.buyTickets')} <span aria-hidden="true">↗</span>
+      </a>
+    )}
 
     {ev.registrationEnabled && (
       ev.championshipRegistration
