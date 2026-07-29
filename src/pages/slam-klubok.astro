@@ -5,6 +5,6 @@ import { getSlamClubs } from '../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 const clubs = await getSlamClubs(sanityClient);
 ---
-<BaseLayout title="Slamklubok">
+<BaseLayout title="Klubok">
   <ClubsIndex clubs={clubs} lang="hu" />
 </BaseLayout>

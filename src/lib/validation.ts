@@ -116,7 +116,7 @@ export function validateMonthlyContest(input: MonthlyContestInput): ValidationRe
   return { ok: true };
 }
 
-// Slamklub beküldés: város + Facebook (vagy más) link kötelező.
+// Klub beküldés: város + Facebook (vagy más) link kötelező.
 export type SlamClubInput = {
   city?: string;
   name?: string;

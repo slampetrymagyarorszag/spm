@@ -38,12 +38,12 @@ export const POST: APIRoute = async ({ request }) => {
       if (emails.notifyOnSubmissions && emails.notifyEmail) {
         await sendMail({
           to: emails.notifyEmail,
-          subject: 'Új slamklub beküldés — elbírálásra',
-          html: `<h2>Új slamklub</h2>
+          subject: 'Új klub beküldés — elbírálásra',
+          html: `<h2>Új klub</h2>
             <p><strong>Város:</strong> ${esc(String(data.city))}</p>
             ${data.name ? `<p><strong>Név:</strong> ${esc(String(data.name))}</p>` : ''}
             <p><strong>Link:</strong> ${esc(String(data.facebookUrl))}</p>
-            <p>Hagyd jóvá a Studióban: <em>🏙️ Slamklubok → Elbírálásra vár</em>.</p>`,
+            <p>Hagyd jóvá a Studióban: <em>🏙️ Klubok → Elbírálásra vár</em>.</p>`,
         });
       }
     } catch { /* nem kötelező */ }

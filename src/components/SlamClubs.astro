@@ -1,5 +1,5 @@
 ---
-// Slamklubok — kétsoros, folyamatosan futó neon-szalag. Minden chip kattintható,
+// Klubok — kétsoros, folyamatosan futó neon-szalag. Minden chip kattintható,
 // a klub Facebook-oldalára visz. Hoverre megáll. prefers-reduced-motion: tördelve.
 import type { SlamClub } from '../sanity/lib/api';
 interface Props { clubs: SlamClub[] }
@@ -10,7 +10,7 @@ const row1 = [...base, ...base];
 const row2 = [...[...base].reverse(), ...[...base].reverse()];
 ---
 {clubs.length === 0 ? (
-  <p class="text-surface/60">Még nincs felvett slamklub — lentebb beküldheted a sajátodat!</p>
+  <p class="text-surface/60">Még nincs felvett klub — lentebb beküldheted a sajátodat!</p>
 ) : (
   <div class="space-y-4">
     {[row1, row2].map((row, ri) => (
@@ -28,7 +28,7 @@ const row2 = [...[...base].reverse(), ...[...base].reverse()];
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="text-accent"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.79 8.43-4.94 8.43-9.94Z"/></svg>
               <span class="leading-tight">
                 <span class="block font-display text-xl text-surface group-hover/chip:text-accent">{c.city}</span>
-                <span class="block text-xs uppercase tracking-wide text-surface/55">{c.name || 'Slamklub'}</span>
+                <span class="block text-xs uppercase tracking-wide text-surface/55">{c.name || 'Klub'}</span>
               </span>
               <span class="text-accent" aria-hidden="true">↗</span>
             </a>
