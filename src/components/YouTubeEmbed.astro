@@ -11,7 +11,7 @@ const id = youtubeId(url);
 const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : '';
 ---
 {id && (
-  <div class="yt-lite group relative aspect-video overflow-hidden rounded-lg bg-ink" data-id={id} data-title={title}>
+  <div class="yt-lite surface-dark group relative aspect-video overflow-hidden rounded-lg bg-ink" data-id={id} data-title={title}>
     <img
       src={thumb}
       alt={title}

@@ -35,7 +35,7 @@ export default function FeaturedSlammers({ slammers, lang = 'hu' }: { slammers: 
             onFocus={() => setActive(i)}
             onClick={(e) => { if (isTouch && !isActive) { e.preventDefault(); setActive(i); } }}
             aria-label={s.name}
-            className="group relative block overflow-hidden rounded-xl outline-none ring-accent transition-[flex-grow] duration-700 ease-out focus-visible:ring-2"
+            className="on-media group relative block overflow-hidden rounded-xl outline-none ring-accent transition-[flex-grow] duration-700 ease-out focus-visible:ring-2"
             style={{
               // Érintőn az aktív panel domináns (hogy a teljes arc + név + „Megnyitom" elférjen),
               // a többi vékony sliver. Desktopon a finomabb 7:1 arány marad.

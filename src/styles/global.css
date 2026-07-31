@@ -105,7 +105,43 @@ html.light .surface-dark input,
 html.light .surface-dark textarea { color: #17171c; }
 html.light .surface-dark input::placeholder,
 html.light .surface-dark textarea::placeholder { color: #8a8a95; }
-html.light .surface-dark .pin-city { color: #2a2a33; text-shadow: none; }
+/* Az űrlapmezők keretét/hátterét néhol a szülő `[&_input]:border-white/15` jellegű variánsa
+   festi — azt a fenti substring-szabályok nem érik el (a szülő osztályán van, nem a mezőn),
+   így light módban a mezők kerete és kitöltése láthatatlan maradna a világos kártyán. */
+html.light .surface-dark input:not([type="radio"]):not([type="checkbox"]),
+html.light .surface-dark textarea {
+  border-color: rgba(0,0,0,0.12) !important;
+  background-color: rgba(0,0,0,0.04) !important;
+}
+/* A `hover:bg-white/…` csak hoverre festene, de a fenti substring-szabály `!important`-tel
+   állandó szürke pirulát csinálna belőle, és a hovert is elnyelné. */
+html.light .surface-dark [class*="hover:bg-white/"] { background-color: transparent !important; }
+html.light .surface-dark [class*="hover:bg-white/"]:hover { background-color: rgba(0,0,0,0.06) !important; }
+/* Nem lefedett fehér-utility-k a sötét szekciókban: elválasztó vonal és hover-szövegszín. */
+html.light .surface-dark [class*="bg-surface/"] { background-color: rgba(0,0,0,0.15) !important; }
+html.light .surface-dark [class*="hover:text-surface"]:hover { color: var(--sd-fg) !important; }
+/* Kivétel: ami FOTÓN (sötét fátyolon) ül, annak light módban is fehérnek kell maradnia. */
+html.light .surface-dark .on-media [class*="text-white/"] { color: rgba(255,255,255,0.7) !important; }
+/* (A térkép-tűk light-módú színeit a HungaryMap.astro saját stílusa kezeli.) */
+
+/* Fotó fölé húzott fátyol-gradiensek: a szekció háttérszínébe kell olvadniuk, különben
+   light módban fekete sáv marad a kép alján/tetején. Minden ilyen fátyol a `from`
+   oldalon tömör, ezért iránytól (to-t / to-b) függően cseréljük a stopokat. */
+html.light .surface-dark .bg-gradient-to-t[class*="-ink"] {
+  --tw-gradient-from: var(--sd-bg);
+  --tw-gradient-via: color-mix(in srgb, var(--sd-bg) 65%, transparent);
+  --tw-gradient-to: color-mix(in srgb, var(--sd-bg) 25%, transparent);
+}
+html.light .surface-dark .bg-gradient-to-b[class*="-ink"] {
+  --tw-gradient-from: color-mix(in srgb, var(--sd-bg) 40%, transparent);
+  --tw-gradient-via: color-mix(in srgb, var(--sd-bg) 70%, transparent);
+  --tw-gradient-to: var(--sd-bg);
+}
+
+/* Füstös, sötétre generált hangulatfotók a dramatikus szekciók hátterében. Világos módban
+   a világos panelen szürke maszattá válnának és elvennék a szöveg kontrasztját — ezért
+   halványabban, világosítva tesszük ki őket (finom textúra marad, nem háttérkép). */
+html.light .ambient-photo { opacity: 0.18; filter: brightness(1.35) contrast(0.9); }
 /* A fejléc B&W logója light módban normál (nem invertált). */
 html.light .surface-dark .mix-blend-screen { mix-blend-mode: normal !important; }
 html.light .surface-dark .invert { filter: none !important; }
@@ -208,6 +244,8 @@ html.light .surface-dark .invert { filter: none !important; }
 .fan-arrow:hover { color: var(--color-accent); border-color: color-mix(in srgb, var(--color-accent) 50%, transparent); }
 .fan-arrow:active { opacity: 0.7; }
 html.light .fan-arrow { border-color: rgba(0,0,0,0.1); }
+/* A legyező-kártya háttere csak a bélyegkép betöltéséig látszik — világos módban ne fekete legyen. */
+html.light .fan-card { background: var(--sd-bg); }
 
 /* Neon/füstös esemény-kártya animációk */
 .event-neon { box-shadow: 0 0 0 1px rgba(177, 59, 214, 0.15), 0 24px 60px -30px rgba(177, 59, 214, 0.5); }

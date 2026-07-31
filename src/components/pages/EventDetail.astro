@@ -65,7 +65,7 @@ const eventUrl = eventJsonLd.url;
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(eventJsonLd)} />
 
   <!-- Hero: a borítókép jól látszik (teljes fényerő), csak alul sötétített sáv a cím olvashatóságáért. -->
-  <section class="relative overflow-hidden bg-ink text-surface" style={heroStyle}>
+  <section class="surface-dark relative overflow-hidden bg-ink text-surface" style={heroStyle}>
     {coverUrl && <img src={coverUrl} alt={title} class="absolute inset-0 h-full w-full object-cover" />}
     {coverUrl && <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/5"></div>}
     <div class={`relative z-10 mx-auto flex max-w-5xl flex-col justify-end px-4 ${coverUrl ? 'min-h-[52vh] py-12 md:min-h-[58vh]' : 'py-20 md:py-28'}`}>

@@ -81,6 +81,19 @@ const pins = Object.entries(CITY).map(([key, coords]) => {
   .pin-link:hover { background: color-mix(in srgb, var(--color-accent) 22%, transparent); color: var(--color-accent); }
   .pin-add { text-align: left; font-size: 12px; font-weight: 600; color: var(--color-accent); padding: 6px 7px; border-radius: 7px; border: 1px dashed color-mix(in srgb, var(--color-accent) 45%, transparent); cursor: pointer; }
   .pin-add:hover { background: color-mix(in srgb, var(--color-accent) 15%, transparent); }
+
+  /* Világos téma: a tűk, feliratok és a felugró buborék a világos térképen is olvasható
+     legyen (alapból mind fehér, ami a világos panelen eltűnne). */
+  :global(html.light) .pin-dot { border-color: rgba(0,0,0,0.2); }
+  :global(html.light) .map-pin.empty .pin-dot { background: rgba(0,0,0,0.22); }
+  :global(html.light) .map-pin.club .pin-dot { border-color: rgba(0,0,0,0.15); }
+  :global(html.light) .pin-city { color: #55555f; text-shadow: none; }
+  :global(html.light) .map-pin.club .pin-city { color: #2a2a33; }
+  :global(html.light) .pin-pop { border-color: rgba(0,0,0,0.1); background: #ffffffee; box-shadow: 0 12px 34px rgba(0,0,0,0.18); }
+  :global(html.light) .pin-pop-title { color: #17171c; }
+  :global(html.light) .pin-sub { color: rgba(0,0,0,0.45); }
+  :global(html.light) .pin-link { color: #17171c; }
+
   @media (prefers-reduced-motion: reduce) { .pin-dot { animation: none !important; } }
 </style>
 <script>
