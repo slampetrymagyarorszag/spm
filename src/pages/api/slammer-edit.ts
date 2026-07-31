@@ -4,6 +4,7 @@ import { validateSlammerEdit } from '../../lib/validation';
 import { getEmailSettings } from '../../sanity/lib/api';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc } from '../../lib/escape';
+import { submissionRecipients, notifyFallbackEmail } from '../../lib/recipients';
 import { writeClient } from '../../sanity/lib/writeClient';
 import { isConsented, collectValidUrls } from '../../lib/validation';
 
@@ -87,9 +88,10 @@ export const POST: APIRoute = async ({ request }) => {
     // Best-effort értesítő a kezelőnek.
     try {
       const emails = await getEmailSettings(sanityClient);
-      if (emails.notifyOnSubmissions && emails.notifyEmail) {
+      const to = submissionRecipients(emails, notifyFallbackEmail(import.meta.env, process.env));
+      if (to.length) {
         await sendMail({
-          to: emails.notifyEmail,
+          to,
           subject: `Slammer-módosítási kérés — ${fields.slammerName}`,
           html: `<h2>Módosítási kérés: ${esc(fields.slammerName)}</h2>
             ${remove ? '<p><strong>❗ A slammer kéri, hogy ne szerepeljen az oldalon.</strong></p>' : ''}

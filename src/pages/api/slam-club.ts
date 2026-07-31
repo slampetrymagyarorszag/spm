@@ -4,6 +4,7 @@ import { validateSlamClub } from '../../lib/validation';
 import { getEmailSettings } from '../../sanity/lib/api';
 import { sendMail } from '../../lib/mailer';
 import { escapeHtml as esc } from '../../lib/escape';
+import { submissionRecipients, notifyFallbackEmail } from '../../lib/recipients';
 import { writeClient } from '../../sanity/lib/writeClient';
 
 export const prerender = false;
@@ -35,9 +36,10 @@ export const POST: APIRoute = async ({ request }) => {
     // Best-effort értesítő a kezelőnek.
     try {
       const emails = await getEmailSettings(sanityClient);
-      if (emails.notifyOnSubmissions && emails.notifyEmail) {
+      const to = submissionRecipients(emails, notifyFallbackEmail(import.meta.env, process.env));
+      if (to.length) {
         await sendMail({
-          to: emails.notifyEmail,
+          to,
           subject: 'Új klub beküldés — elbírálásra',
           html: `<h2>Új klub</h2>
             <p><strong>Város:</strong> ${esc(String(data.city))}</p>

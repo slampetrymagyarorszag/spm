@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-export type MailInput = { to: string; subject: string; html: string; replyTo?: string };
+export type MailInput = { to: string | string[]; subject: string; html: string; replyTo?: string };
 
 export async function sendMail({ to, subject, html, replyTo }: MailInput): Promise<void> {
   const apiKey = import.meta.env.RESEND_API_KEY ?? process.env.RESEND_API_KEY;
