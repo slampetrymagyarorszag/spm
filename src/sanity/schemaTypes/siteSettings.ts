@@ -127,9 +127,40 @@ export const siteSettings = defineType({
     }),
     defineField({ name: 'championshipCtaEnabled', title: 'Országos bajnokság CTA — bekapcsolva', type: 'boolean', initialValue: false }),
     defineField({ name: 'championshipCtaLabel', title: 'CTA felirat', type: 'string', initialValue: 'Jelentkezem az országos bajnokságra' }),
-    defineField({ name: 'championshipCtaUrl', title: 'CTA cél (URL vagy /esemenyek/slug)', type: 'string' }),
-    defineField({ name: 'championshipCtaFrom', title: 'CTA megjelenés -tól', type: 'datetime' }),
-    defineField({ name: 'championshipCtaTo', title: 'CTA megjelenés -ig', type: 'datetime' }),
+    defineField({
+      name: 'championshipCtaUrl',
+      title: 'CTA cél (URL vagy /esemenyek/slug) — HAGYD ÜRESEN a felugró űrlaphoz',
+      description:
+        'Ha üresen hagyod, a gomb a jelentkezési űrlapot nyitja meg felugró ablakban (ez a szokásos). Csak akkor tölts ide linket, ha a gombnak máshová kell vinnie.',
+      type: 'string',
+    }),
+    defineField({
+      name: 'championshipCtaIntro',
+      title: 'Bevezető szöveg a felugró űrlap tetején',
+      type: 'text',
+      rows: 2,
+    }),
+    defineField({
+      name: 'championshipDays',
+      title: 'Választható előválogató napok',
+      description: 'A jelentkező ezek közül jelölheti meg, melyik nap(ok) felelnek meg neki. Ahogy ide beírod, úgy jelenik meg az űrlapon és úgy kerül az exportba.',
+      type: 'array',
+      of: [{ type: 'string' }],
+      initialValue: ['2026.09.25. péntek', '2026.09.26. szombat', '2026.09.27. vasárnap'],
+      options: { layout: 'tags' },
+    }),
+    defineField({
+      name: 'championshipCtaFrom',
+      title: 'CTA megjelenés -tól (opcionális)',
+      description: 'HAGYD ÜRESEN, ha a gomb a bekapcsolás pillanatától látszódjon. Csak akkor tölts ide dátumot, ha időzíteni akarod. (Ezek a mezők a bajnoksági gombra vonatkoznak, nem a havi klubra.)',
+      type: 'datetime',
+    }),
+    defineField({
+      name: 'championshipCtaTo',
+      title: 'CTA eltűnés -ig (opcionális)',
+      description: 'HAGYD ÜRESEN, ha a gomb visszakapcsolásig látszódjon.',
+      type: 'datetime',
+    }),
   ],
   preview: { prepare: () => ({ title: 'Oldal beállítások' }) },
 });

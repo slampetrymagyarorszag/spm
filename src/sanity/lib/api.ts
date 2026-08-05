@@ -29,6 +29,8 @@ export type SiteSettings = {
   championshipCtaUrl?: string;
   championshipCtaFrom?: string;
   championshipCtaTo?: string;
+  championshipCtaIntro?: string;
+  championshipDays?: string[];
 };
 
 export type EmailSettings = {

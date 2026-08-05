@@ -5,7 +5,8 @@ export const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   social,
   impressum{ orgName, address, email, taxNumber, annualReportsUrl, annualReports[]{ label, "fileUrl": file.asset->url } },
   home, monthlyContest, emails,
-  championshipCtaEnabled, championshipCtaLabel, championshipCtaUrl, championshipCtaFrom, championshipCtaTo
+  championshipCtaEnabled, championshipCtaLabel, championshipCtaUrl, championshipCtaFrom, championshipCtaTo,
+  championshipCtaIntro, championshipDays
 }`;
 
 // Csak a már megjelent (nem jövőbeli dátumú) hírek — időzített megjelenés.

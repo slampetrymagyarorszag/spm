@@ -86,16 +86,56 @@ export type ChampionshipInput = {
   stageName?: string;
   achievements?: string;
   unavailableDay?: string;
+  /** Mely előválogató napok felelnek meg (több is választható). */
+  availableDays?: unknown;
+  /** Szabad szöveges megjegyzés a szervezőknek. */
+  note?: string;
   consent?: unknown;
   eventSlug?: string;
   website?: string;
 };
 
-export function validateChampionship(input: ChampionshipInput): ValidationResult {
+/**
+ * Az előválogató napok alapértelmezése, ha a Studióban nincs megadva.
+ * Új bajnokságnál elég a Studióban átírni (Oldal beállítások → Választható előválogató napok),
+ * nem kell kódot módosítani.
+ */
+export const DEFAULT_CHAMPIONSHIP_DAYS = [
+  '2026.09.25. péntek',
+  '2026.09.26. szombat',
+  '2026.09.27. vasárnap',
+];
+
+/**
+ * A beküldött napokat a megengedett listára szűri: kanonikus alakra hozza (a Studióban
+ * megadott írásmódra), kis-nagybetűtől függetlenül deduplikál, és az ismeretlen napokat
+ * eldobja — így a CSV-exportba csak tiszta, összehasonlítható értékek kerülnek.
+ * A visszaadott sorrend a MEGENGEDETT lista sorrendje, nem a beküldésé.
+ */
+export function normalizeAvailableDays(input: unknown, allowed: string[]): string[] {
+  const raw = Array.isArray(input) ? input : typeof input === 'string' && input ? [input] : [];
+  const picked = new Set(raw.map((d) => String(d ?? '').trim().toLowerCase()).filter(Boolean));
+  return allowed.map((d) => d.trim()).filter((d) => picked.has(d.toLowerCase()));
+}
+
+export type ChampionshipOptions = {
+  /** Ha igaz, legalább egy megfelelő napot meg kell jelölni (a felugró CTA-űrlap ilyen). */
+  requireDays?: boolean;
+  allowedDays?: string[];
+};
+
+export function validateChampionship(
+  input: ChampionshipInput,
+  opts: ChampionshipOptions = {},
+): ValidationResult {
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A név megadása kötelező.' };
   if (!input.email || !EMAIL_RE.test(input.email)) return { ok: false, error: 'Érvényes email cím szükséges.' };
   if (!input.stageName || input.stageName.trim().length < 2) return { ok: false, error: 'A művésznév megadása kötelező.' };
+  if (opts.requireDays) {
+    const days = normalizeAvailableDays(input.availableDays, opts.allowedDays ?? DEFAULT_CHAMPIONSHIP_DAYS);
+    if (days.length === 0) return { ok: false, error: 'Jelöld meg, melyik nap(ok) felelnek meg neked.' };
+  }
   if (!isConsented(input.consent)) return { ok: false, error: 'Kérjük, fogadd el a jelentkezés feltételeit.' };
   return { ok: true };
 }

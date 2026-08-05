@@ -1,14 +1,173 @@
 ---
+// „Jelentkezem az országos bajnokságra" gomb + felugró jelentkezési űrlap.
+// Alapesetben a gomb az űrlapot nyitja meg; ha a Studióban meg van adva a CTA cél URL,
+// akkor a régi viselkedés marad (egyszerű link oda).
 import type { SiteSettings } from '../sanity/lib/api';
 import { isCtaActive } from '../sanity/lib/cta';
+import { DEFAULT_CHAMPIONSHIP_DAYS } from '../lib/validation';
+import { t } from '../i18n/ui';
+import { getLangFromUrl, type Lang } from '../i18n';
+
 interface Props { settings: SiteSettings }
 const { settings } = Astro.props;
+const lang: Lang = getLangFromUrl(Astro.url);
+
 const active = isCtaActive(settings);
 const label = settings.championshipCtaLabel ?? 'Jelentkezem az országos bajnokságra';
-const url = settings.championshipCtaUrl ?? '/esemenyek';
+const url = settings.championshipCtaUrl?.trim();
+const intro = settings.championshipCtaIntro?.trim();
+const days = settings.championshipDays?.length ? settings.championshipDays : DEFAULT_CHAMPIONSHIP_DAYS;
+const btnClass = 'inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-ink shadow-lg transition hover:opacity-90';
 ---
-{active && (
-  <a href={url} class="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-ink shadow-lg hover:opacity-90">
-    🎤 {label}
-  </a>
+{active && url && (
+  <a href={url} class={btnClass}>{label}</a>
 )}
+
+{active && !url && (
+  <div class="championship-cta" style="display:contents">
+    <button type="button" class:list={[btnClass, 'ch-open']}>{label}</button>
+
+    <div class="ch-modal fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={t(lang, 'championship.modalAriaLabel')}>
+      <div class="ch-backdrop absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      <!-- overflow-x-hidden: a dekoratív fény-folt kilóg jobbra, azt vágjuk, nem görgetjük. -->
+      <div class="surface-dark relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto overflow-x-hidden rounded-2xl border border-white/10 bg-ink text-surface shadow-2xl">
+        <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/25 blur-[90px]"></div>
+        <div class="relative p-6 md:p-7">
+          <button type="button" class="ch-close absolute right-4 top-4 text-surface/60 hover:text-surface" aria-label={t(lang, 'common.close')}>✕</button>
+          <p class="mb-1 text-xs uppercase tracking-[0.2em] text-accent">{t(lang, 'championship.heading')}</p>
+          <h2 class="font-display text-3xl leading-[0.95]">{label}</h2>
+          {intro && <p class="mt-2 text-sm text-surface/75">{intro}</p>}
+
+          <form class="ch-form mt-5 grid gap-3" aria-label={t(lang, 'championship.formAriaLabel')}>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label for="ch-cta-name" class="mb-1 block text-sm text-surface/70">{t(lang, 'championship.nameLabel')} <span class="text-accent">*</span></label>
+                <input id="ch-cta-name" type="text" name="name" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+              </div>
+              <div>
+                <label for="ch-cta-stage" class="mb-1 block text-sm text-surface/70">{t(lang, 'championship.stageNameLabel')} <span class="text-accent">*</span></label>
+                <input id="ch-cta-stage" type="text" name="stageName" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+              </div>
+            </div>
+
+            <div>
+              <label for="ch-cta-email" class="mb-1 block text-sm text-surface/70">{t(lang, 'championship.emailLabel')} <span class="text-accent">*</span></label>
+              <input id="ch-cta-email" type="email" name="email" required class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent" />
+            </div>
+
+            <div>
+              <label for="ch-cta-ach" class="mb-1 block text-sm text-surface/70">{t(lang, 'championship.achievementsLabel')} <span class="text-surface/40">{t(lang, 'championship.achievementsOptional')}</span></label>
+              <textarea id="ch-cta-ach" name="achievements" rows="2" placeholder={t(lang, 'championship.achievementsPlaceholder')} class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent"></textarea>
+            </div>
+
+            <fieldset class="mt-1">
+              <legend class="mb-2 text-sm text-surface/70">
+                {t(lang, 'championship.availableDaysLabel')} <span class="text-accent">*</span>
+                <span class="text-surface/40">{t(lang, 'championship.availableDaysHint')}</span>
+              </legend>
+              <div class="flex flex-wrap gap-2">
+                {days.map((day) => (
+                  <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent/10">
+                    <input type="checkbox" name="availableDays" value={day} class="accent-[var(--color-accent)]" /> {day}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div>
+              <label for="ch-cta-note" class="mb-1 block text-sm text-surface/70">{t(lang, 'championship.noteLabel')} <span class="text-surface/40">{t(lang, 'championship.optional')}</span></label>
+              <textarea id="ch-cta-note" name="note" rows="2" placeholder={t(lang, 'championship.notePlaceholder')} class="w-full rounded-lg border border-white/15 bg-ink/40 px-4 py-3 text-surface placeholder:text-surface/40 outline-none focus:border-accent"></textarea>
+            </div>
+
+            <div class="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-surface/70" set:html={t(lang, 'championship.drawNoticePopup')} />
+
+            <label class="flex items-start gap-3 text-sm text-surface/75">
+              <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
+              <span>{t(lang, 'championship.consentText')}</span>
+            </label>
+
+            <!-- honeypot -->
+            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+            <button type="submit" class="mt-1 rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:opacity-90">{t(lang, 'championship.submit')}</button>
+            <p class="ch-status text-sm" role="status" aria-live="polite" data-sending={t(lang, 'form.statusSending')} data-ok={t(lang, 'form.successChampionship')} data-err={t(lang, 'form.statusError')} data-neterr={t(lang, 'form.statusNetworkError')}></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+<script>
+  document.querySelectorAll('.championship-cta').forEach((rootNode) => {
+    const root = rootNode as HTMLElement;
+    if (root.dataset.wired) return;
+    root.dataset.wired = '1';
+
+    const openBtn = root.querySelector('.ch-open') as HTMLButtonElement;
+    const modal = root.querySelector('.ch-modal') as HTMLElement;
+    const form = root.querySelector('.ch-form') as HTMLFormElement;
+    const status = root.querySelector('.ch-status') as HTMLElement;
+
+    function openModal() {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      (form.querySelector('input[name=name]') as HTMLInputElement)?.focus();
+    }
+    function closeModal() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    openBtn.addEventListener('click', openModal);
+    root.querySelector('.ch-close')?.addEventListener('click', closeModal);
+    root.querySelector('.ch-backdrop')?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type=submit]') as HTMLButtonElement;
+      const fd = new FormData(form);
+      // A napok többértékűek — a getAll kell hozzá, az Object.fromEntries csak az utolsót adná.
+      const payload: Record<string, any> = {
+        ...Object.fromEntries(fd.entries()),
+        availableDays: fd.getAll('availableDays').map(String),
+        kind: 'championship',
+      };
+      if (payload.availableDays.length === 0) {
+        status.textContent = 'Jelölj meg legalább egy napot, ami megfelel.';
+        status.style.color = '#ff8da1';
+        return;
+      }
+      btn.disabled = true;
+      status.textContent = status.dataset.sending ?? 'Küldés…';
+      status.style.color = '';
+      try {
+        const res = await fetch('/api/registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          status.textContent = status.dataset.ok ?? 'Köszönjük a jelentkezést!';
+          status.style.color = '#7CFFB2';
+          form.reset();
+          setTimeout(closeModal, 2500);
+        } else {
+          status.textContent = json.error ?? status.dataset.err ?? 'Hiba történt.';
+          status.style.color = '#ff8da1';
+        }
+      } catch {
+        status.textContent = status.dataset.neterr ?? 'Hálózati hiba. Próbáld újra.';
+        status.style.color = '#ff8da1';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>

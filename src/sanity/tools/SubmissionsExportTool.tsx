@@ -12,6 +12,8 @@ type Row = {
   entryType?: string;
   contextLabel?: string;
   achievements?: string;
+  availableDays?: string[];
+  note?: string;
   unavailableDay?: string;
 };
 
@@ -23,6 +25,8 @@ const COLUMNS: { key: keyof Row; label: string }[] = [
   { key: 'stageName', label: 'Művésznév' },
   { key: 'entryType', label: 'Jelentkezés típusa' },
   { key: 'contextLabel', label: 'Mire jelentkezett' },
+  { key: 'availableDays', label: 'Megfelelő napok' },
+  { key: 'note', label: 'Megjegyzés' },
   { key: 'achievements', label: 'Eddigi eredmények' },
   { key: 'unavailableDay', label: 'Nem megfelelő nap' },
 ];
@@ -38,11 +42,15 @@ export function SubmissionsExportTool() {
   const client = useClient({ apiVersion: '2024-01-01' });
   const [rows, setRows] = useState<Row[] | null>(null);
   const [filter, setFilter] = useState<'all' | 'havi-klub' | 'bajnoksag'>('all');
+  // Kétlépcsős törlés: az első kattintás csak felfedi a megerősítő gombot.
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setRows(null);
     const data = await client.fetch<Row[]>(
-      '*[_type == "formSubmission"] | order(submittedAt desc){_id,kind,submittedAt,name,email,stageName,entryType,contextLabel,achievements,unavailableDay}',
+      '*[_type == "formSubmission"] | order(submittedAt desc){_id,kind,submittedAt,name,email,stageName,entryType,contextLabel,achievements,availableDays,note,unavailableDay}',
     );
     setRows(data || []);
   }, [client]);
@@ -51,6 +59,26 @@ export function SubmissionsExportTool() {
 
   const visible = (rows || []).filter((r) => filter === 'all' || r.kind === filter);
 
+  // A törlés VÉGLEGES, és pontosan azt a listát törli, ami épp a képernyőn van (a szűrőt
+  // is figyelembe véve) — így nem lehet véletlenül mást törölni, mint amit a szerkesztő lát.
+  const deleteVisible = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const ids = visible.map((r) => r._id);
+      for (let i = 0; i < ids.length; i += 50) {
+        const tx = ids.slice(i, i + 50).reduce((t, id) => t.delete(id), client.transaction());
+        await tx.commit({ visibility: 'async' });
+      }
+      setConfirmDelete(false);
+      await load();
+    } catch (e: any) {
+      setDeleteError(e?.message || 'A törlés nem sikerült. Lehet, hogy nincs törlési jogod.');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const downloadCsv = () => {
     const header = COLUMNS.map((c) => c.label).join(';');
     const lines = visible.map((r) =>
@@ -58,6 +86,7 @@ export function SubmissionsExportTool() {
         let v: any = r[c.key];
         if (c.key === 'kind') v = kindLabel(r.kind);
         if (c.key === 'submittedAt' && r.submittedAt) v = new Date(r.submittedAt).toLocaleString('hu-HU');
+        if (Array.isArray(v)) v = v.join(', ');
         return csvCell(v);
       }).join(';'),
     );
@@ -96,7 +125,42 @@ export function SubmissionsExportTool() {
           </Box>
           <Button text="Frissítés" mode="ghost" onClick={load} />
           <Button text={`CSV letöltése (${visible.length})`} tone="primary" disabled={!rows || visible.length === 0} onClick={downloadCsv} />
+          {!confirmDelete ? (
+            <Button
+              text="Törlés…"
+              mode="ghost"
+              tone="critical"
+              disabled={!rows || visible.length === 0}
+              onClick={() => { setConfirmDelete(true); setDeleteError(null); }}
+            />
+          ) : (
+            <Flex gap={2} align="center">
+              <Button
+                text={deleting ? 'Törlés…' : `Igen, törlöm mind (${visible.length})`}
+                tone="critical"
+                disabled={deleting}
+                onClick={deleteVisible}
+              />
+              <Button text="Mégse" mode="ghost" disabled={deleting} onClick={() => setConfirmDelete(false)} />
+            </Flex>
+          )}
         </Flex>
+
+        {confirmDelete && (
+          <Card padding={3} radius={2} tone="critical">
+            <Text size={1}>
+              <strong>Végleges törlés.</strong> A most listázott {visible.length} jelentkezés törlődik
+              {filter === 'all' ? ' (mind a havi klub, mind a bajnokság)' : filter === 'bajnoksag' ? ' (csak az országos bajnokság)' : ' (csak a havi klub)'}.
+              Ez nem vonható vissza — ha kell az adat, előbb töltsd le CSV-ben.
+            </Text>
+          </Card>
+        )}
+
+        {deleteError && (
+          <Card padding={3} radius={2} tone="critical">
+            <Text size={1}>{deleteError}</Text>
+          </Card>
+        )}
 
         {rows === null ? (
           <Flex align="center" gap={2}><Spinner /><Text>Betöltés…</Text></Flex>
@@ -107,7 +171,7 @@ export function SubmissionsExportTool() {
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
               <thead>
                 <tr>
-                  {COLUMNS.slice(0, 7).map((c) => (
+                  {COLUMNS.slice(0, 8).map((c) => (
                     <th key={c.key} style={{ textAlign: 'left', borderBottom: '1px solid var(--card-border-color)', padding: '6px 10px', whiteSpace: 'nowrap' }}>{c.label}</th>
                   ))}
                 </tr>
@@ -122,6 +186,7 @@ export function SubmissionsExportTool() {
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{r.stageName}</td>
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{r.entryType}</td>
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{r.contextLabel}</td>
+                    <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{(r.availableDays || []).join(', ')}</td>
                   </tr>
                 ))}
               </tbody>
