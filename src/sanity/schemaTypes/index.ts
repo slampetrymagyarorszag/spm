@@ -12,5 +12,6 @@ import { location } from './objects/location';
 import { seo } from './objects/seo';
 import { mediaItem } from './mediaItem';
 import { page } from './page';
+import { pressContact } from './pressContact';
 
-export const schemaTypes = [siteSettings, blockContent, post, slammer, event, eventTip, slammerApplication, slammerEditRequest, formSubmission, slamClub, location, seo, mediaItem, page];
+export const schemaTypes = [siteSettings, blockContent, post, slammer, event, eventTip, slammerApplication, slammerEditRequest, formSubmission, slamClub, location, seo, mediaItem, page, pressContact];

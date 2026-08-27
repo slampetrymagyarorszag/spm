@@ -61,6 +61,35 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
+      // Sajtólista — a kiküldés a felső „Sajtóközlemény küldése” menüből megy
+      S.listItem()
+        .title('📰 Sajtólista')
+        .child(
+          S.list()
+            .title('Sajtólista')
+            .items([
+              S.listItem()
+                .title('✅ Feliratkozott')
+                .child(
+                  S.documentList()
+                    .title('Feliratkozott sajtókapcsolatok')
+                    .filter('_type == "pressContact" && subscribed != false')
+                    .defaultOrdering([{ field: 'name', direction: 'asc' }]),
+                ),
+              S.listItem()
+                .title('⛔ Leiratkozott')
+                .child(
+                  S.documentList()
+                    .title('Leiratkozott sajtókapcsolatok')
+                    .filter('_type == "pressContact" && subscribed == false')
+                    .defaultOrdering([{ field: 'unsubscribedAt', direction: 'desc' }]),
+                ),
+              S.listItem()
+                .title('Összes')
+                .child(S.documentTypeList('pressContact').title('Összes sajtókapcsolat')),
+            ]),
+        ),
+
       // Látogatói esemény-tippek elbírálása
       S.listItem()
         .title('📥 Beküldött események')
