@@ -122,6 +122,17 @@ const btnClass = 'inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 
     }
 
     openBtn.addEventListener('click', openModal);
+
+    // Mélylink: a /?jelentkezes=1 címre érkezve rögtön nyílik az űrlap. Így az emailben
+    // vagy közösségi posztban lévő gomb egy kattintással a kitölthető űrlapra visz.
+    try {
+      if (new URLSearchParams(location.search).get('jelentkezes')) {
+        openModal();
+        // A paramétert kivesszük, hogy egy frissítés ne nyissa meg újra.
+        history.replaceState(null, '', location.pathname + location.hash);
+      }
+    } catch { /* régi böngésző: marad a kattintás */ }
+
     root.querySelector('.ch-close')?.addEventListener('click', closeModal);
     root.querySelector('.ch-backdrop')?.addEventListener('click', closeModal);
     document.addEventListener('keydown', (e) => {

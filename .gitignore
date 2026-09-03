@@ -34,3 +34,6 @@ pnpm-debug.log*
 # migration output (verification artifact)
 migration-output.json
 migration-slammers.json
+
+# Megkereso kampany: valodi cimlistak, naplok es kimenetek SOHA nem kerulnek gitbe
+outreach/
