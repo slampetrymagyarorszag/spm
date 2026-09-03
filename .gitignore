@@ -35,5 +35,6 @@ pnpm-debug.log*
 migration-output.json
 migration-slammers.json
 
-# Megkereso kampany: valodi cimlistak, naplok es kimenetek SOHA nem kerulnek gitbe
-outreach/
+# Megkereso kampany: valodi cimlistak, naplok es kimenetek SOHA nem kerulnek gitbe.
+# Csak a GYOKERBELI adatmappa - a scripts/outreach/ kodnak bent kell lennie.
+/outreach/
