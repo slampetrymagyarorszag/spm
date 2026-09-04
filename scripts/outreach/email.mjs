@@ -10,7 +10,7 @@ export function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-export const SUBJECT = 'Vasárnap éjfélkor becsukjuk a jelentkezést (14. OB)';
+export const SUBJECT = 'Vasárnap éjfélkor zárul a jelentkezés (14. OB)';
 
 export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@slampoetry.hu' }) {
   const hello = greeting(name);
