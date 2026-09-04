@@ -155,7 +155,7 @@ describe('greeting', () => {
   });
 });
 
-import { renderOutreachEmail, renderOutreachText, SUBJECT, esc } from '../scripts/outreach/email.mjs';
+import { renderOutreachEmail, renderOutreachText, SUBJECT, esc, BANNER_URL, EVENT_URL } from '../scripts/outreach/email.mjs';
 
 describe('kampány-levél', () => {
   const base = { name: 'Varga Zsombor', applyUrl: 'https://slampoetry.hu/?jelentkezes=1' };
@@ -196,5 +196,21 @@ describe('kampány-levél', () => {
 
   it('a szöveges változat is tartalmazza a linket', () => {
     expect(renderOutreachText(base)).toContain('https://slampoetry.hu/?jelentkezes=1');
+  });
+
+  it('a fejlécben ott a plakát, alt-szöveggel és az eseményre linkelve', () => {
+    const html = renderOutreachEmail(base);
+    expect(html).toContain(BANNER_URL);
+    expect(html).toContain(`href="${EVENT_URL}"`);
+    // Kép-blokkolás mellett is legyen mit felolvasni.
+    expect(html).toMatch(/alt="[^"]*Előválogatók[^"]*"/);
+  });
+
+  it('benne van a Facebook-esemény és a helyszín mindkét változatban', () => {
+    for (const body of [renderOutreachEmail(base), renderOutreachText(base)]) {
+      expect(body).toContain('facebook.com/events/864586666381482');
+      expect(body).toContain('Kazinczy utca 34');
+      expect(body).toContain('18:00');
+    }
   });
 });

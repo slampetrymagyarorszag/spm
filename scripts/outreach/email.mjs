@@ -12,13 +12,30 @@ export function esc(s) {
 
 export const SUBJECT = 'Vasárnap éjfélkor zárul a jelentkezés (14. OB)';
 
-export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@slampoetry.hu' }) {
+/** Az esemény hivatalos plakátja és Facebook-eseménye. */
+export const BANNER_URL = 'https://slampoetry.hu/ob14-elovalogatok.jpg';
+export const EVENT_URL = 'https://www.facebook.com/events/864586666381482/';
+const BANNER_ALT =
+  'XIV. Slam Poetry Országos Bajnokság — Előválogatók, 2026. szeptember 25-26-27., 18:00, KAZI';
+
+export function renderOutreachEmail({
+  name,
+  applyUrl,
+  contactEmail = 'contest@slampoetry.hu',
+  bannerUrl = BANNER_URL,
+  eventUrl = EVENT_URL,
+}) {
   const hello = greeting(name);
   const btn =
     'display:inline-block;background:#b13bd6;color:#111114;text-decoration:none;' +
     'font-weight:700;font-size:17px;padding:16px 30px;border-radius:10px';
 
-  return `<div style="font-family:Inter,Arial,sans-serif;line-height:1.65;color:#17171c;max-width:560px">
+  return `<div style="font-family:Inter,Arial,sans-serif;line-height:1.65;color:#17171c;max-width:600px">
+  <a href="${esc(eventUrl)}" style="display:block;margin:0 0 24px">
+    <img src="${esc(bannerUrl)}" alt="${esc(BANNER_ALT)}" width="600"
+         style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:10px">
+  </a>
+
   <p style="margin:0 0 16px">${esc(hello)}</p>
 
   <p style="margin:0 0 16px">Ott voltál valamelyik korábbi országos bajnokság előválogatóján, úgyhogy nem hagyunk ki:
@@ -31,7 +48,10 @@ export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@sl
   <p style="margin:0 0 24px">A kitöltés rövidebb, mint amennyit egy csattanón szoktál agyalni:
   név, művésznév, a neked megfelelő napok, és ha üzennél valamit, egy megjegyzés.</p>
 
-  <p style="margin:0 0 28px"><a href="${esc(applyUrl)}" style="${btn}">Jelentkezem az előválogatóra &rarr;</a></p>
+  <p style="margin:0 0 20px"><a href="${esc(applyUrl)}" style="${btn}">Jelentkezem az előválogatóra &rarr;</a></p>
+
+  <p style="margin:0 0 28px">Helyszín a KAZI (1075 Budapest, Kazinczy utca 34.), kezdés minden nap 18:00.
+  Az esemény a Facebookon: <a href="${esc(eventUrl)}" style="color:#b13bd6">${esc(eventUrl.replace(/^https?:\/\/(www\.)?/, ''))}</a></p>
 
   <p style="margin:0 0 8px">Ha van a fiókodban egy szöveg, ami már rég színpadot keres, ez az a hét.</p>
   <p style="margin:0 0 24px">Slam Poetry Magyarország</p>
@@ -47,7 +67,12 @@ export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@sl
 }
 
 /** Egyszerű szöveges változat — a levelezők egy része ezt mutatja, és jobb a kézbesíthetőség. */
-export function renderOutreachText({ name, applyUrl, contactEmail = 'contest@slampoetry.hu' }) {
+export function renderOutreachText({
+  name,
+  applyUrl,
+  contactEmail = 'contest@slampoetry.hu',
+  eventUrl = EVENT_URL,
+}) {
   return `${greeting(name)}
 
 Ott voltál valamelyik korábbi országos bajnokság előválogatóján, úgyhogy nem hagyunk ki:
@@ -61,6 +86,9 @@ A kitöltés rövidebb, mint amennyit egy csattanón szoktál agyalni: név, mű
 a neked megfelelő napok, és ha üzennél valamit, egy megjegyzés.
 
 Jelentkezés: ${applyUrl}
+
+Helyszín a KAZI (1075 Budapest, Kazinczy utca 34.), kezdés minden nap 18:00.
+Az esemény a Facebookon: ${eventUrl}
 
 Ha van a fiókodban egy szöveg, ami már rég színpadot keres, ez az a hét.
 Slam Poetry Magyarország
