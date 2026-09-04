@@ -44,7 +44,7 @@ export function renderOutreachEmail({
   <p style="margin:0 0 16px">${esc(hello)}</p>
 
   <p style="margin:0 0 16px">Ott voltál valamelyik korábbi országos bajnokság előválogatóján, úgyhogy nem hagyunk ki:
-  <strong>a 14. OB jelentkezése vasárnap éjfélkor zár.</strong></p>
+  <strong>a 14. OB jelentkezése vasárnap éjfélkor zár. Jelentkezz!</strong></p>
 
   <p style="margin:0 0 16px">Az előválogatók <strong>szeptember 25-én, 26-án és 27-én</strong> lesznek.
   Bejelölöd, melyik nap jó neked, a beosztás pedig sorsolással dől el. A kéréseket igyekszünk
@@ -82,7 +82,7 @@ export function renderOutreachText({
   return `${greeting(name)}
 
 Ott voltál valamelyik korábbi országos bajnokság előválogatóján, úgyhogy nem hagyunk ki:
-a 14. OB jelentkezése vasárnap éjfélkor zár.
+a 14. OB jelentkezése vasárnap éjfélkor zár. Jelentkezz!
 
 Az előválogatók szeptember 25-én, 26-án és 27-én lesznek. Bejelölöd, melyik nap jó neked,
 a beosztás pedig sorsolással dől el. A kéréseket igyekszünk figyelembe venni, de a végén

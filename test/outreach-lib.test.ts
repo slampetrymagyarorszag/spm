@@ -164,6 +164,8 @@ describe('kampány-levél', () => {
     const html = renderOutreachEmail(base);
     expect(html).toContain('Szia Varga Zsombor!');
     expect(html).toContain('vasárnap éjfélkor zár');
+    expect(html).toContain('Jelentkezz!');
+    expect(renderOutreachText(base)).toContain('Jelentkezz!');
     expect(html).toContain('14. OB');
     expect(html).toContain('szeptember 25-én, 26-án és 27-én');
   });
