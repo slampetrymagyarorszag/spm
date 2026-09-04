@@ -26,9 +26,14 @@ export function renderOutreachEmail({
   eventUrl = EVENT_URL,
 }) {
   const hello = greeting(name);
+  // Az elsődleges (kitöltött) gomb a jelentkezés. Az esemény másodlagos, kontúros gombot
+  // kap, hogy a két hívás ne versenyezzen egymással.
   const btn =
     'display:inline-block;background:#b13bd6;color:#111114;text-decoration:none;' +
     'font-weight:700;font-size:17px;padding:16px 30px;border-radius:10px';
+  const btnSecondary =
+    'display:inline-block;background:#ffffff;color:#b13bd6;text-decoration:none;' +
+    'border:2px solid #b13bd6;font-weight:600;font-size:15px;padding:12px 24px;border-radius:10px';
 
   return `<div style="font-family:Inter,Arial,sans-serif;line-height:1.65;color:#17171c;max-width:600px">
   <a href="${esc(eventUrl)}" style="display:block;margin:0 0 24px">
@@ -45,13 +50,14 @@ export function renderOutreachEmail({
   Bejelölöd, melyik nap jó neked, a beosztás pedig sorsolással dől el. A kéréseket igyekszünk
   figyelembe venni, de a végén a kalap dönt.</p>
 
-  <p style="margin:0 0 24px">A kitöltés rövidebb, mint amennyit egy csattanón szoktál agyalni:
+  <p style="margin:0 0 24px">A kitöltés rövidebb, mint amennyit egy szóviccen szoktál agyalni:
   név, művésznév, a neked megfelelő napok, és ha üzennél valamit, egy megjegyzés.</p>
 
-  <p style="margin:0 0 20px"><a href="${esc(applyUrl)}" style="${btn}">Jelentkezem az előválogatóra &rarr;</a></p>
+  <p style="margin:0 0 28px;text-align:center"><a href="${esc(applyUrl)}" style="${btn}">Jelentkezem az előválogatóra &rarr;</a></p>
 
-  <p style="margin:0 0 28px">Helyszín a KAZI (1075 Budapest, Kazinczy utca 34.), kezdés minden nap 18:00.
-  Az esemény a Facebookon: <a href="${esc(eventUrl)}" style="color:#b13bd6">${esc(eventUrl.replace(/^https?:\/\/(www\.)?/, ''))}</a></p>
+  <p style="margin:0 0 16px">Helyszín a KAZI (1075 Budapest, Kazinczy utca 34.), kezdés minden nap 18:00.</p>
+
+  <p style="margin:0 0 28px;text-align:center"><a href="${esc(eventUrl)}" style="${btnSecondary}">Megnézem a Facebook-eseményt &rarr;</a></p>
 
   <p style="margin:0 0 8px">Ha van a fiókodban egy szöveg, ami már rég színpadot keres, ez az a hét.</p>
   <p style="margin:0 0 24px">Slam Poetry Magyarország</p>
@@ -82,7 +88,7 @@ Az előválogatók szeptember 25-én, 26-án és 27-én lesznek. Bejelölöd, me
 a beosztás pedig sorsolással dől el. A kéréseket igyekszünk figyelembe venni, de a végén
 a kalap dönt.
 
-A kitöltés rövidebb, mint amennyit egy csattanón szoktál agyalni: név, művésznév,
+A kitöltés rövidebb, mint amennyit egy szóviccen szoktál agyalni: név, művésznév,
 a neked megfelelő napok, és ha üzennél valamit, egy megjegyzés.
 
 Jelentkezés: ${applyUrl}

@@ -206,6 +206,13 @@ describe('kampány-levél', () => {
     expect(html).toMatch(/alt="[^"]*Előválogatók[^"]*"/);
   });
 
+  it('a jelentkezés és az esemény is kattintható gomb, középre rendezve', () => {
+    const html = renderOutreachEmail(base);
+    // Elsődleges: kitöltött magenta. Másodlagos: kontúros, hogy ne versenyezzen vele.
+    expect(html).toMatch(/text-align:center[^>]*><a href="https:\/\/slampoetry\.hu\/\?jelentkezes=1"[^>]*background:#b13bd6/);
+    expect(html).toMatch(/text-align:center[^>]*><a href="https:\/\/www\.facebook\.com\/events\/[^"]*"[^>]*border:2px solid #b13bd6/);
+  });
+
   it('benne van a Facebook-esemény és a helyszín mindkét változatban', () => {
     for (const body of [renderOutreachEmail(base), renderOutreachText(base)]) {
       expect(body).toContain('facebook.com/events/864586666381482');
