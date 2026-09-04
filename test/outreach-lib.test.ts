@@ -124,7 +124,7 @@ describe('isPersonName — a valódi táblákból származó esetek', () => {
   });
 
   it('az ékezetes betűk nem akadnak bele a szűrőszavakba', () => {
-    // A JS  nem ismeri az ékezeteket: a „Teodóra” korábban az „óra” szóra bukott.
+    // A JS szóhatár (backslash-b) nem ismeri az ékezeteket: a „Teodóra” korábban az „óra” szóra bukott.
     expect(isPersonName('Trapp Teodóra')).toBe(true);
     expect(isPersonName('Vasárnapi Ödön')).toBe(true);
   });
@@ -163,10 +163,9 @@ describe('kampány-levél', () => {
   it('személyre szól és tartalmazza a lényeget', () => {
     const html = renderOutreachEmail(base);
     expect(html).toContain('Szia Varga Zsombor!');
-    expect(html).toContain('vasárnap éjfélig');
-    expect(html).toContain('14. Slam Poetry Országos Bajnokság');
+    expect(html).toContain('vasárnap éjfélkor zár');
+    expect(html).toContain('14. OB');
     expect(html).toContain('szeptember 25-én, 26-án és 27-én');
-    expect(html).toContain('Csapj oda neki!');
   });
 
   it('a gomb a jelentkezési mélylinkre mutat', () => {

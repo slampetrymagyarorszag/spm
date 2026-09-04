@@ -10,7 +10,7 @@ export function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-export const SUBJECT = 'Vasárnapig még beférsz a 14. Országos Slam Poetry Bajnokságra';
+export const SUBJECT = 'Vasárnap éjfélkor becsukjuk a jelentkezést (14. OB)';
 
 export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@slampoetry.hu' }) {
   const hello = greeting(name);
@@ -21,18 +21,19 @@ export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@sl
   return `<div style="font-family:Inter,Arial,sans-serif;line-height:1.65;color:#17171c;max-width:560px">
   <p style="margin:0 0 16px">${esc(hello)}</p>
 
-  <p style="margin:0 0 16px">Ott voltál a korábbi országos bajnokságok előválogatóin, úgyhogy szólunk:
-  <strong>vasárnap éjfélig még jelentkezhetsz a 14. Slam Poetry Országos Bajnokság előválogatójára.</strong></p>
+  <p style="margin:0 0 16px">Ott voltál valamelyik korábbi országos bajnokság előválogatóján, úgyhogy nem hagyunk ki:
+  <strong>a 14. OB jelentkezése vasárnap éjfélkor zár.</strong></p>
 
   <p style="margin:0 0 16px">Az előválogatók <strong>szeptember 25-én, 26-án és 27-én</strong> lesznek.
-  A jelentkezésnél megjelölöd, melyik nap felel meg neked — a végleges beosztás sorsolással alakul,
-  de az igényeket lehetőség szerint figyelembe vesszük.</p>
+  Bejelölöd, melyik nap jó neked, a beosztás pedig sorsolással dől el. A kéréseket igyekszünk
+  figyelembe venni, de a végén a kalap dönt.</p>
 
-  <p style="margin:0 0 24px">Három perc az egész: név, művésznév, melyik nap jó, és ha van, egy megjegyzés nekünk.</p>
+  <p style="margin:0 0 24px">A kitöltés rövidebb, mint amennyit egy csattanón szoktál agyalni:
+  név, művésznév, a neked megfelelő napok, és ha üzennél valamit, egy megjegyzés.</p>
 
   <p style="margin:0 0 28px"><a href="${esc(applyUrl)}" style="${btn}">Jelentkezem az előválogatóra &rarr;</a></p>
 
-  <p style="margin:0 0 8px">Csapj oda neki!</p>
+  <p style="margin:0 0 8px">Ha van a fiókodban egy szöveg, ami már rég színpadot keres, ez az a hét.</p>
   <p style="margin:0 0 24px">Slam Poetry Magyarország</p>
 
   <hr style="border:0;border-top:1px solid #e4e4e7;margin:0 0 12px">
@@ -49,18 +50,19 @@ export function renderOutreachEmail({ name, applyUrl, contactEmail = 'contest@sl
 export function renderOutreachText({ name, applyUrl, contactEmail = 'contest@slampoetry.hu' }) {
   return `${greeting(name)}
 
-Ott voltál a korábbi országos bajnokságok előválogatóin, úgyhogy szólunk:
-vasárnap éjfélig még jelentkezhetsz a 14. Slam Poetry Országos Bajnokság előválogatójára.
+Ott voltál valamelyik korábbi országos bajnokság előválogatóján, úgyhogy nem hagyunk ki:
+a 14. OB jelentkezése vasárnap éjfélkor zár.
 
-Az előválogatók szeptember 25-én, 26-án és 27-én lesznek. A jelentkezésnél megjelölöd,
-melyik nap felel meg neked — a végleges beosztás sorsolással alakul, de az igényeket
-lehetőség szerint figyelembe vesszük.
+Az előválogatók szeptember 25-én, 26-án és 27-én lesznek. Bejelölöd, melyik nap jó neked,
+a beosztás pedig sorsolással dől el. A kéréseket igyekszünk figyelembe venni, de a végén
+a kalap dönt.
 
-Három perc az egész: név, művésznév, melyik nap jó, és ha van, egy megjegyzés nekünk.
+A kitöltés rövidebb, mint amennyit egy csattanón szoktál agyalni: név, művésznév,
+a neked megfelelő napok, és ha üzennél valamit, egy megjegyzés.
 
 Jelentkezés: ${applyUrl}
 
-Csapj oda neki!
+Ha van a fiókodban egy szöveg, ami már rég színpadot keres, ez az a hét.
 Slam Poetry Magyarország
 
 ---
