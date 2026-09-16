@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseFbPostId, fbObjectIdCandidates, deriveTitleAndBody } from '../src/lib/facebook';
+import { parseFbPostId, fbObjectIdCandidates, deriveTitleAndBody, isOpaquePostId } from '../src/lib/facebook';
 
 describe('parseFbPostId', () => {
   it('/{oldal}/posts/{id}', () => {
@@ -44,5 +44,30 @@ describe('deriveTitleAndBody', () => {
   it('hosszú címet levág', () => {
     const long = 'a'.repeat(120);
     expect(deriveTitleAndBody(long).title.length).toBeLessThanOrEqual(91);
+  });
+});
+
+describe('isOpaquePostId', () => {
+  it('felismeri a mai pfbid linkek azonositojat', () => {
+    expect(isOpaquePostId('pfbid0YffCkUVzhh6FVC46jxCYgrbgqVe5odxpfUqZZkZdf1Hn8SvGkdCiiFvovzebfbijl')).toBe(true);
+    expect(isOpaquePostId('PFBID123')).toBe(true);
+  });
+
+  it('a numerikus (mukodo) azonositot nem jeloli annak', () => {
+    expect(isOpaquePostId('1538956828264206')).toBe(false);
+    expect(isOpaquePostId('128047023886269_1538956828264206')).toBe(false);
+  });
+
+  it('ures/hianyzo ertekre hamis', () => {
+    expect(isOpaquePostId('')).toBe(false);
+    expect(isOpaquePostId(undefined)).toBe(false);
+  });
+
+  it('a numerikus permalinkbol kinyert azonosito hasznalhato marad', () => {
+    // Ez az a link, ami a valosagban mukodott.
+    const id = parseFbPostId('https://www.facebook.com/1459238139569409/posts/1538956828264206');
+    expect(id).toBe('1538956828264206');
+    expect(isOpaquePostId(id!)).toBe(false);
+    expect(fbObjectIdCandidates(id!, '128047023886269')[0]).toBe('128047023886269_1538956828264206');
   });
 });

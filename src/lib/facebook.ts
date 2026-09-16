@@ -29,6 +29,16 @@ export function parseFbPostId(url?: string): string | null {
   return null;
 }
 
+/**
+ * Atlatszatlan (pfbid...) poszt-azonosito-e? A mai Facebook-linkek ilyenek, es a Graph API
+ * NEM tudja feloldani oket: a nyers lekeres "(#12) singular statuses API is deprecated"
+ * hibat ad, a Graph sajat permalink_url-je pedig numerikus ID-t ad vissza, tehat meg
+ * osszeparositani sem lehet a kettot. Ezert a felulet listabol valasztast kinal helyette.
+ */
+export function isOpaquePostId(id?: string): boolean {
+  return /^pfbid/i.test(String(id ?? '').trim());
+}
+
 // A Graph API-nak átadandó objektum-ID jelöltek (sorrendben próbáljuk).
 export function fbObjectIdCandidates(postId: string, pageId?: string): string[] {
   const out: string[] = [];
