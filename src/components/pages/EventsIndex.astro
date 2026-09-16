@@ -17,7 +17,7 @@ interface Props {
 const { events, upcoming, past, tips, lang } = Astro.props;
 const calEvents = events.map((e) => ({ title: e.title, slug: e.slug, startsAt: e.startsAt }));
 ---
-<PageHero label={t(lang, 'home.calendarLabel')} title={t(lang, 'nav.events')} lead={t(lang, 'events.pageLead')} object="/hero-scoreboard.png" objectHover="/hero-scoreboard-break.png" objectAlt="" />
+<PageHero label={t(lang, 'home.calendarLabel')} title={t(lang, 'nav.events')} lead={t(lang, 'events.pageLead')} object="/hero-scoreboard.webp" objectHover="/hero-scoreboard-break.webp" objectAlt="" />
 
 {events.length === 0 ? (
   <section class="mx-auto max-w-4xl px-4 py-16">

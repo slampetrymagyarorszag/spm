@@ -18,7 +18,7 @@ interface Props {
 const { videos, playlists, galleryMedia, downloads, hasAny, lang } = Astro.props;
 const mediaFanLabels = { prev: t(lang, 'media.prev'), next: t(lang, 'media.next'), play: t(lang, 'media.play'), close: t(lang, 'media.close') };
 ---
-<PageHero label={t(lang, 'media.pageLabel')} title={t(lang, 'media.pageTitle')} lead={t(lang, 'media.pageLead')} object="/hero-clapper.png" objectHover="/hero-clapper-break.png" objectAlt="" />
+<PageHero label={t(lang, 'media.pageLabel')} title={t(lang, 'media.pageTitle')} lead={t(lang, 'media.pageLead')} object="/hero-clapper.webp" objectHover="/hero-clapper-break.webp" objectAlt="" />
 <section class="mx-auto max-w-6xl px-4 py-16">
   {!hasAny && <p class="text-muted">{t(lang, 'media.comingSoon')}</p>}
 

@@ -22,10 +22,12 @@ mkdirSync(outDir, { recursive: true });
 
 execFileSync(
   ffmpegPath,
-  ['-i', input, '-vf', `fps=${fps},scale=${width}:-1`, '-q:v', '4', `${outDir}/frame_%03d.jpg`],
+  // WebP: ugyanez a kockasor JPG-ben ~2,9 MB, WebP-ben ~1,8 MB, és a ScrollMic a
+  // manifestből olvassa a kiterjesztést, szóval csak itt kell egy helyen állítani.
+  ['-i', input, '-vf', `fps=${fps},scale=${width}:-1`, '-q:v', '78', `${outDir}/frame_%03d.webp`],
   { stdio: 'inherit' }
 );
 
-const count = readdirSync(outDir).filter((f) => f.endsWith('.jpg')).length;
-writeFileSync(`${outDir}/manifest.json`, JSON.stringify({ count, ext: 'jpg' }));
+const count = readdirSync(outDir).filter((f) => f.endsWith('.webp')).length;
+writeFileSync(`${outDir}/manifest.json`, JSON.stringify({ count, ext: 'webp' }));
 console.log(`Kész: ${count} képkocka a ${outDir}/ mappában.`);

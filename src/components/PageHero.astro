@@ -5,7 +5,7 @@ interface Props { label?: string; title: string; lead?: string; mic?: boolean; o
 const { label, title, lead, mic = false, object, objectHover, objectAlt = '' } = Astro.props;
 // Világos módban átlátszó (luminancia-alfa) változatot töltünk, hogy a kép a világos
 // panelen is jól nézzen ki (a sötét-only mix-blend-screen helyett normál keverés).
-const lightVariant = (src?: string) => (src && src.endsWith('.png') ? src.replace(/\.png$/, '-light.png') : src);
+const lightVariant = (src?: string) => (src && src.endsWith('.webp') ? src.replace(/\.webp$/, '-light.webp') : src);
 const objectLight = lightVariant(object);
 const objectHoverLight = lightVariant(objectHover);
 ---

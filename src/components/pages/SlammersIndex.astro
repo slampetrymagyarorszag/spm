@@ -9,7 +9,7 @@ import type { SlammerListItem } from '../../sanity/lib/api';
 interface Props { slammers: SlammerListItem[]; lang: Lang }
 const { slammers, lang } = Astro.props;
 ---
-<PageHero label={t(lang, 'home.slammersLabel')} title={t(lang, 'home.slammersTitle')} lead={t(lang, 'slammers.pageLead')} object="/hero-micstand.png" objectHover="/hero-micstand-break.png" objectAlt="" />
+<PageHero label={t(lang, 'home.slammersLabel')} title={t(lang, 'home.slammersTitle')} lead={t(lang, 'slammers.pageLead')} object="/hero-micstand.webp" objectHover="/hero-micstand-break.webp" objectAlt="" />
 
 <section class="mx-auto max-w-6xl px-4 py-12">
   {slammers.length === 0

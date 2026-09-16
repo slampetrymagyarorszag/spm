@@ -8,7 +8,7 @@ import type { PostListItem } from '../../sanity/lib/api';
 interface Props { posts: PostListItem[]; lang: Lang }
 const { posts, lang } = Astro.props;
 ---
-<PageHero label={t(lang, 'home.newsLabel')} title={t(lang, 'nav.news')} lead={t(lang, 'news.pageLead')} object="/hero-typewriter.png" objectHover="/hero-typewriter-break.png" objectAlt="" />
+<PageHero label={t(lang, 'home.newsLabel')} title={t(lang, 'nav.news')} lead={t(lang, 'news.pageLead')} object="/hero-typewriter.webp" objectHover="/hero-typewriter-break.webp" objectAlt="" />
 <section class="mx-auto max-w-6xl px-4 py-16">
   {posts.length === 0 ? (
     <p class="text-muted">{t(lang, 'home.newsSoon')}</p>

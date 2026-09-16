@@ -20,7 +20,7 @@ const body = localized(page, 'body', lang);
 const settings = await getSiteSettings(sanityClient);
 const reports = (settings?.impressum?.annualReports ?? []).filter((r) => r.fileUrl);
 ---
-<PageHero label={t(lang, 'association.label')} title={title} lead={lead} object="/hero-beer.png" objectHover="/hero-beer-break.png" objectAlt="" />
+<PageHero label={t(lang, 'association.label')} title={title} lead={lead} object="/hero-beer.webp" objectHover="/hero-beer-break.webp" objectAlt="" />
 <div class="mx-auto max-w-3xl px-4 py-12">
   {body ? <RichText value={body} /> : <p class="text-muted">{t(lang, 'association.placeholder')}</p>}
 </div>

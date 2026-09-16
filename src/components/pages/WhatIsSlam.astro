@@ -13,7 +13,7 @@ const title = localized(page, 'title', lang) ?? (lang === 'en' ? 'What is slam p
 const lead = localized(page, 'lead', lang);
 const body = localized(page, 'body', lang);
 ---
-<PageHero label={t(lang, 'whatIsSlam.label')} title={title} lead={lead} object="/hero-chair.png" objectHover="/hero-chair-break.png" objectAlt="" />
+<PageHero label={t(lang, 'whatIsSlam.label')} title={title} lead={lead} object="/hero-chair.webp" objectHover="/hero-chair-break.webp" objectAlt="" />
 <div class="mx-auto max-w-3xl px-4 py-12">
   {body ? <RichText value={body} /> : <p class="text-muted">{t(lang, 'whatIsSlam.placeholder')}</p>}
 </div>
