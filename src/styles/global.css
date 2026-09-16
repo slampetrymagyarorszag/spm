@@ -88,10 +88,9 @@ html.light .scroll-mic {
   mix-blend-mode: multiply;
 }
 
-/* Hero-objektumok: sötét módban screen-blendes változat, világosban átlátszó változat. */
-.hero-only-light { display: none; }
-html.light .hero-only-dark { display: none; }
-html.light .hero-only-light { display: block; }
+/* (A korábbi `.hero-only-dark` / `.hero-only-light` kapcsolgatás megszűnt: a hero-képek
+   most háttérképként, téma szerinti szabályból jönnek, így a nem használt változat le sem
+   töltődik. Lásd `.hero-obj` és `.clubs-map-*` lentebb.) */
 
 /* Light módban a konvertált szekciókon belüli sötét-utility-k igazítása. */
 html.light .surface-dark .text-surface { color: var(--sd-fg) !important; }
@@ -195,6 +194,66 @@ html.light .surface-dark .invert { filter: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .anim-char { transition: none; }
   .anim-text:hover .anim-char { transform: none; }
+}
+
+/* Hero-objektum: a négy változatból csak az tölt le, amelyik az aktuális témához tartozik.
+   (Korábban <img>-ek voltak, és a böngésző mind a négyet lehúzta — a `display:none` nem
+   akadályozza meg a letöltést. Háttérképnél viszont a nem illeszkedő szabály képét soha
+   nem kéri le.) Minden hero-asset 848×1264, ezért rögzített az arány: más méretű képhez
+   ezt az értéket is igazítani kell. */
+.hero-obj { height: 110%; aspect-ratio: 848 / 1264; }
+.hero-obj-layer {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.hero-obj-base { background-image: var(--hero-dark); opacity: 0.9; mix-blend-mode: screen; }
+html.light .hero-obj-base { background-image: var(--hero-light); mix-blend-mode: normal; }
+.hero-obj-hover { opacity: 0; mix-blend-mode: screen; }
+html.light .hero-obj-hover { mix-blend-mode: normal; }
+
+/* A „szétesős” változat csak akkor tölt le, ha VAN egér és tényleg rámutatnak. Érintőn
+   soha nem jön le, pedig ott a hover-effekt amúgy sem látszik. */
+@media (hover: hover) {
+  .hero-group:hover .hero-obj-base { opacity: 0; transform: scale(1.03); }
+  .hero-group:hover .hero-obj-hover { background-image: var(--hero-dark-break); opacity: 0.9; transform: scale(1.05); }
+  html.light .hero-group:hover .hero-obj-hover { background-image: var(--hero-light-break); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-obj-layer { transition: none; }
+  .hero-group:hover .hero-obj-base { transform: none; }
+  .hero-group:hover .hero-obj-hover { transform: none; }
+}
+
+/* Klubok-oldal kétfázisú térkép-hero — ugyanaz az elv, csak jobbra igazítva, és világos
+   módban multiply-jal (a világos változat fehér hátterű vonalrajz). */
+.clubs-map-layer {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center right;
+  background-size: contain;
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.clubs-map-base { background-image: var(--map-dark); opacity: 0.9; mix-blend-mode: screen; }
+html.light .clubs-map-base { background-image: var(--map-light); mix-blend-mode: multiply; }
+.clubs-map-break { opacity: 0; transform: scale(0.95); mix-blend-mode: screen; }
+html.light .clubs-map-break { mix-blend-mode: multiply; }
+
+@media (hover: hover) {
+  .clubs-hero:hover .clubs-map-base { opacity: 0; transform: scale(1.1); }
+  .clubs-hero:hover .clubs-map-break { background-image: var(--map-dark-break); opacity: 1; transform: scale(1.1); }
+  html.light .clubs-hero:hover .clubs-map-break { background-image: var(--map-light-break); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clubs-map-layer { transition: none; }
+  .clubs-hero:hover .clubs-map-base,
+  .clubs-hero:hover .clubs-map-break { transform: none; }
 }
 
 /* Hero-objektumok erős beleolvadása a sötétbe — a szélek lágyan eltűnnek (fade-out). */

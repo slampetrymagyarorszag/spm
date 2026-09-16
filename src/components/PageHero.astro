@@ -8,38 +8,33 @@ const { label, title, lead, mic = false, object, objectHover, objectAlt = '' } =
 const lightVariant = (src?: string) => (src && src.endsWith('.webp') ? src.replace(/\.webp$/, '-light.webp') : src);
 const objectLight = lightVariant(object);
 const objectHoverLight = lightVariant(objectHover);
+
+// A változatokat CSS-változóként adjuk át, és háttérképként rajzoljuk ki (a szabályok a
+// global.css-ben, `.hero-obj`). Ez azért kell, mert a böngésző CSAK azt a képet tölti le,
+// amelyik egy ténylegesen érvényes szabályban szerepel — az <img>-et viszont a
+// `display:none` sem állítja meg, így korábban mind a négy változat lejött minden
+// oldalletöltésnél, pedig hármat sosem látott a látogató.
+const objStyle = object
+  ? [
+      `--hero-dark:url('${object}')`,
+      objectLight && `--hero-light:url('${objectLight}')`,
+      objectHover && `--hero-dark-break:url('${objectHover}')`,
+      objectHoverLight && `--hero-light-break:url('${objectHoverLight}')`,
+    ].filter(Boolean).join(';')
+  : undefined;
 ---
-<section class="hero-group group/obj surface-dark relative overflow-hidden bg-ink text-surface">
+<section class="hero-group surface-dark relative overflow-hidden bg-ink text-surface">
   {mic && <ScrollMic />}
   {object && (
-    <div class="hero-fade absolute bottom-0 left-0 hidden h-[110%] md:block" aria-hidden={objectAlt ? undefined : 'true'}>
-      {/* Alap kép — sötét (screen blend) és világos (átlátszó) változat */}
-      <img
-        src={object}
-        alt={objectAlt}
-        class="hero-only-dark h-full w-auto object-contain object-bottom opacity-90 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-[1.03] group-hover/obj:opacity-0"
-      />
-      <img
-        src={objectLight}
-        alt={objectAlt}
-        class="hero-only-light h-full w-auto object-contain object-bottom opacity-90 transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-[1.03] group-hover/obj:opacity-0"
-      />
-      {objectHover && (
-        <>
-          <img
-            src={objectHover}
-            alt=""
-            aria-hidden="true"
-            class="hero-only-dark pointer-events-none absolute bottom-0 left-0 h-full w-auto object-contain object-bottom opacity-0 mix-blend-screen transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-105 group-hover/obj:opacity-90"
-          />
-          <img
-            src={objectHoverLight}
-            alt=""
-            aria-hidden="true"
-            class="hero-only-light pointer-events-none absolute bottom-0 left-0 h-full w-auto object-contain object-bottom opacity-0 transition-[opacity,transform] duration-700 ease-out group-hover/obj:scale-105 group-hover/obj:opacity-90"
-          />
-        </>
-      )}
+    <div
+      class="hero-obj hero-fade absolute bottom-0 left-0 hidden md:block"
+      style={objStyle}
+      role={objectAlt ? 'img' : undefined}
+      aria-label={objectAlt || undefined}
+      aria-hidden={objectAlt ? undefined : 'true'}
+    >
+      <span class="hero-obj-layer hero-obj-base"></span>
+      {objectHover && <span class="hero-obj-layer hero-obj-hover"></span>}
     </div>
   )}
   <div class={`relative z-10 mx-auto max-w-6xl px-4 py-20 md:py-28 ${object ? 'md:pl-[34%]' : ''}`}>
