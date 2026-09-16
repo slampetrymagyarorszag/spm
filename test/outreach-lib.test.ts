@@ -223,3 +223,43 @@ describe('kampány-levél', () => {
     }
   });
 });
+
+import { renderGroupsEmail, renderGroupsText, groupGreeting, SUBJECT as GROUPS_SUBJECT, ARTICLE_URL } from '../scripts/outreach/email-groups.mjs';
+
+describe('csoportbeosztás-levél', () => {
+  const base = { name: 'Varga Zsombor' };
+
+  it('nevén szólítja, ha megadta', () => {
+    expect(groupGreeting('Varga Zsombor')).toBe('Szia Varga Zsombor!');
+  });
+
+  it('név nélkül a jelentkezőnek szóló megszólítás megy', () => {
+    expect(groupGreeting('')).toBe('Kedves OB-előválogatóra jelentkező!');
+    expect(groupGreeting('Budapest')).toBe('Kedves OB-előválogatóra jelentkező!');
+  });
+
+  it('a gomb a saját hírünkre mutat, nem a Facebookra', () => {
+    const html = renderGroupsEmail(base);
+    expect(html).toContain(ARTICLE_URL);
+    expect(html).toContain('slampoetry.hu/hirek/xiv-spob-elovalogatok-nevsor');
+  });
+
+  it('tartalmazza a lényeget: egy csoport naponta, 18:00-ig érkezés', () => {
+    for (const body of [renderGroupsEmail(base), renderGroupsText(base)]) {
+      expect(body).toContain('egy csoport');
+      expect(body).toContain('18:00');
+      expect(body).toContain('19:00');
+      expect(body).toContain('Kazinczy utca 34');
+      expect(body).toContain('facebook.com/events/864586666381482');
+    }
+  });
+
+  it('nincs benne gondolatjel', () => {
+    expect(renderGroupsEmail(base)).not.toMatch(/[\u2013\u2014]/);
+    expect(GROUPS_SUBJECT).not.toMatch(/[\u2013\u2014]/);
+  });
+
+  it('escapeli a nevet', () => {
+    expect(renderGroupsEmail({ name: '<script>x</script>' })).not.toContain('<script>x</script>');
+  });
+});
