@@ -13,7 +13,7 @@ const cls =
   <p class="not-prose my-6">
     <a
       href={href}
-      class={`inline-flex items-center gap-1 rounded-lg px-6 py-3 font-semibold !no-underline transition ${cls}`}
+      class={`pt-btn ${style === 'outline' ? 'pt-btn-outline' : ''} inline-flex items-center gap-1 rounded-lg px-6 py-3 font-semibold !no-underline transition ${cls}`}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
     >
       {label}{external && <span aria-hidden="true">↗</span>}
