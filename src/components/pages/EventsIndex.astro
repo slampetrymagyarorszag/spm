@@ -15,7 +15,7 @@ interface Props {
   lang: Lang;
 }
 const { events, upcoming, past, tips, lang } = Astro.props;
-const calEvents = events.map((e) => ({ title: e.title, slug: e.slug, startsAt: e.startsAt }));
+const calEvents = events.map((e) => ({ title: e.title, slug: e.slug, startsAt: e.startsAt, endsAt: e.endsAt }));
 ---
 <PageHero label={t(lang, 'home.calendarLabel')} title={t(lang, 'nav.events')} lead={t(lang, 'events.pageLead')} object="/hero-scoreboard.webp" objectHover="/hero-scoreboard-break.webp" objectAlt="" />
 

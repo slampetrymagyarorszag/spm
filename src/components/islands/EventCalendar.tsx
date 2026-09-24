@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
+import { eventDays, eventEnd, isMultiDay, formatEventDayBadge } from '../../sanity/lib/events';
 
-export type CalEvent = { title: string; slug: string; startsAt: string };
+export type CalEvent = { title: string; slug: string; startsAt: string; endsAt?: string };
 
 const MONTHS = [
   'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
@@ -20,9 +21,12 @@ export default function EventCalendar({ events, lang = 'hu' }: { events: CalEven
   const byDay = useMemo(() => {
     const map = new Map<string, CalEvent[]>();
     for (const e of events) {
-      const d = new Date(e.startsAt);
-      const k = keyOf(d.getFullYear(), d.getMonth(), d.getDate());
-      (map.get(k) ?? map.set(k, []).get(k)!).push(e);
+      // Többnapos eseménynél MINDEN érintett napra rákerül, különben a háromnapos
+      // előválogató csak a péntek alatt látszana.
+      for (const d of eventDays(e)) {
+        const k = keyOf(d.getFullYear(), d.getMonth(), d.getDate());
+        (map.get(k) ?? map.set(k, []).get(k)!).push(e);
+      }
     }
     return map;
   }, [events]);
@@ -38,8 +42,12 @@ export default function EventCalendar({ events, lang = 'hu' }: { events: CalEven
     }
     const monthEvents = events
       .filter((e) => {
-        const d = new Date(e.startsAt);
-        return d.getFullYear() === view.y && d.getMonth() === view.m;
+        // Az is beletartozik, ami átnyúlik a hónapba vagy a hónapból.
+        const s = new Date(e.startsAt);
+        const t = eventEnd(e);
+        const monthStart = new Date(view.y, view.m, 1);
+        const monthEnd = new Date(view.y, view.m + 1, 0, 23, 59, 59);
+        return s <= monthEnd && t >= monthStart;
       })
       .sort((a, b) => +new Date(a.startsAt) - +new Date(b.startsAt));
     return { cells, monthEvents };
@@ -100,7 +108,7 @@ export default function EventCalendar({ events, lang = 'hu' }: { events: CalEven
             return (
               <li key={e.slug}>
                 <a href={hrefFor(e.slug)} className="group flex items-center gap-3 text-sm">
-                  <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-accent/15 font-display text-accent">{d.getDate()}</span>
+                  <span className={`flex h-9 shrink-0 flex-col items-center justify-center rounded-lg bg-accent/15 font-display text-accent ${isMultiDay(e) ? 'w-14 text-xs' : 'w-9'}`}>{formatEventDayBadge(e)}</span>
                   <span className="font-display transition group-hover:text-accent">{e.title}</span>
                   <span className="ml-auto text-xs text-surface/50">{d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}</span>
                 </a>

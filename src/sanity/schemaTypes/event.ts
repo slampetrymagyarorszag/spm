@@ -21,6 +21,10 @@ export const event = defineType({
       name: 'startsAt', title: 'Időpont', type: 'datetime', group: 'main', validation: (r) => r.required(),
       description: 'A dátum a „közelgő / korábbi" rendezéshez és a lista-kártyához kell.',
     }),
+    defineField({
+      name: 'endsAt', title: 'Befejezés (csak többnapos eseménynél)', type: 'datetime', group: 'main',
+      description: 'Hagyd üresen, ha egynapos. Többnaposnál az UTOLSÓ nap záró időpontja — ettől jelenik meg „szeptember 25–27.” alakban, és marad a közelgők közt az utolsó napig.',
+    }),
     defineField({ name: 'slug', title: 'Webcím (slug)', type: 'slug', group: 'main', options: { source: 'title', slugify }, validation: (r) => r.required() }),
 
     // — Opcionális részletek (a FB-beágyazás amúgy is mutatja ezeket) —

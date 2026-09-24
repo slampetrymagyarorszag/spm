@@ -32,11 +32,11 @@ export const SLAMMERS_FEATURED_QUERY = `*[_type == "slammer" && featured == true
 }`;
 
 export const EVENTS_QUERY = `*[_type == "event" && defined(slug.current)]{
-  _id, title, "slug": slug.current, startsAt, cover, accentColor, location,
+  _id, title, "slug": slug.current, startsAt, endsAt, cover, accentColor, location,
   titleEn
 }`;
 export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug][0]{
-  _id, title, "slug": slug.current, startsAt, cover, accentColor, location, description,
+  _id, title, "slug": slug.current, startsAt, endsAt, cover, accentColor, location, description,
   ticketUrl, facebookEventUrl, registrationEnabled, championshipRegistration, registrationDeadline,
   performers[]->{ _id, name, "slug": slug.current, photo },
   titleEn, descriptionEn

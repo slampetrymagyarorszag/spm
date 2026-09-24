@@ -3,16 +3,20 @@ import { urlForImage } from '../sanity/lib/image';
 import { localized } from '../i18n/content';
 import { localizedPath, type Lang } from '../i18n';
 import type { EventListItem } from '../sanity/lib/api';
+import { isMultiDay, formatEventDate, formatEventWeekday, formatEventDayBadge } from '../sanity/lib/events';
 interface Props { event: EventListItem; lang?: Lang }
 const { event, lang = 'hu' } = Astro.props;
 const d = new Date(event.startsAt);
-const date = d.toLocaleDateString('hu-HU', { month: 'long', day: 'numeric', weekday: 'long' });
+const multi = isMultiDay(event);
+// Többnapos eseménynél a hétköznap helyett a nap-tartományt mutatjuk („péntek–vasárnap”),
+// mert egyetlen hétköznap félrevezető lenne. Év nélkül: a listában felesleges.
+const date = `${formatEventDate(event, 'hu-HU', { year: false })}, ${formatEventWeekday(event, 'hu-HU')}`;
 const time = d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
 const title = localized(event, 'title', lang);
 ---
 <a href={localizedPath(`/esemenyek/${event.slug}`, lang)} class="group flex gap-5 border-t border-ink/10 py-6">
   <div class="shrink-0 text-center">
-    <p class="font-display text-3xl leading-none">{d.getDate()}</p>
+    <p class={`font-display leading-none ${multi ? 'text-2xl' : 'text-3xl'}`}>{formatEventDayBadge(event)}</p>
     <p class="text-xs uppercase text-muted">{d.toLocaleDateString('hu-HU', { month: 'short' })}</p>
   </div>
   <div class="min-w-0">
