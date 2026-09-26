@@ -7,6 +7,8 @@ import { promoteEventTipAction } from './src/sanity/actions/promoteEventTip';
 import { SubmissionsExportTool } from './src/sanity/tools/SubmissionsExportTool';
 import { FacebookImportTool } from './src/sanity/tools/FacebookImportTool';
 import { PressReleaseTool } from './src/sanity/tools/PressReleaseTool';
+import { RegistrationSettingsTool } from './src/sanity/tools/RegistrationSettingsTool';
+import { EditorialDashboardTool } from './src/sanity/tools/EditorialDashboardTool';
 
 const projectId =
   (import.meta as any).env?.PUBLIC_SANITY_PROJECT_ID ?? process.env.PUBLIC_SANITY_PROJECT_ID!;
@@ -19,6 +21,8 @@ export default defineConfig({
   plugins: [structureTool({ structure })],
   tools: (prev) => [
     ...prev,
+    { name: 'attekintes', title: 'Áttekintés', component: EditorialDashboardTool },
+    { name: 'jelentkezesek-beallitasai', title: 'Jelentkezések beállításai', component: RegistrationSettingsTool },
     { name: 'jelentkezesek-export', title: 'Jelentkezések export', component: SubmissionsExportTool },
     { name: 'facebook-import', title: 'Facebook hír import', component: FacebookImportTool },
     { name: 'sajtokozlemeny', title: 'Sajtóközlemény küldése', component: PressReleaseTool },

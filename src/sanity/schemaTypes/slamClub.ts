@@ -8,15 +8,15 @@ export const slamClub = defineType({
   title: 'Klub',
   type: 'document',
   fields: [
+    defineField({
+      name: 'approved', title: 'Megjelenhet az oldalon', type: 'boolean', initialValue: false,
+      description: 'Új klubnál hagyd kikapcsolva, amíg a várost, nevet és linket ellenőrzöd. Bekapcsolás után a Slammerek → Klubok fülön látható.',
+    }),
     defineField({ name: 'city', title: 'Város', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'name', title: 'Klub neve', type: 'string', description: 'Pl. „Slam Poetry Szeged". Üresen hagyva a város jelenik meg.' }),
-    defineField({ name: 'facebookUrl', title: 'Facebook (vagy más) link', type: 'url', validation: (r) => r.required() }),
+    defineField({ name: 'facebookUrl', title: 'Klub oldala (Facebook vagy weboldal)', type: 'url', validation: (r) => r.required(), description: 'A város alatt erre a címre lehet továbblépni; nyisd meg és ellenőrizd jóváhagyás előtt.' }),
     defineField({ name: 'submitterEmail', title: 'Beküldő email', type: 'string', readOnly: true }),
     defineField({ name: 'submittedAt', title: 'Beküldve', type: 'datetime', readOnly: true }),
-    defineField({
-      name: 'approved', title: 'Jóváhagyva — megjelenhet az oldalon', type: 'boolean', initialValue: false,
-      description: 'Kapcsold BE, hogy a klub megjelenjen a Slammerek → Klubok fülön.',
-    }),
   ],
   orderings: [{ title: 'Város szerint', name: 'city', by: [{ field: 'city', direction: 'asc' }] }],
   preview: {

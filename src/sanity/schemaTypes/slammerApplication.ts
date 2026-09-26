@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { PromoteSlammerInput } from '../components/PromoteSlammerInput';
 
 // Látogató által beküldött slammer-jelentkezés. A szerkesztő a Studióban elbírálja,
 // és az „Jóváhagyva" kapcsolóval megjeleníti a Slammerek oldalon (Közösségi beküldések).
@@ -7,6 +8,10 @@ export const slammerApplication = defineType({
   title: 'Beküldött slammer',
   type: 'document',
   fields: [
+    defineField({
+      name: 'promotionControl', title: 'Profil létrehozása', type: 'string', readOnly: true,
+      components: { input: PromoteSlammerInput },
+    }),
     defineField({ name: 'realName', title: 'Név', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'stageName', title: 'Művésznév', type: 'string' }),
     defineField({

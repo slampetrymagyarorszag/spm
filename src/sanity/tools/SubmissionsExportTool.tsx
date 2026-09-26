@@ -42,22 +42,42 @@ export function SubmissionsExportTool() {
   const client = useClient({ apiVersion: '2024-01-01' });
   const [rows, setRows] = useState<Row[] | null>(null);
   const [filter, setFilter] = useState<'all' | 'havi-klub' | 'bajnoksag'>('all');
+  const [club, setClub] = useState('all');
+  const [submittedMonth, setSubmittedMonth] = useState('all');
   // Kétlépcsős törlés: az első kattintás csak felfedi a megerősítő gombot.
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [confirmedIds, setConfirmedIds] = useState<string[]>([]);
 
   const load = useCallback(async () => {
+    setConfirmDelete(false);
+    setConfirmedIds([]);
     setRows(null);
-    const data = await client.fetch<Row[]>(
-      '*[_type == "formSubmission"] | order(submittedAt desc){_id,kind,submittedAt,name,email,stageName,entryType,contextLabel,achievements,availableDays,note,unavailableDay}',
-    );
-    setRows(data || []);
+    setLoadError(null);
+    try {
+      const data = await client.fetch<Row[]>(
+        '*[_type == "formSubmission"] | order(submittedAt desc){_id,kind,submittedAt,name,email,stageName,entryType,contextLabel,achievements,availableDays,note,unavailableDay}',
+      );
+      setRows(data || []);
+    } catch (e: any) {
+      setLoadError(e?.message || 'Nem sikerült betölteni a jelentkezéseket.');
+      setRows([]);
+    }
   }, [client]);
 
   useEffect(() => { load(); }, [load]);
 
-  const visible = (rows || []).filter((r) => filter === 'all' || r.kind === filter);
+  const clubLabels = [...new Set((rows || []).filter((r) => r.kind === 'havi-klub').map((r) => r.contextLabel?.trim()).filter(Boolean))] as string[];
+  const months = [...new Set((rows || []).map((r) => r.submittedAt?.slice(0, 7)).filter(Boolean))] as string[];
+  months.sort().reverse();
+  const visible = (rows || []).filter((r) =>
+    (filter === 'all' || r.kind === filter) &&
+    (club === 'all' || (r.kind === 'havi-klub' && r.contextLabel?.trim() === club)) &&
+    (submittedMonth === 'all' || r.submittedAt?.slice(0, 7) === submittedMonth),
+  );
+  const changeFilter = (next: typeof filter) => { setFilter(next); setClub('all'); setConfirmDelete(false); };
 
   // A törlés VÉGLEGES, és pontosan azt a listát törli, ami épp a képernyőn van (a szűrőt
   // is figyelembe véve) — így nem lehet véletlenül mást törölni, mint amit a szerkesztő lát.
@@ -65,12 +85,13 @@ export function SubmissionsExportTool() {
     setDeleting(true);
     setDeleteError(null);
     try {
-      const ids = visible.map((r) => r._id);
+      const ids = confirmedIds;
       for (let i = 0; i < ids.length; i += 50) {
         const tx = ids.slice(i, i + 50).reduce((t, id) => t.delete(id), client.transaction());
         await tx.commit({ visibility: 'async' });
       }
       setConfirmDelete(false);
+      setConfirmedIds([]);
       await load();
     } catch (e: any) {
       setDeleteError(e?.message || 'A törlés nem sikerült. Lehet, hogy nincs törlési jogod.');
@@ -97,7 +118,8 @@ export function SubmissionsExportTool() {
     const a = document.createElement('a');
     const stamp = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = `jelentkezesek-${filter}-${stamp}.csv`;
+    const clubPart = club === 'all' ? '' : `-${club.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').slice(0, 35)}`;
+    a.download = `jelentkezesek-${filter}${clubPart}-${submittedMonth === 'all' ? 'mind' : submittedMonth}-${stamp}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -115,33 +137,51 @@ export function SubmissionsExportTool() {
           </Text>
         </Stack>
 
-        <Flex gap={3} align="center">
+        <Flex gap={3} align="center" wrap="wrap">
           <Box style={{ minWidth: 220 }}>
-            <Select value={filter} onChange={(e) => setFilter(e.currentTarget.value as any)}>
+            <Select aria-label="Jelentkezés típusa" value={filter} onChange={(e) => changeFilter(e.currentTarget.value as typeof filter)}>
               <option value="all">Összes jelentkezés</option>
               <option value="havi-klub">Csak havi klub</option>
               <option value="bajnoksag">Csak országos bajnokság</option>
             </Select>
           </Box>
+          {filter === 'havi-klub' && (
+            <Box style={{ minWidth: 220 }}>
+              <Select aria-label="Havi klub" value={club} onChange={(e) => { setClub(e.currentTarget.value); setConfirmDelete(false); }}>
+                <option value="all">Minden havi klub</option>
+                {clubLabels.map((label) => <option key={label} value={label}>{label}</option>)}
+              </Select>
+            </Box>
+          )}
+          <Box style={{ minWidth: 170 }}>
+            <Select aria-label="Beküldés hónapja" value={submittedMonth} onChange={(e) => { setSubmittedMonth(e.currentTarget.value); setConfirmDelete(false); }}>
+              <option value="all">Minden beküldési hónap</option>
+              {months.map((month) => <option key={month} value={month}>{month}</option>)}
+            </Select>
+          </Box>
           <Button text="Frissítés" mode="ghost" onClick={load} />
           <Button text={`CSV letöltése (${visible.length})`} tone="primary" disabled={!rows || visible.length === 0} onClick={downloadCsv} />
+        </Flex>
+        <Text size={1} muted>Az export mindig csak a fenti szűrőknek megfelelő {visible.length} jelentkezést tartalmazza. A „Havi klub” szűrő a jelentkezésben mentett klub/hónap megnevezést használja.</Text>
+
+        <Flex gap={3} align="center" wrap="wrap">
           {!confirmDelete ? (
             <Button
-              text="Törlés…"
+              text="A szűrt jelentkezések törlése…"
               mode="ghost"
               tone="critical"
               disabled={!rows || visible.length === 0}
-              onClick={() => { setConfirmDelete(true); setDeleteError(null); }}
+              onClick={() => { setConfirmedIds(visible.map((r) => r._id)); setConfirmDelete(true); setDeleteError(null); }}
             />
           ) : (
             <Flex gap={2} align="center">
               <Button
-                text={deleting ? 'Törlés…' : `Igen, törlöm mind (${visible.length})`}
+                text={deleting ? 'Törlés…' : `Igen, törlöm mind (${confirmedIds.length})`}
                 tone="critical"
                 disabled={deleting}
                 onClick={deleteVisible}
               />
-              <Button text="Mégse" mode="ghost" disabled={deleting} onClick={() => setConfirmDelete(false)} />
+              <Button text="Mégse" mode="ghost" disabled={deleting} onClick={() => { setConfirmDelete(false); setConfirmedIds([]); }} />
             </Flex>
           )}
         </Flex>
@@ -149,7 +189,7 @@ export function SubmissionsExportTool() {
         {confirmDelete && (
           <Card padding={3} radius={2} tone="critical">
             <Text size={1}>
-              <strong>Végleges törlés.</strong> A most listázott {visible.length} jelentkezés törlődik
+              <strong>Végleges törlés.</strong> A kijelöléskor listázott {confirmedIds.length} jelentkezés törlődik
               {filter === 'all' ? ' (mind a havi klub, mind a bajnokság)' : filter === 'bajnoksag' ? ' (csak az országos bajnokság)' : ' (csak a havi klub)'}.
               Ez nem vonható vissza — ha kell az adat, előbb töltsd le CSV-ben.
             </Text>
@@ -161,6 +201,7 @@ export function SubmissionsExportTool() {
             <Text size={1}>{deleteError}</Text>
           </Card>
         )}
+        {loadError && <Card padding={3} radius={2} tone="critical"><Text size={1}>{loadError}</Text></Card>}
 
         {rows === null ? (
           <Flex align="center" gap={2}><Spinner /><Text>Betöltés…</Text></Flex>

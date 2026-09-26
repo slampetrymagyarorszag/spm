@@ -1,6 +1,4 @@
 import type { APIRoute } from 'astro';
-import { writeClient } from '../../sanity/lib/writeClient';
-import { slugify } from '../../sanity/lib/slugify';
 import { parseFbPostId, fbObjectIdCandidates, deriveTitleAndBody, isOpaquePostId } from '../../lib/facebook';
 
 export const prerender = false;
@@ -8,7 +6,6 @@ export const prerender = false;
 const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
-const key = () => Math.random().toString(36).slice(2, 10);
 const GRAPH = 'https://graph.facebook.com/v19.0';
 
 /**
@@ -52,9 +49,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (!token) {
     return json({ ok: false, error: 'Hiányzik a Facebook Page access token. Tedd be az .env-be: FB_PAGE_ACCESS_TOKEN (és FB_PAGE_ID).' }, 503);
-  }
-  if (!writeClient) {
-    return json({ ok: false, error: 'A Sanity írás most nem elérhető (SANITY_FORM_TOKEN).' }, 503);
   }
 
   const data = await request.json().catch(() => ({}));
@@ -107,46 +101,25 @@ export const POST: APIRoute = async ({ request }) => {
   const finalTitle = title || `Facebook hír — ${new Date(fb.created_time || Date.now()).toLocaleDateString('hu-HU')}`;
   const publishedAt = fb.created_time ? new Date(fb.created_time).toISOString() : new Date().toISOString();
 
-  // Egyedi slug.
-  const base = slugify(finalTitle) || 'hir';
-  let slug = base;
-  try {
-    const taken = await writeClient.fetch('count(*[_type=="post" && slug.current==$s])', { s: slug });
-    if (taken > 0) slug = `${base}-${key().slice(0, 4)}`;
-  } catch { /* ha a count elhasal, marad az alap slug */ }
-
-  // Borítókép letöltése és feltöltése (best-effort).
-  let cover: any = undefined;
+  // A képet a Studio tölti fel a bejelentkezett szerkesztő Sanity-jogosultságával.
+  // Ez a publikus API csak Facebook-adatot olvas, nem hozhat létre hírt vagy assetet.
+  let imageData: string | undefined;
+  let imageType: string | undefined;
+  let imageError: string | undefined;
   if (fb.full_picture) {
     try {
       const imgRes = await fetch(fb.full_picture);
       if (imgRes.ok) {
+        const contentType = imgRes.headers.get('content-type') || '';
+        if (!contentType.startsWith('image/')) throw new Error('A Facebook nem képfájlt adott vissza.');
         const buf = Buffer.from(await imgRes.arrayBuffer());
-        const asset = await writeClient.assets.upload('image', buf, { filename: `${base}.jpg`, contentType: imgRes.headers.get('content-type') || 'image/jpeg' });
-        cover = { _type: 'image', asset: { _type: 'reference', _ref: asset._id }, alt: finalTitle };
-      }
-    } catch { /* a kép nem kötelező */ }
+        if (buf.length > 8 * 1024 * 1024) imageError = 'A Facebook-kép túl nagy (8 MB felett).';
+        else {
+          imageData = buf.toString('base64');
+          imageType = contentType;
+        }
+      } else imageError = `A Facebook nem adta át a képet (HTTP ${imgRes.status}).`;
+    } catch (e: any) { imageError = e?.message || 'A Facebook-kép letöltése nem sikerült.'; }
   }
-
-  const body = paragraphs.map((p) => ({
-    _type: 'block', _key: key(), style: 'normal', markDefs: [],
-    children: [{ _type: 'span', _key: key(), text: p, marks: [] }],
-  }));
-
-  try {
-    const created = await writeClient.create({
-      _type: 'post',
-      title: finalTitle,
-      slug: { _type: 'slug', current: slug },
-      publishedAt,
-      author: 'Slam Poetry Magyarország',
-      excerpt: message ? message.slice(0, 220) : undefined,
-      cover,
-      body: body.length ? body : undefined,
-      tags: ['facebook'],
-    });
-    return json({ ok: true, id: created._id, slug, title: finalTitle, hadImage: !!cover }, 200);
-  } catch (e: any) {
-    return json({ ok: false, error: `Nem sikerült létrehozni a hírt: ${e?.message || 'ismeretlen hiba'}` }, 500);
-  }
+  return json({ ok: true, title: finalTitle, publishedAt, excerpt: message ? message.slice(0, 220) : '', paragraphs, imageData, imageType, imageError }, 200);
 };

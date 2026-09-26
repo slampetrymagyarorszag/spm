@@ -14,7 +14,7 @@ export const POSTS_QUERY = `*[_type == "post" && defined(slug.current) && publis
   _id, title, "slug": slug.current, publishedAt, author, excerpt, cover,
   titleEn, excerptEn
 }`;
-export const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0]{
+export const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug && publishedAt <= now()][0]{
   _id, title, "slug": slug.current, publishedAt, author, excerpt, cover, tags, body,
   titleEn, excerptEn, bodyEn,
   seo{ metaTitle, metaDescription, shareImage }
@@ -31,11 +31,11 @@ export const SLAMMERS_FEATURED_QUERY = `*[_type == "slammer" && featured == true
   _id, name, "slug": slug.current, hometown, photo
 }`;
 
-export const EVENTS_QUERY = `*[_type == "event" && defined(slug.current)]{
+export const EVENTS_QUERY = `*[_type == "event" && defined(slug.current) && (!defined(showFrom) || showFrom <= now())]{
   _id, title, "slug": slug.current, startsAt, endsAt, cover, accentColor, location,
   titleEn
 }`;
-export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug][0]{
+export const EVENT_BY_SLUG_QUERY = `*[_type == "event" && slug.current == $slug && (!defined(showFrom) || showFrom <= now())][0]{
   _id, title, "slug": slug.current, startsAt, endsAt, cover, accentColor, location, description,
   ticketUrl, facebookEventUrl, registrationEnabled, championshipRegistration, registrationDeadline,
   performers[]->{ _id, name, "slug": slug.current, photo },
@@ -53,12 +53,12 @@ export const MEDIA_CONFIG_QUERY = `*[_type == "siteSettings"][0]{
 }`;
 
 // Csak a szerkesztő által jóváhagyott, beküldött esemény-tippek.
-export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true] | order(submittedAt desc){
+export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true && promoted != true] | order(submittedAt desc){
   _id, eventName, description, facebookUrl
 }`;
 
 // Csak a jóváhagyott, beküldött slammer-jelentkezések.
-export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && approved == true] | order(submittedAt desc){
+export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && approved == true && promoted != true] | order(submittedAt desc){
   _id, realName, stageName, description, youtubeUrl, photo
 }`;
 

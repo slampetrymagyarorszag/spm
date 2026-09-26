@@ -18,7 +18,7 @@ export const eventTip = defineType({
       title: 'Jóváhagyva — „Tőletek érkezett” tippként megjelenik',
       type: 'boolean',
       initialValue: false,
-      description: 'Kapcsold BE, hogy a tipp megjelenjen az Események oldalon a „Közösségi tippek" között (egyszerű kártyaként, naptár nélkül). Ha inkább teljes, naptári eseményt szeretnél belőle, használd az „Eseménnyé alakítás (naptárba)” gombot.',
+      description: 'Kapcsold BE, hogy a tipp megjelenjen az Események oldalon a „Közösségi tippek" között (egyszerű kártyaként, naptár nélkül). Teljes eseményhez használd az „Eseménnyé alakítás” műveletet: ez előbb piszkozatot készít, amit dátum és borító után publikálhatsz.',
     }),
     defineField({
       name: 'promoted', title: 'Eseménnyé alakítva', type: 'boolean', readOnly: true, initialValue: false,

@@ -4,6 +4,7 @@ import EventsIndex from '../../../components/pages/EventsIndex.astro';
 import { getEvents, getEventTips } from '../../../sanity/lib/api';
 import { splitEvents } from '../../../sanity/lib/events';
 import { sanityClient } from 'sanity:client';
+export const prerender = false;
 const [events, tips] = await Promise.all([getEvents(sanityClient), getEventTips(sanityClient)]);
 const { upcoming, past } = splitEvents(events);
 ---

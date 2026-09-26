@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Card, Stack, Heading, Text, TextInput, Button, Flex, Badge, Box, Spinner } from '@sanity/ui';
+import { useClient } from 'sanity';
+import { IntentLink } from 'sanity/router';
+import { slugify } from '../lib/slugify';
 
 type FbPost = {
   id: string;
@@ -16,9 +19,10 @@ type FbPost = {
 // API nem tudja feloldani — és a Facebook a permalinkben sem adja vissza, tehát a beillesztett
 // linket összepárosítani sem lehet a poszttal.
 export function FacebookImportTool() {
+  const client = useClient({ apiVersion: '2024-01-01' });
   const [url, setUrl] = useState('');
   const [busy, setBusy] = useState<string>('');
-  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [result, setResult] = useState<{ ok: boolean; msg: string; id?: string } | null>(null);
   const [posts, setPosts] = useState<FbPost[] | null>(null);
   const [listError, setListError] = useState<string | null>(null);
 
@@ -48,9 +52,40 @@ export function FacebookImportTool() {
       });
       const j = await res.json();
       if (res.ok && j.ok) {
+        const id = `drafts.fb-post-${String(payload.postId || slugify(j.title) || 'hir').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+        if (await client.getDocument(id) || await client.getDocument(id.replace(/^drafts\./, ''))) {
+          setResult({ ok: true, id, msg: 'Ez a Facebook-poszt már szerepel a Hírek között. A meglévő hírt nyisd meg.' });
+          setUrl('');
+          return;
+        }
+        const base = slugify(j.title) || 'hir';
+        const slug = (await client.fetch<number>('count(*[_type=="post" && slug.current==$s])', { s: base })) > 0
+          ? `${base}-${Math.random().toString(36).slice(2, 6)}` : base;
+        let cover: any;
+        let imageError = j.imageError || '';
+        if (j.imageData) {
+          try {
+            const bytes = Uint8Array.from(atob(j.imageData), (char) => char.charCodeAt(0));
+            const type = j.imageType || 'image/jpeg';
+            const asset = await client.assets.upload('image', new Blob([bytes], { type }), { filename: `${slug}.${type.includes('png') ? 'png' : 'jpg'}`, contentType: type });
+            cover = { _type: 'image', asset: { _type: 'reference', _ref: asset._id }, alt: j.title };
+          } catch (e: any) { imageError = e?.message || 'A kép feltöltése nem sikerült.'; }
+        }
+        const key = () => Math.random().toString(36).slice(2, 10);
+        const body = (j.paragraphs || []).map((paragraph: string) => ({
+          _type: 'block', _key: key(), style: 'normal', markDefs: [],
+          children: [{ _type: 'span', _key: key(), text: paragraph, marks: [] }],
+        }));
+        await client.createIfNotExists({
+          _id: id, _type: 'post', title: j.title,
+          slug: { _type: 'slug', current: slug }, publishedAt: j.publishedAt,
+          author: 'Slam Poetry Magyarország', excerpt: j.excerpt || undefined,
+          cover, body: body.length ? body : undefined, tags: ['facebook'],
+        });
         setResult({
           ok: true,
-          msg: `Hír létrehozva: „${j.title}”${j.hadImage ? ' (képpel)' : ' (kép nélkül)'}. Nyisd meg a Hírek között, nézd át és publikáld.`,
+          id,
+          msg: `Piszkozat elkészült: „${j.title}”${cover ? ' (képpel)' : ` (kép nélkül${imageError ? `: ${imageError}` : ': a Facebook nem adott képet'})`}. Átnézés után külön publikálhatod.`,
         });
         setUrl('');
       } else {
@@ -81,7 +116,7 @@ export function FacebookImportTool() {
           <Card padding={3} radius={2} tone={result.ok ? 'positive' : 'critical'} border>
             <Flex gap={3} align="center">
               <Badge tone={result.ok ? 'positive' : 'critical'}>{result.ok ? 'Kész' : 'Hiba'}</Badge>
-              <Text size={1}>{result.msg}</Text>
+              <Text size={1}>{result.msg} {result.id && <IntentLink intent="edit" params={{ id: result.id.replace(/^drafts\./, ''), type: 'post' }} style={{ textDecoration: 'underline' }}>Hír megnyitása</IntentLink>}</Text>
             </Flex>
           </Card>
         )}
@@ -139,7 +174,7 @@ export function FacebookImportTool() {
         </Stack>
 
         <Stack space={3}>
-          <Heading size={1}>Vagy illeszd be a link</Heading>
+          <Heading size={1}>Vagy illeszd be a linket</Heading>
           <Text muted size={1}>
             Csak a régi, számot tartalmazó linkek működnek (pl. <code>/posts/1538956828264206</code>).
             A mai <code>pfbid…</code> linkeket a Facebook API nem tudja feloldani, ezért azokhoz
@@ -148,6 +183,7 @@ export function FacebookImportTool() {
           <Flex gap={2} align="center">
             <div style={{ flex: 1 }}>
               <TextInput
+                aria-label="Facebook-poszt linkje"
                 value={url}
                 onChange={(e) => setUrl(e.currentTarget.value)}
                 placeholder="https://www.facebook.com/…/posts/1538956828264206"

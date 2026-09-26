@@ -6,8 +6,7 @@ import { slugify } from '../lib/slugify';
 const key = () => Math.random().toString(36).slice(2, 10);
 
 // Studio-művelet: egy beküldött esemény-tippből teljes értékű `event` dokumentumot
-// hoz létre (a fő rendszerbe, naptárban is megjelenik), majd a tippet „feldolgozott"-ra
-// állítja. Az időpont kezdőértéke „most" — a szerkesztő utána beállítja a valódi dátumot.
+// hoz létre piszkozatként. Csak a dátum és borító ellenőrzése utáni publikáláskor jelenik meg.
 export function promoteEventTipAction(props: any) {
   const { type, published, draft, onComplete } = props;
   const client = useClient({ apiVersion: '2024-01-01' });
@@ -31,12 +30,13 @@ export function promoteEventTipAction(props: any) {
         const taken = await client.fetch('count(*[_type=="event" && slug.current==$s])', { s: slug });
         if (taken > 0) slug = `${base}-${key().slice(0, 4)}`;
 
+        const sourceId = String(doc._id).replace(/^drafts\./, '');
+        const targetId = `event-from-${sourceId.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
         const event: any = {
+          _id: `drafts.${targetId}`,
           _type: 'event',
           title,
           slug: { _type: 'slug', current: slug },
-          // Helykitöltő időpont — a szerkesztő állítsa be a valódi dátumot.
-          startsAt: new Date().toISOString(),
         };
         if (doc.facebookUrl) event.facebookEventUrl = doc.facebookUrl;
         if (doc.ticketUrl) event.ticketUrl = doc.ticketUrl;
@@ -47,16 +47,15 @@ export function promoteEventTipAction(props: any) {
           }];
         }
 
-        const created = await client.create(event);
-        await client
-          .patch(String(doc._id).replace(/^drafts\./, ''))
-          .set({ promoted: true, promotedEventId: created._id })
+        await client.transaction()
+          .createIfNotExists(event)
+          .patch(sourceId, (p) => p.set({ promoted: true, promotedEventId: targetId }))
           .commit();
 
         toast.push({
           status: 'success',
-          title: 'Eseménnyé alakítva',
-          description: 'Bekerült a naptárba. NE feledd beállítani a valódi időpontot!',
+          title: 'Eseménypiszkozat elkészült',
+          description: 'Az Események között állítsd be a valódi dátumot és a borítót, majd publikáld.',
         });
         onComplete();
       } catch (e: any) {

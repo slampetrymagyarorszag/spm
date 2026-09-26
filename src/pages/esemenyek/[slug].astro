@@ -1,11 +1,8 @@
 ---
 import EventDetail from '../../components/pages/EventDetail.astro';
-import { getEvents, getEventBySlug } from '../../sanity/lib/api';
+import { getEventBySlug } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
-export async function getStaticPaths() {
-  const events = await getEvents(sanityClient);
-  return events.map((e) => ({ params: { slug: e.slug } }));
-}
+export const prerender = false;
 const { slug } = Astro.params;
 const ev = await getEventBySlug(sanityClient, slug!);
 if (!ev) return Astro.redirect('/esemenyek');

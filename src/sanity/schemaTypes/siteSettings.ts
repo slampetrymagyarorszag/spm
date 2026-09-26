@@ -93,6 +93,11 @@ export const siteSettings = defineType({
       name: 'monthlyContest', title: 'Havi klub — jelentkezés gomb', type: 'object',
       description: 'A főoldali hero melletti „Jelentkezem a havi versenyre" gomb (Slam Poetry Budapest havi klub). Kapcsold be, add meg, melyik havi klubról van szó, és állítsd be, mikor nyíljon/záruljon a jelentkezés. Ha vége, egyszerűen kapcsold ki — a következő hónapnál csak átírod a hónapot és a dátumokat.',
       options: { collapsible: true, collapsed: true },
+      validation: (r) => r.custom((value: any) => {
+        if (value?.enabled && !value?.monthLabel?.trim()) return 'A bekapcsolt havi klubhoz add meg, melyik havi klubra jelentkeznek.';
+        if (value?.opensAt && value?.closesAt && value.opensAt >= value.closesAt) return 'A zárásnak a nyitás után kell lennie.';
+        return true;
+      }),
       fields: [
         defineField({ name: 'enabled', title: 'Bekapcsolva', type: 'boolean', initialValue: false }),
         defineField({ name: 'monthLabel', title: 'Melyik havi klub', type: 'string', description: 'Pl. „2026. júniusi klub". Ez kerül a beérkező emailbe, hogy melyik hónapra jött a jelentkezés.' }),
@@ -162,5 +167,6 @@ export const siteSettings = defineType({
       type: 'datetime',
     }),
   ],
+  validation: (r) => r.custom((value: any) => value?.championshipCtaFrom && value?.championshipCtaTo && value.championshipCtaFrom >= value.championshipCtaTo ? 'A bajnoki jelentkezés zárása a nyitás után legyen.' : true),
   preview: { prepare: () => ({ title: 'Oldal beállítások' }) },
 });
