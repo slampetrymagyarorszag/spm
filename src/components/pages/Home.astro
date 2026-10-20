@@ -100,6 +100,20 @@ const secondaryCtaHref = localizedPath(home.secondaryCtaHref || '/mi-az-a-slam-p
   <a href={localizedPath('/hirek', lang)} class="mx-auto mt-8 block max-w-6xl px-4 text-center text-sm uppercase tracking-wide text-accent hover:underline sm:hidden">{t(lang, 'home.allNews')}</a>
 </section>
 
+<!-- Oktatási és kulturális intézmények -->
+<section class="mx-auto max-w-6xl border-t border-ink/15 px-4 py-16 md:py-20">
+  <div class="grid gap-8 md:grid-cols-[1fr_1.1fr] md:items-center">
+    <div>
+      <p class="mb-4 text-xs uppercase tracking-[0.2em] text-accent">{lang === 'hu' ? 'Iskolák · Könyvtárak · Kulturális intézmények' : 'Schools · Libraries · Cultural institutions'}</p>
+      <h2 class="font-display text-4xl leading-[1.08] md:text-5xl">{lang === 'hu' ? 'Adj hangot az irodalomnak.' : 'Give literature a voice.'}</h2>
+    </div>
+    <div>
+      <p class="text-base leading-relaxed text-muted">{lang === 'hu' ? 'Hívjátok meg az SPM-et rendhagyó irodalomórára vagy kreatív írás / előadói workshopra. Iskolák, könyvtárak, művelődési központok és más kulturális intézmények számára is keresünk kapcsolódást – az intézményetek céljaihoz és közönségéhez igazítva.' : 'Invite SPM for a literature session or a creative writing / performance workshop. For schools, libraries, community arts centres and other cultural institutions, shaped around your goals and audience.'}</p>
+      <a href={localizedPath('/oktatas', lang)} class="mt-5 inline-block text-sm font-semibold text-accent underline underline-offset-4">{lang === 'hu' ? 'Slam az intézményetekben →' : 'Slam at your institution →'}</a>
+    </div>
+  </div>
+</section>
+
 <!-- Közösségi hangulat-band: valódi slam-est fotó + CTA -->
 <section class="surface-dark relative overflow-hidden bg-ink text-surface">
   <img src="/community.webp" alt="Telt házas slam est közönsége" loading="lazy" decoding="async" class="ambient-photo absolute inset-0 h-full w-full object-cover opacity-45" />

@@ -39,11 +39,13 @@
     "resend": "^6.12.4",
     "sanity": "^5.30.0",
     "styled-components": "^6.4.2",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@sanity/block-tools": "^3.70.0",
     "@sanity/schema": "^5.30.0",
+    "@types/three": "^0.186.0",
     "he": "^1.2.0",
     "jsdom": "^29.1.1",
     "patch-package": "^8.0.1",

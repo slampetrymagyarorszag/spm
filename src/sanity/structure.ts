@@ -58,6 +58,7 @@ export const structure: StructureResolver = (S) =>
 
       S.documentTypeListItem('mediaItem').title('Médiatár'),
       S.documentTypeListItem('page').title('Oldalak'),
+      S.listItem().title('Oktatás').child(S.document().schemaType('educationPage').documentId('educationPage')),
 
       S.divider(),
 

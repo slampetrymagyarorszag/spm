@@ -1,0 +1,225 @@
+---
+import LetterScene from '../education/LetterScene';
+import { educationCopy, educationEnabled } from '../../lib/education';
+import { localizedPath, type Lang } from '../../i18n';
+import { sanityClient } from 'sanity:client';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const defaults = educationCopy[lang];
+const doc = await sanityClient.fetch('*[_type == "educationPage" && _id == "educationPage"][0]').catch(() => null);
+const content = doc?.[lang] ?? {};
+const c = { ...defaults, ...Object.fromEntries(Object.entries(content).filter(([key, v]) => typeof defaults[key as keyof typeof defaults] === 'string' && typeof v === 'string' && v.trim())) } as typeof defaults;
+const enabled = educationEnabled();
+---
+<div class="education" data-education>
+  <section class="edu-hero surface-dark">
+    <div class="edu-wrap edu-hero-grid">
+      <div class="edu-hero-copy">
+        <p class="edu-label">{c.eyebrow}</p>
+        <h1 class="font-display">{c.title}</h1>
+        <p class="edu-lead">{c.lead}</p>
+        <a class="edu-button edu-magnetic" href="#erdeklodes" data-edu-program="lesson"><span>{c.cta}</span><span aria-hidden="true">↗</span></a>
+        <a class="edu-text-link" href="#programok">{c.programs[1].cta} <span aria-hidden="true">→</span></a>
+        <a class="edu-text-link" href={localizedPath('/mi-az-a-slam-poetry', lang)}>{c.what} <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="edu-art">
+        <div class="edu-fallback font-display" aria-hidden="true"><span>?</span><span>!</span><span>A</span><span>Á</span><span>É</span></div>
+        <LetterScene client:visible />
+        <div class="edu-art-caption"><span aria-hidden="true">↔</span> {c.hint}</div>
+      </div>
+    </div>
+    <div class="edu-wrap edu-hero-bottom"><span>SLAM POETRY × {lang === 'hu' ? 'IRODALOM' : 'LITERATURE'}</span><a href="#miert" aria-label={c.benefitsLabel}>↓</a></div>
+  </section>
+
+  <section class="edu-wrap edu-programs" id="programok" aria-labelledby="programs-title">
+    <p class="edu-label">{c.programsLabel}</p><h2 class="font-display edu-section-title" id="programs-title">{c.programsTitle}</h2><p class="edu-intro">{c.programsIntro}</p>
+    <div class="edu-program-grid">{c.programs.map((program, i) => <article class="edu-program">
+      <p class="edu-number">0{i + 1} / {program.label}</p><h3 class="font-display">{program.title}</h3><p>{program.text}</p><p class="edu-program-detail">{program.detail}</p>
+      <a class="edu-text-link" href="#erdeklodes" data-edu-program={program.id}>{program.cta} <span aria-hidden="true">→</span></a>
+    </article>)}</div>
+  </section>
+
+  <section class="edu-wrap edu-benefits" id="miert" aria-labelledby="benefits-title">
+    <h2 class="edu-label" id="benefits-title">{c.benefitsLabel}</h2>
+    {c.benefits.map((item, i) => <div class="edu-benefit"><span class="edu-number">0{i + 1}</span><h3 class="font-display">{item.title}</h3><p>{item.text}</p></div>)}
+  </section>
+
+  <section class="edu-lesson surface-dark">
+    <div class="edu-wrap edu-lesson-grid">
+      <div class="edu-lesson-image"><img src="/education-writing.webp" alt="" loading="lazy" width="1536" height="1024" /></div>
+      <div><p class="edu-label">{c.lessonLabel}</p><h2 class="font-display">{c.lessonTitle}</h2><p class="edu-body">{c.lessonText}</p><a class="edu-text-link" href="#erdeklodes">{c.cta} <span aria-hidden="true">→</span></a></div>
+    </div>
+  </section>
+
+  <section class="edu-wrap edu-reflection">
+    <div class="edu-questions font-display">{c.questions.map((question) => <p>{question}</p>)}</div>
+    <p>{c.reflection}</p>
+  </section>
+
+  <section class="edu-wrap edu-institutions" aria-labelledby="institutions-title">
+    <p class="edu-label">{c.institutionsLabel}</p><h2 class="font-display edu-section-title" id="institutions-title">{c.institutionsTitle}</h2>
+    <div class="edu-institution-grid">{c.institutions.map(item => <article><h3 class="font-display">{item.title}</h3><p>{item.text}</p></article>)}</div>
+  </section>
+
+  <section class="edu-wrap edu-process" aria-labelledby="process-title">
+    <h2 class="edu-label" id="process-title">{c.processLabel}</h2>
+    <ol>{c.steps.map((step, i) => <li><span class="edu-number">0{i + 1}</span><h3 class="font-display">{step.title}</h3><p>{step.text}</p></li>)}</ol>
+  </section>
+
+  <section class="edu-wrap edu-faq" aria-labelledby="faq-title">
+    <p class="edu-label">{c.faqLabel}</p><h2 class="font-display edu-section-title" id="faq-title">{c.faqTitle}</h2>
+    {c.faqs.map(item => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+  </section>
+
+  <section class="edu-form-section surface-dark" id="erdeklodes">
+    <div class="edu-wrap edu-form-grid">
+      <div><p class="edu-label">{lang === 'hu' ? 'Kezdjük egy levéllel' : 'Start with an email'}</p><h2 class="font-display">{c.formTitle}</h2><p class="edu-body">{c.formText}</p>
+        <address class="edu-direct"><p>{c.directContact}</p><strong>Vajna Balázs</strong><br />{c.role} · Slam Poetry Magyarország<br /><a href="mailto:oktatas@slampoetry.hu">oktatas@slampoetry.hu</a><br /><a href="tel:+36302318087">06302318087</a></address>
+      </div>
+      <form class="edu-form" data-enabled={String(enabled)} data-sending={c.sending} data-submit={c.submit} data-success={c.success} data-error={c.error}>
+        <input type="hidden" name="lang" value={lang} />
+        <div class="edu-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+        <label for="edu-email">Email</label><input id="edu-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder={lang === 'hu' ? 'nev@intezmeny.hu' : 'name@institution.org'} aria-describedby="edu-privacy" />
+        <label class="edu-program-label" for="edu-program">{c.programField} <small>({c.optional})</small></label><select id="edu-program" name="program"><option value="">{c.programUncertain}</option>{c.programs.map(program => <option value={program.id}>{program.label}</option>)}</select>
+        <details><summary>{c.extra} <span aria-hidden="true">+</span></summary><div class="edu-extra">
+          <label for="edu-name">{c.name} <small>({c.optional})</small></label><input id="edu-name" name="name" autocomplete="name" maxlength="120" />
+          <label for="edu-school">{c.school} <small>({c.optional})</small></label><input id="edu-school" name="school" autocomplete="organization" maxlength="240" />
+          <label for="edu-message">{c.message} <small>({c.optional})</small></label><textarea id="edu-message" name="message" rows="3" maxlength="3000"></textarea>
+        </div></details>
+        <p id="edu-privacy" class="edu-small">{c.privacy}</p>
+        <button class="edu-button" type="submit" disabled={!enabled}><span>{c.submit}</span><span aria-hidden="true">→</span></button>
+        {!enabled && <p class="edu-small edu-form-preview">{c.preview} <a href={localizedPath('/kapcsolat', lang)}>{c.contact} →</a></p>}
+        <p class="edu-form-status" role="status" aria-live="polite"></p>
+        <noscript><p>{lang === 'hu' ? 'Az űrlaphoz JavaScript szükséges.' : 'This form requires JavaScript.'} <a href={localizedPath('/kapcsolat', lang)}>{c.contact}</a></p></noscript>
+      </form>
+    </div>
+  </section>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-education]');
+  if (root) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const observer = new IntersectionObserver((entries) => { for (const entry of entries) entry.target.classList.toggle('is-active', entry.isIntersecting); }, { threshold: 0.55 });
+    root.querySelectorAll('.edu-benefit').forEach((item) => observer.observe(item));
+    const button = root.querySelector<HTMLElement>('.edu-magnetic');
+    button?.addEventListener('pointermove', (event) => {
+      if (reduced.matches || event.pointerType !== 'mouse') return;
+      const r = button.getBoundingClientRect(); button.style.translate = `${(event.clientX - r.left - r.width / 2) * 0.07}px ${(event.clientY - r.top - r.height / 2) * 0.12}px`;
+    });
+    button?.addEventListener('pointerleave', () => { button.style.translate = ''; });
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    root.querySelectorAll<HTMLAnchorElement>('[data-edu-program]').forEach(link => link.addEventListener('click', () => {
+      form.querySelector<HTMLSelectElement>('[name="program"]')!.value = link.dataset.eduProgram!;
+    }));
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); if (form.dataset.enabled !== 'true') return;
+      const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      const status = form.querySelector<HTMLElement>('.edu-form-status')!;
+      submit.disabled = true; submit.querySelector('span')!.textContent = form.dataset.sending!; status.textContent = '';
+      try {
+        const response = await fetch('/api/education', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))), signal: AbortSignal.timeout(20000) });
+        const data = await response.json(); if (!response.ok || !data.ok) throw new Error();
+        status.textContent = form.dataset.success!; form.reset();
+      } catch { status.textContent = form.dataset.error!; }
+      finally { submit.disabled = false; submit.querySelector('span')!.textContent = form.dataset.submit!; }
+    });
+  }
+</script>
+
+<style is:global>
+  .education { --edu-line: color-mix(in srgb, currentColor 18%, transparent); }
+  .education h1, .education h2, .education h3 { text-wrap: balance; }
+  .edu-wrap { max-width: 1160px; padding-inline: 24px; margin-inline: auto; }
+  .edu-label { font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 28px; }
+  .edu-label::before { content: ''; display: inline-block; width: 28px; height: 2px; background: var(--color-accent); vertical-align: middle; margin-right: 12px; }
+  .edu-section-title { font-size: clamp(2.3rem, 4.7vw, 4.1rem); line-height: 1.12; max-width: 860px; }
+  .edu-intro { max-width: 720px; font-size: 16px; line-height: 1.8; margin-top: 24px; color: var(--color-muted); }
+  .edu-programs, .edu-institutions, .edu-faq { padding-block: 85px; scroll-margin-top: 90px; }
+  .edu-program-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 48px; }
+  .edu-program { border-top: 2px solid var(--color-accent); padding-top: 24px; }
+  .edu-program h3 { font-size: clamp(2rem, 3vw, 2.9rem); line-height: 1.16; margin-block: 24px; }
+  .edu-program p:not(.edu-number), .edu-institution-grid p { font-size: 15px; line-height: 1.85; }
+  .edu-program-detail { margin-top: 16px; color: var(--color-muted); }
+  .edu-institution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 45px; }
+  .edu-institution-grid article { border-top: 1px solid var(--edu-line); padding-top: 24px; }
+  .edu-institution-grid h3 { font-size: 27px; margin-bottom: 20px; }
+  .edu-faq details { border-bottom: 1px solid var(--edu-line); padding-block: 24px; }
+  .edu-faq details:first-of-type { margin-top: 35px; border-top: 1px solid var(--edu-line); }
+  .edu-faq summary { cursor: pointer; font-size: 18px; font-weight: 600; }
+  .edu-faq details p { margin-top: 18px; max-width: 790px; font-size: 15px; line-height: 1.8; }
+  .edu-direct { font-style: normal; font-size: 14px; line-height: 1.9; margin-top: 32px; }
+  .edu-direct p { color: inherit; opacity: .7; margin-bottom: 12px; }
+  .edu-direct a { text-decoration: underline; text-underline-offset: 4px; }
+  .edu-hero { overflow: hidden; padding-top: 72px; }
+  .edu-hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; min-height: 570px; gap: 20px; }
+  .edu-hero-copy { position: relative; z-index: 2; }
+  .edu-hero h1 { font-size: clamp(3.8rem, 7.3vw, 6.8rem); line-height: 1.03; max-width: 650px; }
+  .edu-lead { margin-top: 30px; max-width: 460px; font-size: 17px; line-height: 1.8; opacity: .75; }
+  .edu-button { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; padding: 19px 23px; background: var(--color-accent); color: white; font-size: 14px; font-weight: 600; margin-top: 30px; transition: translate .2s, background .2s; border: 1px solid transparent; cursor: pointer; }
+  .edu-button:hover { background: #9227b3; }
+  .edu-button:focus-visible, .education a:focus-visible, .education summary:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 5px; }
+  .edu-button:disabled { opacity: .45; cursor: not-allowed; }
+  .edu-text-link { display: block; width: fit-content; font-size: 13px; margin-top: 22px; text-underline-offset: 5px; }
+  .edu-text-link:hover { text-decoration: underline; }
+  .edu-art { position: relative; height: 530px; }
+  .education-letter-scene { position: absolute; inset: 0; touch-action: pan-y; }
+  .education-letter-scene canvas { display: block; width: 100%; height: 100%; }
+  .edu-fallback { position: absolute; inset: 14% 9%; border: 1px solid var(--color-accent); border-radius: 50%; color: var(--color-accent); display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 65px; transform: rotate(-15deg); }
+  .edu-art:has([data-ready="true"]) .edu-fallback { visibility: hidden; }
+  .edu-art-caption { position: absolute; bottom: 10px; width: 100%; text-align: center; font-size: 11px; letter-spacing: .08em; opacity: .6; pointer-events: none; }
+  .edu-hero-bottom { padding-block: 36px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; letter-spacing: .15em; opacity: .65; }
+  .edu-hero-bottom a { font-size: 24px; }
+  .edu-benefits { padding-block: 96px; }
+  .edu-benefit { border-top: 1px solid var(--edu-line); padding-block: 32px; display: grid; grid-template-columns: 42px 1.4fr 1fr; align-items: center; gap: 24px; }
+  .edu-number { color: var(--color-accent); font-size: 12px; letter-spacing: .1em; }
+  .edu-benefit h3 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.1; transition: color .5s; }
+  .edu-benefit.is-active h3 { color: var(--color-accent); }
+  .edu-benefit p { font-size: 14px; line-height: 1.8; color: var(--color-muted); }
+  .edu-lesson { padding-block: 88px; }
+  .edu-lesson-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }
+  .edu-lesson-image { overflow: hidden; aspect-ratio: 1; }
+  .edu-lesson-image img { width: 100%; height: 100%; object-fit: cover; }
+  .edu-lesson h2, .edu-form-section h2 { font-size: clamp(2.7rem, 4.7vw, 4.2rem); line-height: 1.12; }
+  .edu-body { font-size: 15px; line-height: 1.9; margin-top: 28px; opacity: .75; }
+  .edu-reflection { padding-block: 105px; display: grid; grid-template-columns: 1.6fr 1fr; gap: 65px; align-items: end; }
+  .edu-questions { font-size: clamp(2.6rem, 5vw, 4.5rem); line-height: 1.2; }
+  .edu-questions p:nth-child(2) { color: var(--color-accent); }
+  .edu-reflection > p { font-size: 15px; line-height: 1.9; max-width: 360px; }
+  .edu-process { padding-bottom: 100px; }
+  .edu-process ol { display: grid; grid-template-columns: repeat(3, 1fr); gap: 38px; list-style: none; padding: 0; }
+  .edu-process li { border-top: 1px solid var(--edu-line); padding-top: 20px; }
+  .edu-process h3 { font-size: 23px; line-height: 1.25; margin-block: 22px 12px; }
+  .edu-process p { font-size: 14px; line-height: 1.8; color: var(--color-muted); }
+  .edu-form-section { padding-block: 100px; scroll-margin-top: 90px; }
+  .edu-form-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 85px; }
+  .edu-form { position: relative; align-self: center; }
+  .edu-form label { display: block; font-size: 13px; margin-bottom: 10px; }
+  .edu-form input:not([type="hidden"]), .edu-form textarea, .edu-form select { width: 100%; border: 1px solid var(--edu-line); background: transparent; color: inherit; padding: 16px; border-radius: 0; font-size: 16px; }
+  .edu-program-label { margin-top: 22px; }.edu-form select option { background: #17171c; color: #fff; }
+  .edu-form input:focus, .edu-form textarea:focus, .edu-form select:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .edu-form details { margin-top: 20px; border-bottom: 1px solid var(--edu-line); }
+  .edu-form summary { padding-block: 15px; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; }
+  .edu-form details[open] summary span { rotate: 45deg; }
+  .edu-extra { padding-block: 15px 20px; }.edu-extra input { margin-bottom: 20px; }
+  .edu-small { font-size: 11px; line-height: 1.7; opacity: .65; margin-top: 20px; }
+  .edu-form .edu-button { width: 100%; }
+  .edu-form-preview a { display: block; margin-top: 8px; text-decoration: underline; }
+  .edu-form-status { margin-top: 18px; font-size: 14px; line-height: 1.8; }
+  .edu-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  @media (max-width: 850px) {
+    .edu-program-grid, .edu-institution-grid { grid-template-columns: 1fr; gap: 36px; }
+    .edu-programs, .edu-institutions, .edu-faq { padding-block: 60px; }
+    .edu-hero { padding-top: 45px; }.edu-hero-grid { grid-template-columns: 1fr; gap: 0; }
+    .edu-hero h1 { font-size: clamp(3.6rem, 12vw, 6rem); max-width: 670px; }
+    .edu-art { height: 340px; max-width: 480px; width: 100%; justify-self: center; }
+    .edu-benefit { grid-template-columns: 28px 1fr; gap: 16px; }.edu-benefit p { grid-column: 2; }
+    .edu-lesson-grid, .edu-reflection, .edu-form-grid { grid-template-columns: 1fr; gap: 36px; }
+    .edu-lesson-image { aspect-ratio: 3 / 2; }.edu-lesson-grid { gap: 40px; }
+    .edu-reflection > p { max-width: 550px; }.edu-form-grid { gap: 42px; }
+    .edu-process ol { grid-template-columns: 1fr; gap: 25px; }
+    .edu-benefits, .edu-reflection { padding-block: 65px; }.edu-lesson, .edu-form-section { padding-block: 60px; }.edu-process { padding-bottom: 60px; }
+    .edu-hero-bottom { padding-block: 25px; }.edu-form-section { scroll-margin-top: 70px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .education *, .education *::before { transition: none !important; scroll-behavior: auto !important; } }
+</style>

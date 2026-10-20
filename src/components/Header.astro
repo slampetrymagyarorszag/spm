@@ -13,6 +13,7 @@ const navItems = [
   { key: 'nav.clubs', href: '/slam-klubok' },
   { key: 'nav.news', href: '/hirek' },
   { key: 'nav.media', href: '/mediatar' },
+  { key: 'nav.education', href: '/oktatas' },
   { key: 'nav.association', href: '/egyesulet' },
   { key: 'nav.contact', href: '/kapcsolat' },
 ];
@@ -25,7 +26,7 @@ const socials = [
 ];
 ---
 <header class="surface-dark sticky top-0 z-50 bg-ink text-surface">
-  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
     <div class="flex items-center gap-4">
       <a href={localizedPath('/', lang)} class="flex items-center gap-3">
         {settings.logoUrl
@@ -41,8 +42,8 @@ const socials = [
         </span>
       </a>
 
-      <span class="hidden h-7 w-px bg-surface/20 xl:ml-4 xl:block"></span>
-      <ul class="hidden items-center gap-1 xl:flex">
+      <span class="hidden h-7 w-px bg-surface/20 2xl:ml-4 2xl:block"></span>
+      <ul class="hidden items-center gap-1 2xl:flex">
         {socials.map((soc) => (
           <li>
             <a
@@ -71,18 +72,18 @@ const socials = [
     </div>
 
     <div class="flex items-center gap-3">
-      <ul class="hidden gap-5 lg:flex">
+      <ul class="hidden gap-3 xl:flex">
         {navItems.map((item) => (
           <li><a href={localizedPath(item.href, lang)} class="whitespace-nowrap text-sm uppercase tracking-wide hover:text-accent">{t(lang, item.key)}</a></li>
         ))}
       </ul>
       <LangToggle />
       <ThemeToggle />
-      <!-- Hamburger (lg alatt) -->
+      <!-- A kilenc menüpont miatt tablet szélességen is nyitható menü. -->
       <button
         type="button"
         id="nav-toggle"
-        class="nav-toggle flex h-9 w-9 items-center justify-center rounded-lg text-surface/80 transition hover:bg-white/10 hover:text-accent lg:hidden"
+        class="nav-toggle flex h-9 w-9 items-center justify-center rounded-lg text-surface/80 transition hover:bg-white/10 hover:text-accent xl:hidden"
         aria-label="Menü megnyitása"
         aria-controls="mobile-nav"
         aria-expanded="false"
@@ -93,8 +94,8 @@ const socials = [
     </div>
   </nav>
 
-  <!-- Mobil/tablet menü (lg alatt) -->
-  <div id="mobile-nav" class="hidden border-t border-white/10 lg:hidden">
+  <!-- Mobil/tablet menü (xl alatt) -->
+  <div id="mobile-nav" class="hidden border-t border-white/10 xl:hidden">
     <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
       {navItems.map((item) => (
         <li><a href={localizedPath(item.href, lang)} class="block rounded-lg px-3 py-2.5 text-sm uppercase tracking-wide hover:bg-white/10 hover:text-accent">{t(lang, item.key)}</a></li>
@@ -127,7 +128,7 @@ const socials = [
     toggle.addEventListener('click', () => setOpen(panel.classList.contains('hidden')));
     // Link-kattintásra zárás
     panel.querySelectorAll('a[href^="/"]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
-    // lg fölött mindig csukva (ha átméretezik)
-    window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
+    // Desktop menüre váltáskor zárjuk a nyitott panelt.
+    window.matchMedia('(min-width: 1280px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
   }
 </script>
