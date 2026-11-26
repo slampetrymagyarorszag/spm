@@ -30,7 +30,9 @@ Actions Secrets: `SPM_BOT_FB_PAGE_ID`, `SPM_BOT_FB_TOKEN`, `SPM_BOT_SANITY_PROJE
 
 A Facebook-token vagy az OpenAI-egyenleg lejárhat. A hibás run piros lesz az Actionsben, és a GitHub-fiók értesítési beállításai szerint jelez; külön email/Messenger-küldő nincs. A summary tartalmazza az eredményt, linkeket és hibákat, a részletes gépi riport a futás munkakönyvtárában készül. A checkpointból a legutóbbi eredmény később is lekérdezhető.
 
-Leállítás: GitHub Actions → workflow menü → Disable workflow. Visszakapcsolás: Enable workflow. A korábbi helyi Codex-automatizálás sikeres GitHub-indulás után szüneteltetendő, hogy ne legyen két publikáló.
+Leállítás: GitHub Actions → workflow menü → Disable workflow. Visszakapcsolás: Enable workflow. A korábbi helyi Codex-automatizálás (`spm-website-bot`) 2026-11-26-án szüneteltetve lett a sikeres GitHub-indulás után, hogy ne legyen két publikáló.
+
+Első igazolt GitHub-futások: [read-only próba](https://github.com/slampetrymagyarorszag/spm/actions/runs/45836680752), [valódi feldolgozás](https://github.com/slampetrymagyarorszag/spm/actions/runs/45836776923). Mindkettő sikeres. A feldolgozás három AI-kérést végzett, új cikket/eseményt nem talált publikálásra; a meglévő EB-hírt és december 2-i eseményt felismerte. Ezért új dokumentum éles létrehozása még nem volt megfigyelhető; annak útvonalát integrációs tesztek ellenőrzik. Az esemény élő HTML-ellenőrzése sikeres volt. A heartbeat branch létrehozása és írása is sikeres.
 
 ## Ellenőrzés
 

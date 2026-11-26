@@ -28,5 +28,13 @@ Nincs tartalomtörlés vagy kézi draft felülírása. Hiányzó tényt nem tal�
 - 20 célzott teszt zöld volt az utolsó esemény-helyszín/borító javítás előtt; újrafuttatandó a release előtt. Sanity POST query `perspective=raw` URL-paraméterrel működik, JSON-bodyban nem fogadott; erre regressziós teszt van.
 - Következő: végső tesztek/workflow lint, kizárólag botfájlok commit/push main-re SSH-val, GitHub dry-run majd publish, élő ellenőrzés, helyi automatizálás szüneteltetése. A `spm-bot-report.json` helyi kimenet, nem commitolandó.
 
+## Éles mérföldkő – 2026-11-26
+- `c8711a4` commit main-re pusholva, kizárólag a bot 9 új fájljával. A régi alkalmazáskód, csomagok és a másik chat változásai nem kerültek bele.
+- GitHub read-only run `45836680752`: sikeres. Valódi publish-módú run `45836776923`: sikeres, 3 valódi OpenAI-kérés, 0 új publikáció, 0 hiba. Meglévő hír/esemény felismerve, új források nem bizonyultak önálló hírnek. Sanity checkpoint és 12 cent konzervatív havi foglalás visszaolvasva; ez nem azonos a tényleges API-költéssel.
+- `codex/spm-bot-heartbeat` ág és heartbeat-commit létrejött a GitHub workflow saját tokenjével.
+- GitHub workflow `active`, helyi Codex `spm-website-bot` már `PAUSED` (tool-visszaigazolás).
+- 22 célzott teszt sikeres, `actionlint` sikeres. A kezdeti Actions v4-ek Node 20 figyelmeztetést adtak; az ellenőrzött aktuális checkout v7.0.1 / setup-node v7.1.0 commitokra rögzítve javítva. Növekvő hírarchívumnál a szemantikai duplikációellenőrzés legfeljebb 20 releváns címet/bevezetőt kap; a teljes ID/link ellenőrzés változatlan.
+- Következő: a fenti kis végső javítás commit/push, force publish ismétlés GitHubon. Várható: 0 új AI-kérés, változatlan keret, nincs duplikáció. Utána a végső futásazonosító rögzítése és rövid átadás.
+
 ## Folytató prompt
 Folytasd az SPM GitHub Actions botot a docs/automation/codex-handoff.md alapján. Ellenőrizd a tényleges fájlokat és futásokat. Fejezd be a tesztelt botot, állítsd be a meglévő kulcsokat Actions Secretsként titkok kiírása nélkül, telepítsd kizárólag a bot változásait, próbáld ki GitHubon, majd a sikeres szerveroldali futás után szüneteltesd a helyi spm-website-bot automatizálást. A másik chat dirty munkafáját őrizd meg.
