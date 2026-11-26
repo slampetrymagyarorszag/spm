@@ -46,6 +46,7 @@ async function verifyPublished(api,doc,fetchLive) {
 export async function run({env=process.env,apply=false,force=false,now=new Date(),api=clients(env),editor=editPost,resolveLinks=resolveShortEventLinks,fetchLive=fetch}={}) {
   const report={at:now.toISOString(),mode:apply?'publish':'dry-run',model:MODEL,status:'running',changes:[],skipped:[],errors:[],sources:{},aiCalls:0};
   const state=await getState(api)||{};
+  report.reservedCents=state.budget?.month===now.toISOString().slice(0,7) ? state.budget.reservedCents||0 : 0;
   if(apply && !force && !due(state.lastCompleted,now))return {...report,status:'not-due',nextDue:new Date(new Date(state.lastCompleted).getTime()+3*DAY).toISOString()};
   // Model authentication is read-only. Actual generation is separately bounded.
   if(!apply) {

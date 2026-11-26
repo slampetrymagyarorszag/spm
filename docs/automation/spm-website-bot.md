@@ -34,6 +34,8 @@ Leállítás: GitHub Actions → workflow menü → Disable workflow. Visszakapc
 
 Első igazolt GitHub-futások: [read-only próba](https://github.com/slampetrymagyarorszag/spm/actions/runs/45836680752), [valódi feldolgozás](https://github.com/slampetrymagyarorszag/spm/actions/runs/45836776923). Mindkettő sikeres. A feldolgozás három AI-kérést végzett, új cikket/eseményt nem talált publikálásra; a meglévő EB-hírt és december 2-i eseményt felismerte. Ezért új dokumentum éles létrehozása még nem volt megfigyelhető; annak útvonalát integrációs tesztek ellenőrzik. Az esemény élő HTML-ellenőrzése sikeres volt. A heartbeat branch létrehozása és írása is sikeres.
 
+[Ismételt GitHub-futás](https://github.com/slampetrymagyarorszag/spm/actions/runs/45837227934): sikeres, 0 új AI-kérés, 0 új dokumentum, a 12 centes konzervatív havi foglalás Sanityben változatlan. A summary korábban új kérés nélküli futásnál 0 foglalást írt; ezt javítottuk a tartós keret visszaolvasásával.
+
 ## Ellenőrzés
 
 Függőségtelepítés nem szükséges, Node 24 kell:

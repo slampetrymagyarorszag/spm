@@ -29,7 +29,7 @@ test('publishing reserves budget before editing and rerunning does not duplicate
   const edit=async()=>{calls++;assert.equal(api.data.get(STATE_ID).budget.reservedCents,4);return editor();};
   const args={env,api,now,apply:true,force:true,fetchLive,resolveLinks:async()=>[],editor:edit};
   const first=await run(args);assert.equal(first.status,'success');assert.equal(first.changes.length,1);
-  const second=await run(args);assert.equal(second.status,'success');assert.equal(second.changes.length,0);assert.equal(calls,1);
+  const second=await run(args);assert.equal(second.status,'success');assert.equal(second.changes.length,0);assert.equal(calls,1);assert.equal(second.reservedCents,4);
   assert.equal([...api.data.values()].filter(d=>d._type==='post').length,1);
 });
 test('saved document survives live failure; retry verifies it instead of another AI call',async()=>{
