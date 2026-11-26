@@ -36,6 +36,6 @@ export default defineConfig({
     react(),
   ],
 
-  vite: { plugins: [tailwindcss()] },
+  vite: { ssr: { noExternal: ['gsap'] }, plugins: [tailwindcss()] },
   adapter: vercel({ includeFiles: ['public/education/slam-poetry-tajekoztato.pdf'] }),
 });

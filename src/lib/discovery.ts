@@ -24,7 +24,7 @@ export function buildSitemap(docs: DiscoveryDocument[]): string {
   for (const doc of publicDocuments(docs)) entries.set(`/${sections[doc._type]}/${encodeURIComponent(doc.slug)}`, timestamp(doc._updatedAt));
   const xml = [...entries].flatMap(([path, lastmod]) => {
     const hu = `${SITE_URL}${path}`;
-    const en = `${SITE_URL}/en${path === '/' ? '/' : path}`;
+    const en = `${SITE_URL}/en${path === '/' ? '' : path}`;
     const alternatives = `<xhtml:link rel="alternate" hreflang="hu" href="${xmlEscape(hu)}"/><xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(en)}"/>`;
     return [hu, en].map(url => `<url><loc>${xmlEscape(url)}</loc>${lastmod ? `<lastmod>${xmlEscape(lastmod)}</lastmod>` : ''}${alternatives}</url>`);
   }).join('');

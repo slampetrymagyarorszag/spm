@@ -9,16 +9,16 @@ export const prerender = false;
 // Friss tartalom új build nélkül, korlátozott YouTube API-terheléssel.
 Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=900, stale-while-revalidate=300');
 
-const env = import.meta.env;
-const apiKey = env.YOUTUBE_API_KEY ?? process.env.YOUTUBE_API_KEY;
+
+const apiKey = process.env.YOUTUBE_API_KEY ?? import.meta.env.YOUTUBE_API_KEY;
 
 const [media, config, videos] = await Promise.all([
   getMedia(sanityClient),
   getMediaConfig(sanityClient),
   fetchChannelUploads({
     apiKey,
-    channelId: env.YOUTUBE_CHANNEL_ID ?? process.env.YOUTUBE_CHANNEL_ID,
-    handle: env.YOUTUBE_CHANNEL_HANDLE ?? process.env.YOUTUBE_CHANNEL_HANDLE,
+    channelId: process.env.YOUTUBE_CHANNEL_ID ?? import.meta.env.YOUTUBE_CHANNEL_ID,
+    handle: process.env.YOUTUBE_CHANNEL_HANDLE ?? import.meta.env.YOUTUBE_CHANNEL_HANDLE,
     max: 9,
   }),
 ]);
@@ -27,8 +27,8 @@ const [media, config, videos] = await Promise.all([
 // (2) a beállításokban megadott listák. Mindkettő elfogad teljes URL-t vagy nyers ID-t.
 const automaticPlaylists = config.youtubeAutoPlaylists === false ? [] : await fetchChannelPlaylists({
   apiKey,
-  channelId: env.YOUTUBE_CHANNEL_ID ?? process.env.YOUTUBE_CHANNEL_ID,
-  handle: env.YOUTUBE_CHANNEL_HANDLE ?? process.env.YOUTUBE_CHANNEL_HANDLE,
+  channelId: process.env.YOUTUBE_CHANNEL_ID ?? import.meta.env.YOUTUBE_CHANNEL_ID,
+  handle: process.env.YOUTUBE_CHANNEL_HANDLE ?? import.meta.env.YOUTUBE_CHANNEL_HANDLE,
   max: 12,
 });
 const playlistDefs = mergePlaylistDefinitions([
@@ -46,7 +46,7 @@ const playlists = await Promise.all(
 // A galéria-rácsban a playlist-elemek ne jelenjenek meg (külön szekcióként jönnek).
 const galleryMedia = media.filter((m) => m.kind !== 'playlist');
 const downloads = (config.downloads ?? []).filter((d) => d.fileUrl || d.url);
-const hasAny = galleryMedia.length > 0 || videos.length > 0 || playlists.some((p) => p.videos.length) || downloads.length > 0;
+const hasAny = galleryMedia.length > 0 || videos.length > 0 || playlists.length > 0 || downloads.length > 0;
 ---
 <BaseLayout title="Médiatár">
   <MediaLibrary videos={videos} playlists={playlists} galleryMedia={galleryMedia} downloads={downloads} hasAny={hasAny} lang="hu" />

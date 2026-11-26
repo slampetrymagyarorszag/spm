@@ -1,10 +1,11 @@
 ---
+import NotFound from '../404.astro';
 import NewsPost from '../../components/pages/NewsPost.astro';
 import { getPostBySlug } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 export const prerender = false;
 const { slug } = Astro.params;
 const post = await getPostBySlug(sanityClient, slug!);
-if (!post) return Astro.redirect('/hirek');
+if (!post) Astro.response.status = 404;
 ---
-<NewsPost post={post} lang="hu" />
+{post ? <NewsPost post={post} lang="hu" /> : <NotFound />}

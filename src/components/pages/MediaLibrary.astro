@@ -29,7 +29,7 @@ const mediaFanLabels = { prev: t(lang, 'media.prev'), next: t(lang, 'media.next'
     </div>
   )}
 
-  {playlists.map((pl) => pl.videos.length > 0 && (
+  {playlists.map((pl) => (
     <div class="mb-16">
       <SectionHeader label={t(lang, 'media.playlistLabel')} title={pl.title} />
       <div class="mb-6 flex flex-wrap items-center justify-between gap-3">

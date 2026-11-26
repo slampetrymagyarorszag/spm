@@ -1,10 +1,11 @@
 ---
+import NotFound from '../404.astro';
 import EventDetail from '../../components/pages/EventDetail.astro';
 import { getEventBySlug } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 export const prerender = false;
 const { slug } = Astro.params;
 const ev = await getEventBySlug(sanityClient, slug!);
-if (!ev) return Astro.redirect('/esemenyek');
+if (!ev) Astro.response.status = 404;
 ---
-<EventDetail event={ev} lang="hu" />
+{ev ? <EventDetail event={ev} lang="hu" /> : <NotFound />}
