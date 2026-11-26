@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "vitest run",
+    "test": "vitest run --exclude 'scripts/spm-bot/**' && node --test scripts/spm-bot/*.test.mjs",
     "migrate:dry": "node --env-file=.env scripts/migrate/run.mjs --dry-run",
     "migrate": "node --env-file=.env scripts/migrate/run.mjs",
     "migrate:slammers:dry": "node --env-file=.env scripts/migrate/run.mjs --slammers --dry-run",
