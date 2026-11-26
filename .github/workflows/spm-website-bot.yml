@@ -1,0 +1,86 @@
+name: SPM website bot
+
+on:
+  schedule:
+    # Daily wake-up; the durable Sanity checkpoint admits one run per 72 hours.
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Read-only check or publish verified new content'
+        type: choice
+        options: [dry-run, publish]
+        default: dry-run
+      force:
+        description: 'Run before 72 hours have elapsed (AI limits still apply)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spm-website-bot
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.repository == 'slampetrymagyarorszag/spm'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      did_run: ${{ steps.bot.outputs.did_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Bot regression tests
+        run: node --test scripts/spm-bot/*.test.mjs
+      - name: Check Facebook and update Sanity
+        id: bot
+        env:
+          FB_PAGE_ID: ${{ secrets.SPM_BOT_FB_PAGE_ID }}
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.SPM_BOT_FB_TOKEN }}
+          PUBLIC_SANITY_PROJECT_ID: ${{ secrets.SPM_BOT_SANITY_PROJECT_ID }}
+          PUBLIC_SANITY_DATASET: ${{ secrets.SPM_BOT_SANITY_DATASET }}
+          SANITY_WRITE_TOKEN: ${{ secrets.SPM_BOT_SANITY_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.SPM_BOT_OPENAI_API_KEY }}
+          RUN_MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode }}
+          FORCE_RUN: ${{ inputs.force }}
+        shell: bash
+        run: |
+          args=()
+          if [ "$RUN_MODE" = "publish" ]; then args+=(--apply); fi
+          if [ "$FORCE_RUN" = "true" ]; then args+=(--force); fi
+          node scripts/spm-bot/run.mjs "${args[@]}"
+
+  keep-schedule-active:
+    # Public repos stop schedules after 60 days without repository activity.
+    # A tiny isolated branch keeps this standing task alive without touching main.
+    if: always() && github.repository == 'slampetrymagyarorszag/spm' && (github.event_name == 'schedule' || inputs.mode == 'publish')
+    needs: update
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: write
+    steps:
+      - name: Record scheduler heartbeat outside the website branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/spm-bot-heartbeat
+          if ! gh api "repos/$REPO/git/ref/heads/$branch" > /dev/null 2>&1; then
+            head=$(gh api "repos/$REPO/git/ref/heads/main" --jq '.object.sha')
+            gh api --method POST "repos/$REPO/git/refs" -f ref="refs/heads/$branch" -f sha="$head" > /dev/null
+          fi
+          sha=$(gh api "repos/$REPO/contents/spm-bot-heartbeat.txt?ref=$branch" --jq '.sha' 2>/dev/null || true)
+          content=$(date -u '+SPM scheduler heartbeat: %Y-%m-%dT%H:%M:%SZ' | base64 -w0)
+          args=(-f "message=SPM bot heartbeat [skip ci] [skip vercel]" -f "branch=$branch" -f "content=$content")
+          if [ -n "$sha" ]; then args+=(-f "sha=$sha"); fi
+          gh api --method PUT "repos/$REPO/contents/spm-bot-heartbeat.txt" "${args[@]}" > /dev/null
