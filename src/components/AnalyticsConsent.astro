@@ -1,0 +1,80 @@
+---
+import type { Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const copy = lang === 'en'
+  ? {
+    settings: 'Analytics preferences',
+    title: 'Website analytics',
+    description: 'If you allow it, we use Google Analytics to measure visits, ticket-link clicks and successful registrations. We do not send your registration details to Analytics.',
+    accept: 'Allow analytics',
+    decline: 'Reject analytics',
+    privacy: 'How Google uses this data',
+  }
+  : {
+    settings: 'Mérési beállítások',
+    title: 'Weboldal-statisztika',
+    description: 'Ha engedélyezed, a Google Analytics segítségével mérjük a látogatásokat, a jegylinkek kattintásait és a sikeres jelentkezéseket. A jelentkezéskor megadott adataidat nem küldjük az Analyticsnek.',
+    accept: 'Mérés engedélyezése',
+    decline: 'Mérés elutasítása',
+    privacy: 'Így használja a Google az adatokat',
+  };
+---
+<div class="bg-ink py-3 text-center text-sm text-surface">
+  <button id="analytics-preferences" type="button" class="underline underline-offset-4" aria-controls="analytics-consent" aria-expanded="false">
+    {copy.settings}
+  </button>
+</div>
+<section hidden id="analytics-consent" class="fixed bottom-4 left-4 right-4 z-[70] max-h-[calc(100dvh-2rem)] max-w-md overflow-auto rounded-xl border border-ink/20 bg-surface p-5 text-ink shadow-xl sm:right-auto" aria-labelledby="analytics-consent-title">
+  <h2 id="analytics-consent-title" tabindex="-1" class="font-display text-xl">{copy.title}</h2>
+  <p class="mt-2 text-sm">{copy.description}</p>
+  <a href="https://policies.google.com/technologies/partner-sites" class="mt-2 inline-block text-sm underline">{copy.privacy}</a>
+  <div class="mt-4 flex flex-wrap gap-2">
+    <button type="button" data-analytics-choice="declined" class="rounded-md border border-ink/30 px-3 py-2 text-sm font-semibold">{copy.decline}</button>
+    <button type="button" data-analytics-choice="accepted" class="rounded-md border border-ink/30 px-3 py-2 text-sm font-semibold">{copy.accept}</button>
+  </div>
+</section>
+
+<script>
+  import { getAnalyticsPreference, setAnalyticsPreference, startAnalytics, trackTicketClick } from '../lib/analytics';
+
+  const panel = document.querySelector<HTMLElement>('#analytics-consent');
+  const settings = document.querySelector<HTMLButtonElement>('#analytics-preferences');
+
+  if (panel && settings) {
+    const setOpen = (open: boolean) => {
+      panel.hidden = !open;
+      settings.setAttribute('aria-expanded', String(open));
+    };
+    const preference = getAnalyticsPreference();
+    if (preference === 'accepted') startAnalytics();
+    if (preference === null) setOpen(true);
+
+    settings.addEventListener('click', () => {
+      setOpen(panel.hidden);
+      if (!panel.hidden) panel.querySelector('h2')?.focus();
+    });
+    panel.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      setOpen(false);
+      settings.focus();
+    });
+    panel.querySelectorAll<HTMLButtonElement>('[data-analytics-choice]').forEach((button) => {
+      button.addEventListener('click', () => {
+        setAnalyticsPreference(button.dataset.analyticsChoice === 'accepted' ? 'accepted' : 'declined');
+        setOpen(false);
+        settings.focus({ preventScroll: true });
+      });
+    });
+  }
+
+  const trackTicket = (event: MouseEvent) => {
+    if (event.type === 'auxclick' && event.button !== 1) return;
+    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[data-ticket-event]') : null;
+    const slug = link?.dataset.ticketEvent;
+    if (slug) trackTicketClick(slug);
+  };
+  document.addEventListener('click', trackTicket);
+  document.addEventListener('auxclick', trackTicket);
+</script>

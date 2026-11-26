@@ -19,6 +19,7 @@ const lang: Lang = getLangFromUrl(Astro.url);
   </form>
 </div>
 <script>
+  import { trackRegistration } from "../lib/analytics";
   const form = document.getElementById('reg-form') as HTMLFormElement | null;
   const status = document.getElementById('reg-status');
   form?.addEventListener('submit', async (e) => {
@@ -30,8 +31,12 @@ const lang: Lang = getLangFromUrl(Astro.url);
     try {
       const res = await fetch('/api/registration', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const json = await res.json();
-      if (res.ok && json.ok) { status.textContent = status.dataset.ok ?? 'Köszönjük a jelentkezést!'; status.style.color = 'green'; form.reset(); }
-      else { status.textContent = json.error ?? status.dataset.err ?? 'Hiba történt.'; status.style.color = 'crimson'; }
+      if (res.ok && json.ok) {
+        trackRegistration("event");
+        status.textContent = status.dataset.ok ?? 'Köszönjük a jelentkezést!';
+        status.style.color = 'green';
+        form.reset();
+      } else { status.textContent = json.error ?? status.dataset.err ?? 'Hiba történt.'; status.style.color = 'crimson'; }
     } catch { status.textContent = status.dataset.neterr ?? 'Hálózati hiba. Próbáld újra.'; status.style.color = 'crimson'; }
     finally { btn.disabled = false; }
   });

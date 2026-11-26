@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { serializeJsonLd, ORGANIZATION_ID, SITE_URL } from "../lib/discovery";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import AnalyticsConsent from "../components/AnalyticsConsent.astro";
 import BackToTop from "../components/BackToTop.astro";
 import { getSiteSettings, type SiteSettings } from "../sanity/lib/api";
 import { sanityClient } from "sanity:client";
@@ -113,6 +114,7 @@ const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor
     <Header settings={settings} lang={lang} />
     <main class="flex-1"><slot /></main>
     <Footer settings={settings} lang={lang} />
+    <AnalyticsConsent lang={lang} />
     <BackToTop />
   </body>
 </html>

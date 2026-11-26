@@ -99,6 +99,7 @@ const btnClass = 'inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 
 )}
 
 <script>
+  import { trackRegistration } from "../lib/analytics";
   document.querySelectorAll('.championship-cta').forEach((rootNode) => {
     const root = rootNode as HTMLElement;
     if (root.dataset.wired) return;
@@ -165,6 +166,7 @@ const btnClass = 'inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 
         });
         const json = await res.json();
         if (res.ok && json.ok) {
+          trackRegistration("championship");
           status.textContent = status.dataset.ok ?? 'Köszönjük a jelentkezést!';
           status.style.color = '#7CFFB2';
           form.reset();
