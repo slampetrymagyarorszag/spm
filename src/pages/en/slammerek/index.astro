@@ -3,6 +3,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SlammersIndex from '../../../components/pages/SlammersIndex.astro';
 import { getSlammers } from '../../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
 const slammers = await getSlammers(sanityClient);
 ---
 <BaseLayout title="Slammers">

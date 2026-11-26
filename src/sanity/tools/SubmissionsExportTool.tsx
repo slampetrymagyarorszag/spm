@@ -160,9 +160,9 @@ export function SubmissionsExportTool() {
             </Select>
           </Box>
           <Button text="Frissítés" mode="ghost" onClick={load} />
-          <Button text={`CSV letöltése (${visible.length})`} tone="primary" disabled={!rows || visible.length === 0} onClick={downloadCsv} />
+          <Button text={rows === null ? 'Jelentkezők betöltése…' : `CSV letöltése (${visible.length})`} tone="primary" disabled={!rows || visible.length === 0} onClick={downloadCsv} />
         </Flex>
-        <Text size={1} muted>Az export mindig csak a fenti szűrőknek megfelelő {visible.length} jelentkezést tartalmazza. A „Havi klub” szűrő a jelentkezésben mentett klub/hónap megnevezést használja.</Text>
+        <Text size={1} muted hidden={rows === null || !!loadError}>Az export mindig csak a fenti szűrőknek megfelelő {visible.length} jelentkezést tartalmazza. A „Havi klub” szűrő a jelentkezésben mentett klub/hónap megnevezést használja.</Text>
 
         <Flex gap={3} align="center" wrap="wrap">
           {!confirmDelete ? (
@@ -205,8 +205,8 @@ export function SubmissionsExportTool() {
 
         {rows === null ? (
           <Flex align="center" gap={2}><Spinner /><Text>Betöltés…</Text></Flex>
-        ) : visible.length === 0 ? (
-          <Text muted>Még nincs jelentkezés.</Text>
+        ) : loadError ? null : visible.length === 0 ? (
+          <Text muted>A jelenlegi szűréshez nincs jelentkezés.</Text>
         ) : (
           <Box overflow="auto">
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>

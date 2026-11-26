@@ -24,6 +24,7 @@ export function collectValidUrls(
 }
 
 export function validateSubmission(input: SubmissionInput): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && input.website.trim() !== '') return { ok: false, error: 'spam' };
   if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A név megadása kötelező.' };
   if (!input.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.email)) return { ok: false, error: 'Érvényes email cím szükséges.' };
@@ -43,6 +44,7 @@ export type EventTipInput = {
 };
 
 export function validateEventTip(input: EventTipInput): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && input.website.trim() !== '') return { ok: false, error: 'spam' };
   if (!input.eventName || input.eventName.trim().length < 2) return { ok: false, error: 'A rendezvény nevének megadása kötelező.' };
   if (!input.description || input.description.trim().length < 5) return { ok: false, error: 'Kérünk egy rövid leírást az eseményről.' };
@@ -67,6 +69,7 @@ export type SlammerApplicationInput = {
 };
 
 export function validateSlammerApplication(input: SlammerApplicationInput): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.realName || input.realName.trim().length < 2) return { ok: false, error: 'A neved megadása kötelező.' };
   // Művésznév opcionális — ha nincs, a valódi név lesz a megjelenített név.
@@ -128,6 +131,7 @@ export function validateChampionship(
   input: ChampionshipInput,
   opts: ChampionshipOptions = {},
 ): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A név megadása kötelező.' };
   if (!input.email || !EMAIL_RE.test(input.email)) return { ok: false, error: 'Érvényes email cím szükséges.' };
@@ -149,6 +153,7 @@ export type MonthlyContestInput = {
 };
 
 export function validateMonthlyContest(input: MonthlyContestInput): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.name || input.name.trim().length < 2) return { ok: false, error: 'A neved / művészneved megadása kötelező.' };
   if (!input.email || !EMAIL_RE.test(input.email)) return { ok: false, error: 'Érvényes email cím szükséges.' };
@@ -165,6 +170,7 @@ export type SlamClubInput = {
   website?: string;
 };
 export function validateSlamClub(input: SlamClubInput): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.city || input.city.trim().length < 2) return { ok: false, error: 'A város megadása kötelező.' };
   if (!input.facebookUrl || !/^https?:\/\/\S+$/i.test(input.facebookUrl.trim())) return { ok: false, error: 'Érvényes link szükséges (https://…).' };
@@ -181,16 +187,21 @@ export type SlammerEditInput = {
   removeRequest?: unknown;
   email?: string;
   website?: string; // honeypot
+  activeRequest?: unknown;
+  hasVideos?: boolean;
   hasPhoto?: boolean; // a szerver tölti ki, ha van feltöltött fájl
 };
 
 export function validateSlammerEdit(input: SlammerEditInput): ValidationResult {
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.entries(input).some(([key, value]) => !['consent', 'availableDays', 'activeRequest', 'removeRequest', 'hasPhoto', 'hasVideos'].includes(key) && value != null && typeof value !== 'string')) return { ok: false, error: 'Hibás űrlapadat. Töltsd újra az oldalt, és próbáld újra.' };
   if (input.website && String(input.website).trim() !== '') return { ok: false, error: 'spam' };
   if (!input.slammerSlug || input.slammerSlug.trim().length < 1) return { ok: false, error: 'Hiányzó slammer-azonosító.' };
   const remove = isConsented(input.removeRequest);
   const hasContent =
     remove ||
     !!input.hasPhoto ||
+    !!input.hasVideos ||
+    isConsented(input.activeRequest) ||
     (input.bioChange && input.bioChange.trim().length >= 3) ||
     (input.linksChange && input.linksChange.trim().length >= 3);
   if (!hasContent) return { ok: false, error: 'Írd le, mit módosítanál, tölts fel képet, vagy jelöld a kérést.' };

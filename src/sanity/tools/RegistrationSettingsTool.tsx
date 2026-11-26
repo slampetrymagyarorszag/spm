@@ -1,8 +1,10 @@
+import { saveRegistrationSettings } from '../lib/registrationSettings';
 import { useCallback, useEffect, useState } from 'react';
 import { useClient } from 'sanity';
 import { Box, Button, Card, Flex, Heading, Spinner, Stack, Text, TextInput, TextArea } from '@sanity/ui';
 
 type Settings = {
+  _rev?: string;
   championshipCtaEnabled?: boolean;
   championshipCtaLabel?: string;
   championshipCtaUrl?: string;
@@ -44,7 +46,7 @@ export function RegistrationSettingsTool() {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const settings = await client.fetch<Settings | null>('*[_id == "siteSettings"][0]{championshipCtaEnabled,championshipCtaLabel,championshipCtaUrl,championshipCtaIntro,championshipDays,championshipCtaFrom,championshipCtaTo,monthlyContest}');
+      const settings = await client.fetch<Settings | null>('*[_id == "siteSettings"][0]{_rev,championshipCtaEnabled,championshipCtaLabel,championshipCtaUrl,championshipCtaIntro,championshipDays,championshipCtaFrom,championshipCtaTo,monthlyContest}', {}, {perspective: 'raw'});
       setData(settings || {});
     } catch (e: any) { setError(e?.message || 'Nem sikerült betölteni a beállításokat.'); }
   }, [client]);
@@ -96,31 +98,9 @@ export function RegistrationSettingsTool() {
     if (!data) return;
     setBusy(true); setError(null); setMessage(null);
     try {
-      const monthly = data.monthlyContest || {};
-      if (monthly.enabled && !monthly.monthLabel?.trim()) throw new Error('A havi klub megnevezése kötelező, ha be van kapcsolva.');
-      if (data.championshipCtaFrom && data.championshipCtaTo && data.championshipCtaFrom >= data.championshipCtaTo) throw new Error('A bajnoki zárásnak a nyitás után kell lennie.');
-      if (monthly.opensAt && monthly.closesAt && monthly.opensAt >= monthly.closesAt) throw new Error('A havi klub zárásának a nyitás után kell lennie.');
-      await client.createIfNotExists({ _id: 'siteSettings', _type: 'siteSettings' });
-      let patch = client.patch('siteSettings').setIfMissing({ monthlyContest: { _type: 'object' } }).set({
-        championshipCtaEnabled: !!data.championshipCtaEnabled,
-        championshipCtaLabel: data.championshipCtaLabel || 'Jelentkezem az országos bajnokságra',
-        championshipDays: (data.championshipDays || []).filter(Boolean),
-        'monthlyContest.enabled': !!monthly.enabled,
-        'monthlyContest.monthLabel': monthly.monthLabel || '',
-        'monthlyContest.buttonLabel': monthly.buttonLabel || 'Jelentkezem a havi versenyre',
-      });
-      for (const [path, value] of Object.entries({
-        championshipCtaUrl: data.championshipCtaUrl,
-        championshipCtaIntro: data.championshipCtaIntro,
-        championshipCtaFrom: data.championshipCtaFrom,
-        championshipCtaTo: data.championshipCtaTo,
-        'monthlyContest.intro': monthly.intro,
-        'monthlyContest.opensAt': monthly.opensAt,
-        'monthlyContest.closesAt': monthly.closesAt,
-      })) patch = value ? patch.set({ [path]: value }) : patch.unset([path]);
-      await patch.commit();
+      await saveRegistrationSettings(client, data);
       await load();
-      setMessage('Mentve. Az új verzió telepítése után a főoldal az aktuális beállításokat élőben olvassa.');
+      setMessage('Mentve. A jelentkezési lehetőséget ellenőrizd a nyilvános oldalon; a gyorsítótár néhány perc alatt frissül.');
     } catch (e: any) { setError(e?.message || 'Nem sikerült menteni.'); }
     finally { setBusy(false); }
   };
@@ -129,11 +109,11 @@ export function RegistrationSettingsTool() {
     <Stack space={5} style={{ maxWidth: 850 }}>
       <Stack space={2}>
         <Heading size={2}>Jelentkezések beállításai</Heading>
-        <Text size={1} muted>Itt kapcsolhatod be és időzítheted a főoldali jelentkezési gombokat. A mentés nem indít új buildet.</Text>
+        <Text size={1} muted>Itt kapcsolhatod be és időzítheted a főoldali jelentkezési gombokat. A mentés azonnal élesíti ezeket a beállításokat, és az esetleges oldalpiszkozatban is frissíti őket.</Text>
       </Stack>
       {error && <Card padding={3} radius={2} tone="critical"><Text>{error}</Text></Card>}
       {message && <Card padding={3} radius={2} tone="positive"><Text>{message}</Text></Card>}
-      {!data ? <Flex gap={2} align="center"><Spinner /><Text>Betöltés…</Text></Flex> : <>
+      {!data && !error ? <Flex gap={2} align="center"><Spinner /><Text>Betöltés…</Text></Flex> : data ? <>
         <Card padding={4} radius={2} border><Stack space={4}>
           <Heading size={1}>Havi klub</Heading>
           <Text size={1} muted>{currentState(data.monthlyContest?.enabled, data.monthlyContest?.opensAt, data.monthlyContest?.closesAt)}</Text>
@@ -155,7 +135,7 @@ export function RegistrationSettingsTool() {
           {field('Másik cél-URL — általában maradjon üres', data.championshipCtaUrl, (value) => change({ championshipCtaUrl: value }), 'Ha kitöltöd, a gomb a jelentkezési űrlap helyett erre a címre visz.')}
         </Stack></Card>
         <Button text={busy ? 'Mentés…' : 'Jelentkezési beállítások mentése'} tone="primary" disabled={busy} onClick={save} />
-      </>}
+      </> : null}
     </Stack>
   </Card>;
 }

@@ -8,8 +8,10 @@ export const slammerApplication = defineType({
   title: 'Beküldött slammer',
   type: 'document',
   fields: [
+    defineField({name:'appliedAt', title:'Átvezetve',type:'string',hidden:true,readOnly:true}),
+    defineField({name:'appliedFields',title:'Átvezetett mezők',type:'array',of:[{type:'string'}],hidden:true,readOnly:true}),
     defineField({
-      name: 'promotionControl', title: 'Profil létrehozása', type: 'string', readOnly: true,
+      name: 'promotionControl', title: 'Profil ellenőrzése és átvezetés', type: 'string', readOnly: true,
       components: { input: PromoteSlammerInput },
     }),
     defineField({ name: 'realName', title: 'Név', type: 'string', validation: (r) => r.required() }),
@@ -36,7 +38,7 @@ export const slammerApplication = defineType({
       name: 'promoted', title: 'Slammerré alakítva', type: 'boolean', readOnly: true, initialValue: false,
       description: 'A „Slammerré alakítás” gomb állítja be. Ha BE van, a beküldés már a fő bázisba került.',
     }),
-    defineField({ name: 'promotedSlammerId', title: 'Létrehozott slammer azonosító', type: 'string', readOnly: true }),
+    defineField({ name: 'promotedSlammerId', hidden: true, title: 'Létrehozott slammer azonosító', type: 'string', readOnly: true }),
   ],
   orderings: [{ title: 'Legújabb', name: 'newest', by: [{ field: 'submittedAt', direction: 'desc' }] }],
   preview: {

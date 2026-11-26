@@ -1,4 +1,5 @@
 ---
+import { articleAuthor, serializeJsonLd, ORGANIZATION_ID } from '../../lib/discovery';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../RichText.astro';
 import { urlForImage } from '../../sanity/lib/image';
@@ -27,15 +28,17 @@ const articleJsonLd = {
   '@type': 'Article',
   headline: title,
   datePublished: post.publishedAt,
-  ...(post.author ? { author: { '@type': 'Person', name: post.author } } : {}),
+  ...(post.author ? { author: articleAuthor(post.author) } : {}),
+  ...(post._updatedAt ? { dateModified: post._updatedAt } : {}),
+  inLanguage: lang,
   ...(coverUrl ? { image: [coverUrl] } : {}),
   ...(excerpt ? { description: excerpt } : {}),
-  publisher: { '@type': 'Organization', name: 'Slam Poetry Magyarország' },
+  publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID, name: 'Slam Poetry Magyarország' },
   mainEntityOfPage: new URL(localizedPath(`/hirek/${post.slug}`, lang), Astro.site).href,
 };
 ---
 <BaseLayout title={seoTitle} description={seoDescription} image={seoImage} ogType="article">
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={serializeJsonLd(articleJsonLd)} />
   <article>
     <header class="surface-dark bg-ink text-surface">
       <div class="mx-auto max-w-3xl px-4 py-16">
@@ -44,7 +47,7 @@ const articleJsonLd = {
       </div>
     </header>
     {post.cover && (
-      <img src={urlForImage(post.cover).width(1200).url()} alt={title} class="mx-auto max-w-4xl w-full px-4 -mt-8 rounded-lg" />
+      <img src={urlForImage(post.cover).width(1200).url()} alt={post.cover.alt || title} class="mx-auto max-w-4xl w-full px-4 -mt-8 rounded-lg" />
     )}
     <div class="mx-auto max-w-3xl px-4 py-12">
       <RichText value={body} />

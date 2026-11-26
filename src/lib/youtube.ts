@@ -83,3 +83,69 @@ export async function fetchChannelUploads(opts: {
     return [];
   }
 }
+
+export type YouTubePlaylist = {
+  id: string;
+  title: string;
+  url: string;
+  videoCount?: number;
+};
+
+// Csak a csatorna nyilvános, nem üres listái: külön CMS-írás vagy cron nélkül.
+export async function fetchChannelPlaylists(opts: {
+  apiKey?: string; channelId?: string; handle?: string; max?: number;
+}): Promise<YouTubePlaylist[]> {
+  const { apiKey, handle, max = 12 } = opts;
+  if (!apiKey || (!opts.channelId && !handle)) return [];
+  try {
+    let channelId = opts.channelId;
+    if (!channelId) {
+      const params = new URLSearchParams({ part: 'id', forHandle: handle!.replace(/^@/, ''), key: apiKey });
+      const res = await fetch(`${API}/channels?${params}`, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) return [];
+      channelId = (await res.json())?.items?.[0]?.id;
+    }
+    if (!channelId) return [];
+    const params = new URLSearchParams({
+      part: 'snippet,contentDetails,status', channelId, maxResults: '50', key: apiKey,
+    });
+    const res = await fetch(`${API}/playlists?${params}`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!Array.isArray(json?.items)) return [];
+    return json.items
+      .filter((item: any) => parsePlaylistId(item?.id) && item?.snippet?.title && item?.status?.privacyStatus === 'public' && item?.contentDetails?.itemCount > 0)
+      .sort((a: any, b: any) => String(b.snippet.publishedAt ?? '').localeCompare(String(a.snippet.publishedAt ?? '')))
+      .slice(0, Math.max(0, Math.min(max, 50)))
+      .map((item: any) => ({
+        id: item.id, title: item.snippet.title,
+        url: `https://www.youtube.com/playlist?list=${item.id}`,
+        videoCount: item.contentDetails.itemCount,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+// A szerkesztő címe elsőbbséget kap; egy lista csak egyszer jelenhet meg.
+export function mergePlaylistDefinitions(
+  manual: { id: string | null; title?: string }[],
+  automatic: YouTubePlaylist[],
+): YouTubePlaylist[] {
+  const automaticById = new Map(automatic.map(item => [item.id, item]));
+  const manualById = new Map<string, { title?: string }>();
+  for (const item of manual) {
+    if (item.id && !manualById.has(item.id)) manualById.set(item.id, item);
+  }
+  const merged = new Map<string, YouTubePlaylist>();
+  for (const item of [...automatic, ...manual]) {
+    if (!item.id || !parsePlaylistId(item.id) || merged.has(item.id)) continue;
+    merged.set(item.id, {
+      ...automaticById.get(item.id),
+      id: item.id,
+      title: manualById.get(item.id)?.title || item.title || 'Lejátszási lista',
+      url: `https://www.youtube.com/playlist?list=${item.id}`,
+    });
+  }
+  return [...merged.values()];
+}

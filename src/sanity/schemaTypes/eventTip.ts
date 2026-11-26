@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { EventTipStatusInput } from '../components/EventTipStatusInput';
 
 // Látogatók által beküldött esemény-tipp. A szerkesztő a Studióban elbírálja,
 // és az „Jóváhagyva" kapcsolóval megjeleníti az oldalon (Események → Közösségi tippek).
@@ -7,6 +8,7 @@ export const eventTip = defineType({
   title: 'Beküldött esemény',
   type: 'document',
   fields: [
+    defineField({name:'reviewControl',title:'Mi legyen a beküldött eseménnyel?',type:'string',components:{input:EventTipStatusInput}}),
     defineField({ name: 'eventName', title: 'Rendezvény neve', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'description', title: 'Leírás', type: 'text', rows: 3 }),
     defineField({ name: 'facebookUrl', title: 'Facebook esemény link', type: 'url' }),
@@ -21,10 +23,10 @@ export const eventTip = defineType({
       description: 'Kapcsold BE, hogy a tipp megjelenjen az Események oldalon a „Közösségi tippek" között (egyszerű kártyaként, naptár nélkül). Teljes eseményhez használd az „Eseménnyé alakítás” műveletet: ez előbb piszkozatot készít, amit dátum és borító után publikálhatsz.',
     }),
     defineField({
-      name: 'promoted', title: 'Eseménnyé alakítva', type: 'boolean', readOnly: true, initialValue: false,
+      name: 'promoted', title: 'Naptári piszkozat létrehozva', type: 'boolean', readOnly: true, initialValue: false,
       description: 'Az „Eseménnyé alakítás” gomb állítja be. Ha BE van, a tippből már teljes naptári esemény készült.',
     }),
-    defineField({ name: 'promotedEventId', title: 'Létrehozott esemény azonosító', type: 'string', readOnly: true }),
+    defineField({ name: 'promotedEventId', hidden:true, title: 'Létrehozott esemény azonosító', type: 'string', readOnly: true }),
   ],
   orderings: [{ title: 'Legújabb', name: 'newest', by: [{ field: 'submittedAt', direction: 'desc' }] }],
   preview: {

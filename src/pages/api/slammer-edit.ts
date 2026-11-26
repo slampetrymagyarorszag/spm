@@ -26,6 +26,9 @@ export const POST: APIRoute = async ({ request }) => {
   const photo = form.get('photo');
   const hasPhoto = photo instanceof File && photo.size > 0;
 
+  const vids = collectValidUrls(form.getAll('videoLink'));
+  if (!vids.ok) return json({ ok: false, error: vids.error }, 400);
+
   const fields = {
     slammerSlug: String(form.get('slammerSlug') ?? ''),
     slammerName: String(form.get('slammerName') ?? ''),
@@ -36,6 +39,7 @@ export const POST: APIRoute = async ({ request }) => {
     email: String(form.get('email') ?? ''),
     website: String(form.get('website') ?? ''),
     hasPhoto,
+    hasVideos: vids.urls.length > 0,
   };
 
   const result = validateSlammerEdit(fields);
@@ -44,9 +48,6 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: result.error }, 400);
   }
 
-  // Több (ismételhető) YouTube-link összegyűjtése és ellenőrzése.
-  const vids = collectValidUrls(form.getAll('videoLink'));
-  if (!vids.ok) return json({ ok: false, error: vids.error }, 400);
 
   if (hasPhoto) {
     if (!(photo as File).type.startsWith('image/')) return json({ ok: false, error: 'A feltöltött fájl nem kép.' }, 400);
@@ -58,6 +59,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
+    const profiles = await writeClient.fetch<any[]>('*[_type == "slammer" && !(_id in path("drafts.**")) && slug.current == $slug][0...2]{_id,name,slug}', { slug: fields.slammerSlug.trim() }, { perspective: 'raw' });
+    if (profiles.length !== 1) return json({ ok: false, error: 'A slammerprofil nem azonosítható. Frissítsd az oldalt.' }, 400);
+    const profile = profiles[0];
     let photoRef: any = undefined;
     if (hasPhoto) {
       const buffer = Buffer.from(await (photo as File).arrayBuffer());
@@ -72,7 +76,8 @@ export const POST: APIRoute = async ({ request }) => {
     const activeRequest = isConsented(fields.activeRequest);
     await writeClient.create({
       _type: 'slammerEditRequest',
-      slammerName: fields.slammerName.trim().slice(0, 200),
+      slammer: { _type: 'reference', _ref: profile._id, _weak: true },
+      slammerName: profile.name,
       slammerSlug: fields.slammerSlug.trim().slice(0, 200),
       removeRequest: remove,
       activeRequest,

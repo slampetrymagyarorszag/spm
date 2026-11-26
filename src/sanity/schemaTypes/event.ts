@@ -19,7 +19,7 @@ export const event = defineType({
       description: 'Rövid cím — ez jelenik meg a listában és a webcímben.',
     }),
     defineField({
-      name: 'startsAt', title: 'Időpont', type: 'datetime', group: 'main', validation: (r) => r.required(),
+      name: 'startsAt', title: 'Kezdés időpontja', type: 'datetime', group: 'main', validation: (r) => r.required(),
       description: 'A dátum a „közelgő / korábbi" rendezéshez és a lista-kártyához kell.',
     }),
     defineField({
@@ -40,8 +40,8 @@ export const event = defineType({
     defineField({ name: 'titleEn', title: 'Cím (English)', type: 'string', group: 'details' }),
     defineField({ name: 'descriptionEn', title: 'Leírás (English)', type: 'blockContent', group: 'details' }),
     defineField({ name: 'performers', title: 'Fellépők', type: 'array', group: 'details', of: [{ type: 'reference', to: [{ type: 'slammer' }] }] }),
-    defineField({ name: 'ticketUrl', title: 'Jegy URL', type: 'url', group: 'details' }),
-    defineField({ name: 'accentColor', title: 'Esemény accent szín (hex)', type: 'string', group: 'details', description: 'Opcionális, pl. #b13bd6 — felülírja az oldal accent színét ennél az eseménynél.' }),
+    defineField({ name: 'ticketUrl', title: 'Jegyvásárlás linkje', type: 'url', group: 'details' }),
+    defineField({ name: 'accentColor', title: 'Esemény kiemelőszíne (opcionális)', type: 'string', group: 'details', description: 'Opcionális, pl. #b13bd6 — felülírja az oldal accent színét ennél az eseménynél.' }),
 
     // — Jelentkezés (országos bajnokság / Budapest Klub) —
     defineField({ name: 'registrationEnabled', title: 'Jelentkezés engedélyezve', type: 'boolean', group: 'registration', initialValue: false }),
@@ -53,5 +53,5 @@ export const event = defineType({
     defineField({ name: 'registrationDeadline', title: 'Jelentkezési határidő', type: 'datetime', group: 'registration' }),
   ],
   orderings: [{ title: 'Kezdés szerint', name: 'starts', by: [{ field: 'startsAt', direction: 'desc' }] }],
-  preview: { select: { title: 'title', subtitle: 'startsAt', media: 'cover' } },
+  preview: { select: { title: 'title', date: 'startsAt', media: 'cover' }, prepare: ({title,date,media}: any) => ({title: title || 'Cím nélkül', subtitle: date ? new Date(date).toLocaleString('hu-HU', {timeZone:'Europe/Budapest', dateStyle:'medium', timeStyle:'short'}) : 'Nincs időpont megadva', media}) },
 });

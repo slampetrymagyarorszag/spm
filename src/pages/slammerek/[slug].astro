@@ -1,12 +1,10 @@
 ---
 import SlammerProfile from '../../components/pages/SlammerProfile.astro';
-import { getSlammers, getSlammerBySlug } from '../../sanity/lib/api';
+import { getSlammerBySlug } from '../../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
 
-export async function getStaticPaths() {
-  const slammers = await getSlammers(sanityClient);
-  return slammers.map((s) => ({ params: { slug: s.slug } }));
-}
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=300');
 const { slug } = Astro.params;
 const slammer = await getSlammerBySlug(sanityClient, slug!);
 if (!slammer) return Astro.redirect('/slammerek');

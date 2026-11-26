@@ -1,244 +1,67 @@
 import type { StructureResolver } from 'sanity/structure';
+import { SubmissionsExportTool } from './tools/SubmissionsExportTool';
+import { FacebookImportTool } from './tools/FacebookImportTool';
+import { PressReleaseTool } from './tools/PressReleaseTool';
+import { RegistrationSettingsTool } from './tools/RegistrationSettingsTool';
 
-export const structure: StructureResolver = (S) =>
-  S.list()
-    .title('Tartalom')
-    .items([
-      S.documentTypeListItem('post').title('Hírek'),
-
-      // Slammerek — összes + kiemelt szűrt nézet
-      S.listItem()
-        .title('Slammerek')
-        .child(
-          S.list()
-            .title('Slammerek')
-            .items([
-              S.listItem()
-                .title('Összes slammer')
-                .child(S.documentTypeList('slammer').title('Összes slammer')),
-              S.listItem()
-                .title('⭐ Kiemelt slammerek')
-                .child(
-                  S.documentList()
-                    .title('Kiemelt slammerek')
-                    .filter('_type == "slammer" && featured == true')
-                    .defaultOrdering([{ field: 'featuredOrder', direction: 'asc' }]),
-                ),
-            ]),
-        ),
-
-      // Események — közelgő / korábbi szűrt nézetek
-      S.listItem()
-        .title('Események')
-        .child(
-          S.list()
-            .title('Események')
-            .items([
-              S.listItem()
-                .title('Közelgő események')
-                .child(
-                  S.documentList()
-                    .title('Közelgő események')
-                    .filter('_type == "event" && startsAt >= now()')
-                    .defaultOrdering([{ field: 'startsAt', direction: 'asc' }]),
-                ),
-              S.listItem()
-                .title('Korábbi események')
-                .child(
-                  S.documentList()
-                    .title('Korábbi események')
-                    .filter('_type == "event" && startsAt < now()')
-                    .defaultOrdering([{ field: 'startsAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('Összes esemény')
-                .child(S.documentTypeList('event').title('Összes esemény')),
-            ]),
-        ),
-
-      S.documentTypeListItem('mediaItem').title('Médiatár'),
-      S.documentTypeListItem('page').title('Oldalak'),
-      S.listItem().title('Oktatás').child(S.document().schemaType('educationPage').documentId('educationPage')),
-
-      S.divider(),
-
-      // Sajtólista — a kiküldés a felső „Sajtóközlemény küldése” menüből megy
-      S.listItem()
-        .title('📰 Sajtólista')
-        .child(
-          S.list()
-            .title('Sajtólista')
-            .items([
-              S.listItem()
-                .title('✅ Feliratkozott')
-                .child(
-                  S.documentList()
-                    .title('Feliratkozott sajtókapcsolatok')
-                    .filter('_type == "pressContact" && subscribed != false')
-                    .defaultOrdering([{ field: 'name', direction: 'asc' }]),
-                ),
-              S.listItem()
-                .title('⛔ Leiratkozott')
-                .child(
-                  S.documentList()
-                    .title('Leiratkozott sajtókapcsolatok')
-                    .filter('_type == "pressContact" && subscribed == false')
-                    .defaultOrdering([{ field: 'unsubscribedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('Összes')
-                .child(S.documentTypeList('pressContact').title('Összes sajtókapcsolat')),
-            ]),
-        ),
-
-      // Látogatói esemény-tippek elbírálása
-      S.listItem()
-        .title('📥 Beküldött események')
-        .child(
-          S.list()
-            .title('Beküldött események')
-            .items([
-              S.listItem()
-                .title('⏳ Elbírálásra vár')
-                .child(
-                  S.documentList()
-                    .title('Elbírálásra vár')
-                    .filter('_type == "eventTip" && approved != true && promoted != true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('✅ „Tőletek érkezett” tipp')
-                .child(
-                  S.documentList()
-                    .title('Közösségi tippek')
-                    .filter('_type == "eventTip" && approved == true && promoted != true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('📅 Eseménnyé alakítva')
-                .child(
-                  S.documentList()
-                    .title('Eseménnyé alakítva')
-                    .filter('_type == "eventTip" && promoted == true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-            ]),
-        ),
-
-      // Látogatói slammer-jelentkezések elbírálása
-      S.listItem()
-        .title('🎤 Beküldött slammerek')
-        .child(
-          S.list()
-            .title('Beküldött slammerek')
-            .items([
-              S.listItem()
-                .title('⏳ Elbírálásra vár')
-                .child(
-                  S.documentList()
-                    .title('Elbírálásra vár')
-                    .filter('_type == "slammerApplication" && promoted != true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('✅ Slammerré alakítva')
-                .child(
-                  S.documentList()
-                    .title('Slammerré alakítva')
-                    .filter('_type == "slammerApplication" && promoted == true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-            ]),
-        ),
-
-      // Slammerek saját módosítási kérései a profiljukról
-      S.listItem()
-        .title('✏️ Slammer-módosítási kérések')
-        .child(
-          S.list()
-            .title('Slammer-módosítási kérések')
-            .items([
-              S.listItem()
-                .title('⏳ Nyitott')
-                .child(
-                  S.documentList()
-                    .title('Nyitott kérések')
-                    .filter('_type == "slammerEditRequest" && handled != true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('✅ Elintézett')
-                .child(
-                  S.documentList()
-                    .title('Elintézett kérések')
-                    .filter('_type == "slammerEditRequest" && handled == true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-            ]),
-        ),
-
-      // Beküldött / kezelt klubok
-      S.listItem()
-        .title('🏙️ Klubok')
-        .child(
-          S.list()
-            .title('Klubok')
-            .items([
-              S.listItem()
-                .title('⏳ Elbírálásra vár')
-                .child(
-                  S.documentList()
-                    .title('Elbírálásra vár')
-                    .filter('_type == "slamClub" && approved != true')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('✅ Jóváhagyott (megjelenik)')
-                .child(
-                  S.documentList()
-                    .title('Jóváhagyott klubok')
-                    .filter('_type == "slamClub" && approved == true')
-                    .defaultOrdering([{ field: 'city', direction: 'asc' }]),
-                ),
-            ]),
-        ),
-
-      // Jelentkezés-napló (havi klub + bajnokság) — export a felső „Jelentkezések export” menüből
-      S.listItem()
-        .title('📋 Jelentkezések (napló)')
-        .child(
-          S.list()
-            .title('Jelentkezések')
-            .items([
-              S.listItem()
-                .title('Összes (időrendben)')
-                .child(
-                  S.documentList()
-                    .title('Összes jelentkezés')
-                    .filter('_type == "formSubmission"')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('🎤 Havi klub')
-                .child(
-                  S.documentList()
-                    .title('Havi klub jelentkezések')
-                    .filter('_type == "formSubmission" && kind == "havi-klub"')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-              S.listItem()
-                .title('🏆 Országos bajnokság')
-                .child(
-                  S.documentList()
-                    .title('Bajnoki jelentkezések')
-                    .filter('_type == "formSubmission" && kind == "bajnoksag"')
-                    .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-                ),
-            ]),
-        ),
-
-      S.divider(),
-      S.listItem()
-        .title('Oldal beállítások')
-        .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
-    ]);
+export const structure: StructureResolver = S => {
+  const filtered = (id: string, title: string, type: string, condition = '', field = 'submittedAt', direction: 'asc' | 'desc' = 'desc') => S.listItem().id(id).title(title).child(
+    S.documentList().id(id).title(title).schemaType(type).filter(`_type == "${type}"${condition ? ` && ${condition}` : ''}`).defaultOrdering([{ field, direction }]),
+  );
+  const tool = (id: string, title: string, component: any) => S.listItem().id(id).title(title).child(S.component(component).id(id).title(title));
+  const group = (id: string, title: string, items: any[]) => S.listItem().id(id).title(title).child(S.list().id(id).title(title).items(items));
+  return S.list().title('Mit szeretnél szerkeszteni?').items([
+    group('news', 'Hírek', [
+      S.documentTypeListItem('post').title('Összes hír és piszkozat').child(S.documentTypeList('post').title('Összes hír és piszkozat').defaultOrdering([{field:'publishedAt',direction:'desc'}])),
+      tool('facebook-import', 'Hír átvétele Facebookról', FacebookImportTool),
+    ]),
+    group('events', 'Eseménynaptár', [
+      filtered('upcoming', 'Közelgő események', 'event', 'coalesce(endsAt, startsAt) >= now()', 'startsAt', 'asc'),
+      S.documentTypeListItem('event').title('Összes esemény és új esemény'),
+      filtered('past', 'Korábbi események', 'event', 'coalesce(endsAt, startsAt) < now()', 'startsAt'),
+    ]),
+    group('slammers', 'Slammerek', [
+      S.documentTypeListItem('slammer').title('Összes profil és új slammer'),
+      filtered('featured', 'Főoldali kiemelés és sorrend', 'slammer', 'featured == true', 'featuredOrder', 'asc'),
+    ]),
+    S.documentTypeListItem('mediaItem').title('Médiatár'),
+    S.divider(),
+    group('requests', 'Beérkezett kérések', [
+      group('edits', 'Meglévő slammer profiljavítása', [
+        filtered('open', 'Feldolgozásra vár', 'slammerEditRequest', 'coalesce(handled, false) == false'),
+        filtered('closed', 'Lezárt kérések', 'slammerEditRequest', 'handled == true'),
+      ]),
+      group('applications', 'Új slammer jelentkezése', [
+        filtered('open', 'Feldolgozásra vár', 'slammerApplication', 'coalesce(promoted, false) == false'),
+        filtered('closed', 'Létrehozott profilok', 'slammerApplication', 'promoted == true'),
+      ]),
+      group('tips', 'Beküldött eseménytippek', [
+        filtered('open', 'Elbírálásra vár', 'eventTip', 'coalesce(approved, false) == false && coalesce(promoted, false) == false'),
+        filtered('approved', 'Közösségi tippként megjelenik', 'eventTip', 'approved == true && coalesce(promoted, false) == false'),
+        filtered('promoted', 'Elkészített eseménypiszkozatok', 'eventTip', 'promoted == true'),
+      ]),
+      group('clubs', 'Klubok jóváhagyása', [
+        filtered('open', 'Elbírálásra vár', 'slamClub', 'coalesce(approved, false) == false'),
+        filtered('approved', 'Megjelenő klubok', 'slamClub', 'approved == true', 'city', 'asc'),
+      ]),
+    ]),
+    group('registrations', 'Versenyjelentkezések', [
+      tool('settings', 'Jelentkezés megnyitása és lezárása', RegistrationSettingsTool),
+      tool('export', 'Jelentkezők és Excel / CSV export', SubmissionsExportTool),
+      filtered('all', 'Összes beküldés (napló)', 'formSubmission'),
+      filtered('monthly', 'Havi klub beküldései', 'formSubmission', 'kind == "havi-klub"'),
+      filtered('championship', 'Bajnokság beküldései', 'formSubmission', 'kind == "bajnoksag"'),
+    ]),
+    S.divider(),
+    group('website', 'Oldalszövegek és beállítások', [
+      S.documentTypeListItem('page').title('Oldalak szövegei'),
+      S.listItem().id('education').title('Oktatás').child(S.document().schemaType('educationPage').documentId('educationPage')),
+      S.listItem().id('settings').title('Főoldal, kapcsolatok és médiatár beállításai').child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+    ]),
+    group('press', 'Sajtó', [
+      filtered('subscribed', 'Feliratkozott sajtókapcsolatok', 'pressContact', 'coalesce(subscribed, true) == true', 'name', 'asc'),
+      S.documentTypeListItem('pressContact').title('Összes sajtókapcsolat'),
+      tool('send', 'Sajtóközlemény összeállítása és küldése', PressReleaseTool),
+    ]),
+  ]);
+};

@@ -10,7 +10,7 @@ export const slamClub = defineType({
   fields: [
     defineField({
       name: 'approved', title: 'Megjelenhet az oldalon', type: 'boolean', initialValue: false,
-      description: 'Új klubnál hagyd kikapcsolva, amíg a várost, nevet és linket ellenőrzöd. Bekapcsolás után a Slammerek → Klubok fülön látható.',
+      description: 'Új klubnál hagyd kikapcsolva, amíg a várost, nevet és linket ellenőrzöd. Bekapcsolás és közzététel után a Klubok oldalon látható (a frissülés néhány percet igényelhet).',
     }),
     defineField({ name: 'city', title: 'Város', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'name', title: 'Klub neve', type: 'string', description: 'Pl. „Slam Poetry Szeged". Üresen hagyva a város jelenik meg.' }),

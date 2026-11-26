@@ -12,6 +12,7 @@ const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
 export const POST: APIRoute = async ({ request }) => {
+  try {
   const data = await request.json().catch(() => ({}));
   const result = validateMonthlyContest(data);
   if (!result.ok) {
@@ -46,7 +47,8 @@ export const POST: APIRoute = async ({ request }) => {
     <p><strong>Jelentkezés típusa:</strong> ${typeLabel}</p>
     <p><strong>Melyik klub:</strong> ${esc(monthLabel)}</p>`;
 
-  // Időbélyeges napló a Sanityben (export miatt) — best-effort, nem buktatja a beküldést.
+  if (!writeClient) return json({ok:false,error:'A jelentkezés rögzítése most nem elérhető. Próbáld újra később.'},503);
+  // A CMS-napló az elsődleges nyilvántartás, az email értesítés.
   try {
     if (writeClient) {
       await writeClient.create({
@@ -57,7 +59,7 @@ export const POST: APIRoute = async ({ request }) => {
         contextLabel: monthLabel,
       });
     }
-  } catch { /* a napló nem kötelező */ }
+  } catch { return json({ok:false,error:'A jelentkezés mentése sikertelen. Próbáld újra később.'},503); }
 
   try {
     await sendMail({
@@ -68,6 +70,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
     return json({ ok: true }, 200);
   } catch (e) {
-    return json({ ok: false, error: 'A jelentkezés küldése sikertelen. Próbáld újra később.' }, 500);
+    return json({ ok: true }, 200); // A naplóban rögzítve van; ne kérjünk ismételt beküldést egy emailhiba miatt.
   }
+  } catch { return json({ok:false,error:'A jelentkezés most nem elérhető. Próbáld újra később.'},503); }
 };

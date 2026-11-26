@@ -2,8 +2,12 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import MediaLibrary from '../../../components/pages/MediaLibrary.astro';
 import { getMedia, getMediaConfig } from '../../../sanity/lib/api';
-import { fetchChannelUploads, fetchPlaylistItems, parsePlaylistId } from '../../../lib/youtube';
+import { fetchChannelUploads, fetchPlaylistItems, parsePlaylistId, fetchChannelPlaylists, mergePlaylistDefinitions } from '../../../lib/youtube';
 import { sanityClient } from 'sanity:client';
+
+export const prerender = false;
+// Friss tartalom új build nélkül, korlátozott YouTube API-terheléssel.
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=900, stale-while-revalidate=300');
 
 const env = import.meta.env;
 const apiKey = env.YOUTUBE_API_KEY ?? process.env.YOUTUBE_API_KEY;
@@ -21,13 +25,21 @@ const [media, config, videos] = await Promise.all([
 
 // Lejátszási listák két forrásból: (1) a médiatár „lejátszási lista" elemei, és
 // (2) a beállításokban megadott listák. Mindkettő elfogad teljes URL-t vagy nyers ID-t.
-const playlistDefs = [
+const automaticPlaylists = config.youtubeAutoPlaylists === false ? [] : await fetchChannelPlaylists({
+  apiKey,
+  channelId: env.YOUTUBE_CHANNEL_ID ?? process.env.YOUTUBE_CHANNEL_ID,
+  handle: env.YOUTUBE_CHANNEL_HANDLE ?? process.env.YOUTUBE_CHANNEL_HANDLE,
+  max: 12,
+});
+const playlistDefs = mergePlaylistDefinitions([
   ...media.filter((m) => m.kind === 'playlist').map((m) => ({ title: m.title, id: parsePlaylistId(m.playlistUrl) })),
   ...(config.youtubePlaylists ?? []).map((p) => ({ title: p.title || 'Lejátszási lista', id: parsePlaylistId(p.playlistId) })),
-].filter((p) => p.id);
+], automaticPlaylists);
 const playlists = await Promise.all(
   playlistDefs.map(async (p) => ({
     title: p.title || 'Lejátszási lista',
+    url: p.url,
+    videoCount: p.videoCount,
     videos: await fetchPlaylistItems(apiKey, p.id!, 6),
   })),
 );

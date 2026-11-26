@@ -19,7 +19,9 @@ const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
 export const POST: APIRoute = async ({ request }) => {
+  try {
   const data = await request.json().catch(() => ({}));
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return json({ok:false,error:'Hibás beküldés.'},400);
   const isChampionship = data.kind === 'championship';
   const slug = typeof data.eventSlug === 'string' ? data.eventSlug : '';
   // Eseményhez NEM kötött bajnoki jelentkezés: a főoldali CTA felugró űrlapja. Ilyenkor
@@ -52,7 +54,7 @@ export const POST: APIRoute = async ({ request }) => {
   const emails = await getEmailSettings(sanityClient);
   const fallback = emails.applicationsEmail ?? import.meta.env.CONTACT_EMAIL ?? process.env.CONTACT_EMAIL ?? 'contest@slampoetry.hu';
 
-  let ev: { title: string; registrationEmail?: string } | null = null;
+  let ev: { title: string; registrationEmail?: string };
   if (isStandaloneChampionship) {
     // Csak akkor fogadjuk el, ha a CTA a Studióban tényleg be van kapcsolva és épp aktív —
     // különben egy lejárt űrlappal is lehetne jelentkezni.
@@ -63,13 +65,15 @@ export const POST: APIRoute = async ({ request }) => {
   } else {
     const found = slug
       ? await sanityClient.fetch(
-          `*[_type == "event" && slug.current == $slug][0]{ title, registrationEnabled, championshipRegistration, registrationEmail }`,
+          `*[_type == "event" && slug.current == $slug][0]{ title, registrationEnabled, championshipRegistration, registrationEmail, registrationDeadline }`,
           { slug }
         )
       : null;
     if (!found || found.registrationEnabled !== true) {
       return json({ ok: false, error: 'Erre az eseményre nem lehet jelentkezni.' }, 400);
     }
+    if (found.registrationDeadline && Date.now() >= Date.parse(found.registrationDeadline)) return json({ok:false,error:'A jelentkezési határidő lejárt.'},400);
+    if (!!found.championshipRegistration !== isChampionship) return json({ok:false,error:'Ehhez az eseményhez másik jelentkezési űrlap tartozik.'},400);
     ev = found;
   }
 
@@ -100,6 +104,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   // A bajnoki jelentkezéseket időbélyeggel naplózzuk a Sanityben (export miatt).
   if (isChampionship) {
+    if (!writeClient) return json({ok:false,error:'A jelentkezés rögzítése most nem elérhető. Próbáld újra később.'},503);
     try {
       if (writeClient) {
         await writeClient.create({
@@ -114,13 +119,13 @@ export const POST: APIRoute = async ({ request }) => {
           unavailableDay: data.unavailableDay ? String(data.unavailableDay).slice(0, 1000) : undefined,
         });
       }
-    } catch { /* a napló nem kötelező */ }
+    } catch { return json({ok:false,error:'A jelentkezés mentése sikertelen. Próbáld újra később.'},503); }
   }
 
   try {
     await sendMail({ to, subject: sanitizeHeader(subject), html, replyTo: sanitizeHeader(data.email) });
   } catch (e) {
-    return json({ ok: false, error: 'A jelentkezés küldése sikertelen. Próbáld újra később.' }, 500);
+    if (!isChampionship) return json({ ok: false, error: 'A jelentkezés küldése sikertelen. Próbáld újra később.' }, 500);
   }
 
   // Automatikus visszaigazolás a JELENTKEZŐNEK. Best-effort: a jelentkezés ekkor már
@@ -138,4 +143,5 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   return json({ ok: true }, 200);
+  } catch { return json({ok:false,error:'A jelentkezés most nem elérhető. Próbáld újra később.'},503); }
 };

@@ -99,3 +99,8 @@ export function formatEventDayBadge(
   if (!isMultiDay(e)) return String(s.getDate());
   return `${s.getDate()}–${eventEnd(e).getDate()}`;
 }
+
+/** A szerver időzónájától független, helyi magyar eseményidő. */
+export function formatEventTime(value: string, locale = 'hu-HU'): string {
+  return new Date(value).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Budapest' });
+}

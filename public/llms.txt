@@ -1,0 +1,29 @@
+# Slam Poetry Magyarország
+
+> A slampoetry.hu a Slam Poetry Magyarország Egyesület hivatalos weboldala: magyar slam poetry, országos bajnokság, budapesti és vidéki klubok, események, slammerek, hírek és fellépésvideók.
+
+A webhely elsődleges nyelve magyar; az angol változat az /en/ útvonal alatt érhető el. A tartalmi oldalak a nyilvános HTML-ben is olvashatók. A hírekben megadott eseménydátumot a cikk megjelenési dátumától külön kell értelmezni; a bajnoki eredmények mindig az adott évre vonatkoznak. A részvételi beszámoló önmagában nem eredményközlés.
+
+## Fő tartalmak
+
+- [Mi az a slam poetry?](https://slampoetry.hu/mi-az-a-slam-poetry): A műfaj bemutatása.
+- [Eseménynaptár](https://slampoetry.hu/esemenyek): Közelgő és korábbi események; kezdés, helyszín és jegylink az esemény saját oldalán.
+- [Hírek és eredmények](https://slampoetry.hu/hirek): Országos bajnoki és klubbeszámolók, hivatalos közlemények.
+- [Slammerek](https://slampoetry.hu/slammerek): Előadói profilok, bemutatkozások és videók.
+- [Slamklubok](https://slampoetry.hu/slam-klubok): Hazai slamközösségek és klubok.
+- [Médiatár](https://slampoetry.hu/mediatar): YouTube-videók, playlistek, fotóalbumok és letölthető anyagok.
+- [Oktatás](https://slampoetry.hu/oktatas): Iskoláknak és intézményeknek szóló slamprogramok és kapcsolatfelvétel.
+- [Egyesület](https://slampoetry.hu/egyesulet): A Slam Poetry Magyarország Egyesület bemutatása.
+- [Kapcsolat](https://slampoetry.hu/kapcsolat): Nyilvános kapcsolatfelvételi lehetőségek.
+- [English](https://slampoetry.hu/en/): English version of the public website.
+
+## Friss, géppel olvasható tartalom
+
+- [Publikált tartalmak szöveges jegyzéke](https://slampoetry.hu/llms-full.txt): Friss hírek, események és slammerprofilok, közvetlen forráslinkekkel.
+- [Hírek RSS-ben](https://slampoetry.hu/rss.xml): A legfrissebb közzétett hírek.
+- [XML sitemap](https://slampoetry.hu/sitemap-index.xml): Magyar és angol tartalmi oldalak, cikkek, események és profilok.
+- [Nyilvános webhelykalauz](https://slampoetry.hu/agents.md): Navigáció és a források értelmezése.
+
+## Forráshasználat
+
+A konkrét cikket, eseményt vagy profilt hivatkozd, ne csak a főoldalt. Időérzékeny adatot az eredeti oldalon ellenőrizz. A bejelentkezést igénylő /admin és a technikai /api útvonalak nem nyilvános tartalmi források.

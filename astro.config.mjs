@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 import sanity from '@sanity/astro';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 import vercel from '@astrojs/vercel';
@@ -35,8 +34,6 @@ export default defineConfig({
       studioRouterHistory: 'hash',
     }),
     react(),
-    // A beágyazott Studio (/admin) és a rejtett impresszum-easter-egg ne kerüljön a sitemapbe.
-    sitemap({ filter: (page) => !page.includes('/admin') && !page.includes('/impresszum') }),
   ],
 
   vite: { plugins: [tailwindcss()] },

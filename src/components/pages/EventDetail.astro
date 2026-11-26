@@ -1,4 +1,5 @@
 ---
+import { serializeJsonLd, ORGANIZATION_ID } from '../../lib/discovery';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../RichText.astro';
 import AddToCalendar from '../AddToCalendar.astro';
@@ -8,7 +9,7 @@ import { urlForImage } from '../../sanity/lib/image';
 import { localized } from '../../i18n/content';
 import { t } from '../../i18n/ui';
 import { localizedPath, type Lang } from '../../i18n';
-import { isMultiDay, formatEventDate, formatEventWeekday, formatEventDayBadge } from '../../sanity/lib/events';
+import { isMultiDay, formatEventDate, formatEventWeekday, formatEventDayBadge, formatEventTime } from '../../sanity/lib/events';
 import type { EventDetail as EventDetailType } from '../../sanity/lib/api';
 
 interface Props { event: EventDetailType; lang: Lang }
@@ -25,7 +26,7 @@ const multiDay = d ? isMultiDay(ev) : false;
 // Többnaposnál a hétköznap helyett a nap-tartomány kell („péntek–vasárnap”).
 const weekday = d ? formatEventWeekday(ev, locale) : '';
 const dateLong = d ? formatEventDate(ev, locale) : '';
-const time = d ? d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : '';
+const time = d ? formatEventTime(ev.startsAt, locale) : '';
 const day = d ? formatEventDayBadge(ev) : '';
 const monthShort = d ? d.toLocaleDateString(locale, { month: 'short' }).replace('.', '') : '';
 
@@ -40,7 +41,7 @@ const mapLink = ev.location?.mapUrl || (mapQuery ? `https://www.google.com/maps/
 
 // OG-leírás: dátum + helyszín tömör összefoglalója.
 // Többnaposnál a tartomány kell ide is, különben a megosztás-előnézet egynaposnak mutatja.
-const dateLabel = d ? `${formatEventDate(ev, 'hu-HU')} ${d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}` : '';
+const dateLabel = d ? `${formatEventDate(ev, 'hu-HU')} ${formatEventTime(ev.startsAt)}` : '';
 const metaDescription = [dateLabel, locName].filter(Boolean).join(' · ') || undefined;
 
 // schema.org Event strukturált adat (Google "Esemény" rich result).
@@ -57,15 +58,15 @@ const eventJsonLd = {
     ? { location: { '@type': 'Place', name: locName, address: locAddr || locName } }
     : {}),
   ...(ev.ticketUrl
-    ? { offers: { '@type': 'Offer', url: ev.ticketUrl, availability: 'https://schema.org/InStock' } }
+    ? { offers: { '@type': 'Offer', url: ev.ticketUrl } }
     : {}),
-  organizer: { '@type': 'Organization', name: 'Slam Poetry Magyarország', url: 'https://slampoetry.hu' },
+  organizer: { '@type': 'Organization', '@id': ORGANIZATION_ID, name: 'Slam Poetry Magyarország', url: 'https://slampoetry.hu' },
   url: new URL(localizedPath(`/esemenyek/${ev.slug}`, lang), Astro.site).href,
 };
 const eventUrl = eventJsonLd.url;
 ---
 <BaseLayout title={title} description={metaDescription} image={coverUrl ?? undefined} ogType="article">
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(eventJsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={serializeJsonLd(eventJsonLd)} />
 
   <!-- Hero: a borítókép jól látszik (teljes fényerő), csak alul sötétített sáv a cím olvashatóságáért. -->
   <section class="surface-dark relative overflow-hidden bg-ink text-surface" style={heroStyle}>

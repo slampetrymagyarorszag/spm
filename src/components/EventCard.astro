@@ -3,7 +3,7 @@ import { urlForImage } from '../sanity/lib/image';
 import { localized } from '../i18n/content';
 import { localizedPath, type Lang } from '../i18n';
 import type { EventListItem } from '../sanity/lib/api';
-import { isMultiDay, formatEventDate, formatEventWeekday, formatEventDayBadge } from '../sanity/lib/events';
+import { isMultiDay, formatEventDate, formatEventWeekday, formatEventDayBadge, formatEventTime } from '../sanity/lib/events';
 interface Props { event: EventListItem; lang?: Lang }
 const { event, lang = 'hu' } = Astro.props;
 const d = new Date(event.startsAt);
@@ -11,7 +11,7 @@ const multi = isMultiDay(event);
 // Többnapos eseménynél a hétköznap helyett a nap-tartományt mutatjuk („péntek–vasárnap”),
 // mert egyetlen hétköznap félrevezető lenne. Év nélkül: a listában felesleges.
 const date = `${formatEventDate(event, 'hu-HU', { year: false })}, ${formatEventWeekday(event, 'hu-HU')}`;
-const time = d.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
+const time = formatEventTime(event.startsAt);
 const title = localized(event, 'title', lang);
 ---
 <a href={localizedPath(`/esemenyek/${event.slug}`, lang)} class="group flex gap-5 border-t border-ink/10 py-6">

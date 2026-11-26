@@ -11,11 +11,11 @@ export const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
 
 // Csak a már megjelent (nem jövőbeli dátumú) hírek — időzített megjelenés.
 export const POSTS_QUERY = `*[_type == "post" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc){
-  _id, title, "slug": slug.current, publishedAt, author, excerpt, cover,
+  _id, _updatedAt, title, "slug": slug.current, publishedAt, author, excerpt, cover,
   titleEn, excerptEn
 }`;
 export const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug && publishedAt <= now()][0]{
-  _id, title, "slug": slug.current, publishedAt, author, excerpt, cover, tags, body,
+  _id, _updatedAt, title, "slug": slug.current, publishedAt, author, excerpt, cover, tags, body,
   titleEn, excerptEn, bodyEn,
   seo{ metaTitle, metaDescription, shareImage }
 }`;
@@ -48,17 +48,18 @@ export const MEDIA_QUERY = `*[_type == "mediaItem"] | order(year desc, _createdA
 
 // Médiatár-konfiguráció: lejátszási listák + letölthető dokumentumok.
 export const MEDIA_CONFIG_QUERY = `*[_type == "siteSettings"][0]{
+  youtubeAutoPlaylists,
   youtubePlaylists[]{ title, playlistId },
   "downloads": downloads[]{ title, description, url, "fileUrl": file.asset->url }
 }`;
 
 // Csak a szerkesztő által jóváhagyott, beküldött esemény-tippek.
-export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true && promoted != true] | order(submittedAt desc){
+export const EVENT_TIPS_QUERY = `*[_type == "eventTip" && approved == true && coalesce(promoted, false) == false] | order(submittedAt desc){
   _id, eventName, description, facebookUrl
 }`;
 
 // Csak a jóváhagyott, beküldött slammer-jelentkezések.
-export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && approved == true && promoted != true] | order(submittedAt desc){
+export const SLAMMER_APPLICATIONS_QUERY = `*[_type == "slammerApplication" && approved == true && coalesce(promoted, false) == false] | order(submittedAt desc){
   _id, realName, stageName, description, youtubeUrl, photo
 }`;
 

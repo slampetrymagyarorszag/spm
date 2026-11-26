@@ -33,24 +33,8 @@ const featuredSlammers = slammerSource
   }));
 const latestPosts = posts.slice(0, 12);
 
-const s = siteSettings.social ?? {};
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Slam Poetry Magyarország',
-  url: Astro.site?.href ?? 'https://slampoetry.hu',
-  logo: new URL('/og-default.jpg', Astro.site).href,
-  sameAs: [s.facebook, s.instagram, s.youtube, s.tiktok].filter(Boolean),
-};
-const siteJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Slam Poetry Magyarország',
-  url: Astro.site?.href ?? 'https://slampoetry.hu',
-};
 ---
 <BaseLayout>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify([orgJsonLd, siteJsonLd])} />
   <Home
     upcoming={upcoming}
     featuredSlammers={featuredSlammers}

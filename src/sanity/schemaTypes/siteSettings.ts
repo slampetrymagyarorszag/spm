@@ -4,12 +4,13 @@ export const siteSettings = defineType({
   name: 'siteSettings',
   title: 'Oldal beállítások',
   type: 'document',
+  groups: [{"name": "home", "title": "Főoldal", "default": true}, {"name": "contacts", "title": "Kapcsolatok és értesítések"}, {"name": "media", "title": "YouTube és letöltések"}, {"name": "advanced", "title": "További beállítások"}],
   fields: [
-    defineField({ name: 'title', title: 'Oldal címe', type: 'string', initialValue: 'Slam Poetry Magyarország' }),
-    defineField({ name: 'logo', title: 'Logó', type: 'image' }),
-    defineField({ name: 'accentColor', title: 'Alap accent szín (hex)', type: 'string', initialValue: '#b13bd6' }),
+    defineField({ name: 'title', group: 'advanced', title: 'Oldal címe', type: 'string', initialValue: 'Slam Poetry Magyarország' }),
+    defineField({ name: 'logo', group: 'advanced', title: 'Logó', type: 'image' }),
+    defineField({ name: 'accentColor', group: 'advanced', title: 'Kiemelőszín (pl. #b13bd6)', type: 'string', initialValue: '#b13bd6' }),
     defineField({
-      name: 'nav',
+      name: 'nav', group: 'advanced', hidden: true,
       title: 'Főmenü',
       type: 'array',
       of: [{
@@ -21,7 +22,7 @@ export const siteSettings = defineType({
       }],
     }),
     defineField({
-      name: 'social',
+      name: 'social', group: 'contacts',
       title: 'Közösségi linkek',
       type: 'object',
       fields: [
@@ -31,9 +32,9 @@ export const siteSettings = defineType({
         defineField({ name: 'tiktok', title: 'TikTok', type: 'url' }),
       ],
     }),
-    defineField({ name: 'contactEmail', title: 'Kapcsolati email (megjelenítéshez)', type: 'string', description: 'Ez a cím látszik a Kapcsolat oldalon és a láblécben. (A form-ok címzettjeit lent, az „Email-címzettek" blokkban állítod.)' }),
+    defineField({ name: 'contactEmail', group: 'contacts', title: 'Kapcsolati email (megjelenítéshez)', type: 'string', description: 'Ez a cím látszik a Kapcsolat oldalon és a láblécben. (Az űrlapok címzettjeit a Kapcsolatok és értesítések fülön, az „Email-címzettek" blokkban állítod.)' }),
     defineField({
-      name: 'emails', title: 'Email-címzettek (form-ok)', type: 'object',
+      name: 'emails', group: 'contacts', title: 'Email-címzettek (form-ok)', type: 'object',
       description: 'Melyik űrlap melyik címre érkezzen. Üresen hagyott mezőnél az alapérték érvényes.',
       options: { collapsible: true, collapsed: true },
       fields: [
@@ -45,7 +46,7 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
-      name: 'home', title: 'Főoldal — hero', type: 'object',
+      name: 'home', group: 'home', title: 'Főoldal nyitó szövegei', type: 'object',
       description: 'A főoldal tetején lévő nagy bevezető blokk szövegei. Üresen hagyva az alapértékek jelennek meg.',
       options: { collapsible: true, collapsed: true },
       fields: [
@@ -64,8 +65,13 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
-      name: 'youtubePlaylists', title: 'YouTube lejátszási listák (médiatár)', type: 'array',
-      description: 'Ezek a listák jelennek meg a Médiatárban (pl. „Májusi klub"), a legfrissebb videókkal. A lista ID-t a YouTube playlist linkjéből másold ki (a „list=" utáni rész, általában PL...-lel kezdődik).',
+      name: 'youtubeAutoPlaylists', group: 'media', title: 'Új YouTube-playlistek automatikus megjelenítése', type: 'boolean',
+      initialValue: true,
+      description: 'Bekapcsolva (és üresen hagyva is) az SPM csatorna 12 legfrissebb nyilvános, nem üres playlistje megjelenik a médiatárban. A frissítés körülbelül 15–20 percet igényelhet. A kézzel hozzáadott listák megmaradnak.',
+    }),
+    defineField({
+      name: 'youtubePlaylists', group: 'media', title: 'YouTube lejátszási listák (médiatár)', type: 'array',
+      description: 'Az automatikusan átvett listák mellé kézzel felvett listák a Médiatárban (pl. „Májusi klub"), a legfrissebb videókkal. A lista ID-t a YouTube playlist linkjéből másold ki (a „list=" utáni rész, általában PL...-lel kezdődik).',
       of: [{
         type: 'object',
         fields: [
@@ -76,7 +82,7 @@ export const siteSettings = defineType({
       }],
     }),
     defineField({
-      name: 'downloads', title: 'Letölthető dokumentumok (médiatár alatt)', type: 'array',
+      name: 'downloads', group: 'media', title: 'Letölthető dokumentumok (médiatár alatt)', type: 'array',
       description: 'Pl. az általános slam kiajánló PDF. Üresen hagyva nem jelenik meg semmi — amint feltöltesz egyet, megjelenik a Médiatár alján.',
       of: [{
         type: 'object',
@@ -90,7 +96,7 @@ export const siteSettings = defineType({
       }],
     }),
     defineField({
-      name: 'monthlyContest', title: 'Havi klub — jelentkezés gomb', type: 'object',
+      name: 'monthlyContest', group: 'advanced', hidden: true, title: 'Havi klub — jelentkezés gomb', type: 'object',
       description: 'A főoldali hero melletti „Jelentkezem a havi versenyre" gomb (Slam Poetry Budapest havi klub). Kapcsold be, add meg, melyik havi klubról van szó, és állítsd be, mikor nyíljon/záruljon a jelentkezés. Ha vége, egyszerűen kapcsold ki — a következő hónapnál csak átírod a hónapot és a dátumokat.',
       options: { collapsible: true, collapsed: true },
       validation: (r) => r.custom((value: any) => {
@@ -108,7 +114,7 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
-      name: 'impressum', title: 'Impresszum', type: 'object',
+      name: 'impressum', group: 'advanced', title: 'Impresszum', type: 'object',
       description: 'A lábléc impresszum blokkja.',
       fields: [
         defineField({ name: 'orgName', title: 'Egyesület neve', type: 'string', initialValue: 'Slam Poetry Magyarország Egyesület' }),
@@ -130,23 +136,23 @@ export const siteSettings = defineType({
         }),
       ],
     }),
-    defineField({ name: 'championshipCtaEnabled', title: 'Országos bajnokság CTA — bekapcsolva', type: 'boolean', initialValue: false }),
-    defineField({ name: 'championshipCtaLabel', title: 'CTA felirat', type: 'string', initialValue: 'Jelentkezem az országos bajnokságra' }),
+    defineField({ name: 'championshipCtaEnabled', group: 'advanced', hidden: true, title: 'Országos bajnokság CTA — bekapcsolva', type: 'boolean', initialValue: false }),
+    defineField({ name: 'championshipCtaLabel', group: 'advanced', hidden: true, title: 'CTA felirat', type: 'string', initialValue: 'Jelentkezem az országos bajnokságra' }),
     defineField({
-      name: 'championshipCtaUrl',
+      name: 'championshipCtaUrl', group: 'advanced', hidden: true,
       title: 'CTA cél (URL vagy /esemenyek/slug) — HAGYD ÜRESEN a felugró űrlaphoz',
       description:
         'Ha üresen hagyod, a gomb a jelentkezési űrlapot nyitja meg felugró ablakban (ez a szokásos). Csak akkor tölts ide linket, ha a gombnak máshová kell vinnie.',
       type: 'string',
     }),
     defineField({
-      name: 'championshipCtaIntro',
+      name: 'championshipCtaIntro', group: 'advanced', hidden: true,
       title: 'Bevezető szöveg a felugró űrlap tetején',
       type: 'text',
       rows: 2,
     }),
     defineField({
-      name: 'championshipDays',
+      name: 'championshipDays', group: 'advanced', hidden: true,
       title: 'Választható előválogató napok',
       description: 'A jelentkező ezek közül jelölheti meg, melyik nap(ok) felelnek meg neki. Ahogy ide beírod, úgy jelenik meg az űrlapon és úgy kerül az exportba.',
       type: 'array',
@@ -155,13 +161,13 @@ export const siteSettings = defineType({
       options: { layout: 'tags' },
     }),
     defineField({
-      name: 'championshipCtaFrom',
+      name: 'championshipCtaFrom', group: 'advanced', hidden: true,
       title: 'CTA megjelenés -tól (opcionális)',
       description: 'HAGYD ÜRESEN, ha a gomb a bekapcsolás pillanatától látszódjon. Csak akkor tölts ide dátumot, ha időzíteni akarod. (Ezek a mezők a bajnoksági gombra vonatkoznak, nem a havi klubra.)',
       type: 'datetime',
     }),
     defineField({
-      name: 'championshipCtaTo',
+      name: 'championshipCtaTo', group: 'advanced', hidden: true,
       title: 'CTA eltűnés -ig (opcionális)',
       description: 'HAGYD ÜRESEN, ha a gomb visszakapcsolásig látszódjon.',
       type: 'datetime',

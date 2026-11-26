@@ -1,4 +1,5 @@
 ---
+import { serializeJsonLd } from '../../lib/discovery';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RichText from '../RichText.astro';
 import YouTubeEmbed from '../YouTubeEmbed.astro';
@@ -16,6 +17,11 @@ const metaDescription = [slammer.hometown, 'slammer — Slam Poetry Magyarorszá
 const bio = localized(slammer, 'bio', lang);
 ---
 <BaseLayout title={slammer.name} description={metaDescription} image={photoUrl} ogType="article">
+  <script type="application/ld+json" slot="head" set:html={serializeJsonLd({
+    '@context': 'https://schema.org', '@type': 'ProfilePage',
+    url: new URL(Astro.url.pathname, Astro.site).href, inLanguage: lang,
+    mainEntity: { '@type': 'Person', name: slammer.name, ...(photoUrl ? { image: photoUrl } : {}) },
+  })} />
   <section class="surface-dark relative overflow-hidden bg-ink text-surface">
     <!-- füstös, ambient színpad-háttér (feljebb tolva, erősebb) -->
     <img src="/slammer-ambient.webp" alt="" aria-hidden="true" class="ambient-photo pointer-events-none absolute inset-0 h-full w-full object-cover object-top opacity-65" />

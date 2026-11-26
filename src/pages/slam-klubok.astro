@@ -3,6 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ClubsIndex from '../components/pages/ClubsIndex.astro';
 import { getSlamClubs } from '../sanity/lib/api';
 import { sanityClient } from 'sanity:client';
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=60');
 const clubs = await getSlamClubs(sanityClient);
 ---
 <BaseLayout title="Klubok">

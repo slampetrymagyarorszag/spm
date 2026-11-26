@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { serializeJsonLd, ORGANIZATION_ID, SITE_URL } from "../lib/discovery";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BackToTop from "../components/BackToTop.astro";
@@ -30,7 +31,9 @@ const pageTitle = title ? `${title} — ${settings.title}` : settings.title;
 
 const SITE_DESCRIPTION =
   "A magyar slam poetry színtér élő központja: események, slammerek, hírek és médiatár — Slam Poetry Magyarország.";
-const metaDescription = description || SITE_DESCRIPTION;
+const metaDescription = description || (getLangFromUrl(Astro.url) === 'en'
+  ? 'Hungarian slam poetry: events, performers, national championship news and videos from Slam Poetry Magyarország.'
+  : SITE_DESCRIPTION);
 
 // Kanonikus és abszolút URL-ek a megfelelő megosztáshoz/indexeléshez.
 // (Astro.site az astro.config-ban beállított nyilvános domain.)
@@ -46,6 +49,15 @@ const ogImage = new URL(image, Astro.site).href;
 // A CMS-ben megadott alap accent szín felülírja a design-token alapértéket (a Tailwind
 // `*-accent` utility-k a --color-accent változót használják). Esemény-oldalak ezt később
 // szintén felülírhatják a saját poszter-színükre.
+const social = settings.social ?? {};
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'Organization', '@id': ORGANIZATION_ID, name: 'Slam Poetry Magyarország', legalName: settings.impressum?.orgName || 'Slam Poetry Magyarország Egyesület', url: SITE_URL, logo: `${SITE_URL}/logo.png`, sameAs: [social.facebook || 'https://www.facebook.com/SlamPoetryHungary', social.instagram || 'https://www.instagram.com/slampoetry_magyarorszag/', social.youtube || 'https://www.youtube.com/@slampoetrymagyarorsz', social.tiktok || 'https://www.tiktok.com/@slampoetrymagyarorszag'].filter(Boolean) },
+    { '@type': 'WebSite', '@id': `${SITE_URL}/#website`, name: 'Slam Poetry Magyarország', url: SITE_URL, publisher: { '@id': ORGANIZATION_ID }, inLanguage: ['hu', 'en'] },
+    { '@type': 'WebPage', '@id': `${canonical}#webpage`, url: canonical, name: pageTitle, description: metaDescription, inLanguage: lang, isPartOf: { '@id': `${SITE_URL}/#website` }, about: { '@id': ORGANIZATION_ID } },
+  ],
+};
 const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor}` : undefined;
 ---
 <!doctype html>
@@ -64,6 +76,9 @@ const bodyStyle = settings.accentColor ? `--color-accent: ${settings.accentColor
     <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
+    <link rel="describedby" href="/llms.txt" type="text/plain" />
+    <link rel="alternate" type="application/rss+xml" title="Slam Poetry Magyarország – Hírek" href="/rss.xml" />
+    {!noindex && <script type="application/ld+json" set:html={serializeJsonLd(graph)} />}
     {hreflangs.map((h) => <link rel="alternate" hreflang={h.lang} href={h.href} />)}
     <link rel="alternate" hreflang="x-default" href={hreflangs.find((h) => h.lang === 'hu')!.href} />
     <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'hu_HU'} />

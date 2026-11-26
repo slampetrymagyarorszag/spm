@@ -55,7 +55,7 @@ export async function getSiteSettings(client: Fetcher): Promise<SiteSettings | n
 }
 
 export type PostListItem = {
-  _id: string; title: string; slug: string; publishedAt: string;
+  _id: string; _updatedAt?: string; title: string; slug: string; publishedAt: string;
   author?: string; excerpt?: string; cover?: any;
   titleEn?: string; excerptEn?: string;
 };
@@ -117,6 +117,7 @@ export async function getMedia(client: Fetcher): Promise<MediaItem[]> {
 }
 
 export type MediaConfig = {
+  youtubeAutoPlaylists?: boolean;
   youtubePlaylists?: { title?: string; playlistId?: string }[];
   downloads?: { title: string; description?: string; url?: string; fileUrl?: string }[];
 };

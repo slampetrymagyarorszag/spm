@@ -9,7 +9,7 @@ import type { Lang } from '../../i18n';
 
 interface Props {
   videos: any[];
-  playlists: { title: string; videos: any[] }[];
+  playlists: { title: string; url: string; videoCount?: number; videos: any[] }[];
   galleryMedia: any[];
   downloads: any[];
   hasAny: boolean;
@@ -32,6 +32,12 @@ const mediaFanLabels = { prev: t(lang, 'media.prev'), next: t(lang, 'media.next'
   {playlists.map((pl) => pl.videos.length > 0 && (
     <div class="mb-16">
       <SectionHeader label={t(lang, 'media.playlistLabel')} title={pl.title} />
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-muted">{pl.videoCount ? (lang === 'en' ? `${pl.videoCount} videos · preview` : `${pl.videoCount} videó · előnézet`) : (lang === 'en' ? 'Playlist preview' : 'Lejátszási lista előnézete')}</p>
+        <a href={pl.url} target="_blank" rel="noopener noreferrer" class="font-medium text-accent underline underline-offset-4">
+          {lang === 'en' ? 'Full playlist on YouTube ↗' : 'Teljes lejátszási lista a YouTube-on ↗'}
+        </a>
+      </div>
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {pl.videos.map((v: any) => (
           <figure>

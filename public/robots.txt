@@ -1,5 +1,23 @@
+# Nyilvános tartalmak a keresők és AI-keresők számára.
 User-agent: *
-Allow: /
 Disallow: /admin
+Disallow: /api/
+Allow: /
+
+# A nevesített csoportoknál is megmaradnak a technikai kizárások.
+User-agent: OAI-SearchBot
+Disallow: /admin
+Disallow: /api/
+Allow: /
+
+User-agent: PerplexityBot
+Disallow: /admin
+Disallow: /api/
+Allow: /
+
+User-agent: Claude-SearchBot
+Disallow: /admin
+Disallow: /api/
+Allow: /
 
 Sitemap: https://slampoetry.hu/sitemap-index.xml
