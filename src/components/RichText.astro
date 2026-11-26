@@ -8,11 +8,15 @@ import PtButton from './portable/PtButton.astro';
 import PtDivider from './portable/PtDivider.astro';
 interface Props { value: any }
 const { value } = Astro.props;
+// Az oldal címe már H1. Az archív cikkek törzsében a legfelső címsor szakaszcím.
+const blocks = Array.isArray(value)
+  ? value.map(block => block?._type === 'block' && block.style === 'h1' ? { ...block, style: 'h2' } : block)
+  : value;
 ---
 {value && (
   <div class="prose-spm max-w-none">
     <PortableText
-      value={value}
+      value={blocks}
       components={{
         type: {
           image: PtImage,
