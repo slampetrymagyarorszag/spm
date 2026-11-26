@@ -20,6 +20,10 @@ const site = PUBLIC_SITE_URL || 'https://slampoetry.hu';
 // https://astro.build/config
 export default defineConfig({
   site,
+  redirects: {
+    '/impresszum': { status: 301, destination: '/egyesulet' },
+    '/en/impresszum': { status: 301, destination: '/en/egyesulet' },
+  },
   i18n: {
     locales: ['hu', 'en'],
     defaultLocale: 'hu',

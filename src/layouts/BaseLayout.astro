@@ -42,7 +42,7 @@ const canonicalPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const canonical = new URL(canonicalPath, Astro.site).href;
 const lang: Lang = getLangFromUrl(Astro.url);
 // hreflang alternatívák: ugyanaz az oldal minden nyelven (abszolút URL).
-const hreflangs = (noindex || canonicalPath === '/impresszum' ? [] : LOCALES).map((l) => ({
+const hreflangs = (noindex ? [] : LOCALES).map((l) => ({
   lang: l,
   href: new URL(alternatePath(canonicalPath, l), Astro.site).href,
 }));

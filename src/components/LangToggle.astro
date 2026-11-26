@@ -6,11 +6,11 @@ const other: Lang = lang === 'hu' ? 'en' : 'hu';
 const href = alternatePath(Astro.url.pathname, other);
 const label = other === 'en' ? 'EN' : 'HU';
 ---
-{!/^\/impresszum\/?$/.test(Astro.url.pathname) && <a
+<a
   href={href}
   class="lang-toggle inline-flex h-8 items-center rounded-full border border-surface/25 px-3 text-xs font-semibold uppercase tracking-wide text-surface/80 transition hover:border-accent hover:text-accent"
   aria-label={t(lang, 'lang.switchTo')}
   title={t(lang, 'lang.switchTo')}
 >
   {label}
-</a>}
+</a>
