@@ -5,19 +5,21 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const copy = lang === 'en'
   ? {
-    settings: 'Analytics preferences',
-    title: 'Website analytics',
-    description: 'If you allow it, we use Google Analytics to measure visits, ticket-link clicks and successful registrations. We do not send your registration details to Analytics.',
-    accept: 'Allow analytics',
-    decline: 'Reject analytics',
+    settings: 'Analytics cookie settings',
+    title: 'Analytics cookies',
+    description: 'If you say yes, we’ll use Google Analytics cookies to see which pages people visit, which ticket links they click and how many registrations go through. That helps us improve the site.',
+    choice: 'You can use the whole site either way and change your choice in the footer at any time.',
+    accept: 'Allow analytics cookies',
+    decline: 'Continue without analytics',
     privacy: 'How Google uses this data',
   }
   : {
-    settings: 'Mérési beállítások',
-    title: 'Weboldal-statisztika',
-    description: 'Ha engedélyezed, a Google Analytics segítségével mérjük a látogatásokat, a jegylinkek kattintásait és a sikeres jelentkezéseket. A jelentkezéskor megadott adataidat nem küldjük az Analyticsnek.',
-    accept: 'Mérés engedélyezése',
-    decline: 'Mérés elutasítása',
+    settings: 'Statisztikai sütik beállításai',
+    title: 'Statisztikai sütik',
+    description: 'Ha engedélyezed, a Google Analytics sütijeivel megnézzük, mely oldalakat látogatjátok, mely jegylinkekre kattintotok, és hány jelentkezés érkezik. Így látjuk, min érdemes javítani az oldalon.',
+    choice: 'Az oldalt mindkét esetben használhatod. A választásodat bármikor módosíthatod a láblécben.',
+    accept: 'Statisztikai sütik engedélyezése',
+    decline: 'Tovább mérés nélkül',
     privacy: 'Így használja a Google az adatokat',
   };
 ---
@@ -29,10 +31,11 @@ const copy = lang === 'en'
 <section hidden id="analytics-consent" class="fixed bottom-4 left-4 right-4 z-[70] max-h-[calc(100dvh-2rem)] max-w-md overflow-auto rounded-xl border border-ink/20 bg-surface p-5 text-ink shadow-xl sm:right-auto" aria-labelledby="analytics-consent-title">
   <h2 id="analytics-consent-title" tabindex="-1" class="font-display text-xl">{copy.title}</h2>
   <p class="mt-2 text-sm">{copy.description}</p>
+  <p class="mt-2 text-sm">{copy.choice}</p>
   <a href="https://policies.google.com/technologies/partner-sites" class="mt-2 inline-block text-sm underline">{copy.privacy}</a>
-  <div class="mt-4 flex flex-wrap gap-2">
-    <button type="button" data-analytics-choice="declined" class="rounded-md border border-ink/30 px-3 py-2 text-sm font-semibold">{copy.decline}</button>
-    <button type="button" data-analytics-choice="accepted" class="rounded-md border border-ink/30 px-3 py-2 text-sm font-semibold">{copy.accept}</button>
+  <div class="mt-4 grid gap-2 sm:grid-cols-2">
+    <button type="button" data-analytics-choice="declined" class="min-h-11 rounded-md border border-ink/30 px-3 py-2 text-sm font-semibold hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2">{copy.decline}</button>
+    <button type="button" data-analytics-choice="accepted" class="min-h-11 rounded-md border border-ink/30 px-3 py-2 text-sm font-semibold hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2">{copy.accept}</button>
   </div>
 </section>
 
