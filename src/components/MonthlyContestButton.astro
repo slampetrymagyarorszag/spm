@@ -18,6 +18,7 @@ const intro = mc?.intro || '';
     class="monthly-contest"
     data-opens={mc?.opensAt ?? ''}
     data-closes={mc?.closesAt ?? ''}
+    data-month={mc?.monthLabel ?? ''}
     style="display:contents"
   >
     <button
@@ -88,15 +89,20 @@ const intro = mc?.intro || '';
     function inWindow() {
       const now = Date.now();
       if (opensAt && now < opensAt) return false;
-      if (closesAt && now > closesAt) return false;
+      if (closesAt && now >= closesAt) return false;
       return true;
     }
     function refresh() {
       openBtn.classList.toggle('hidden', !inWindow());
       if (!inWindow()) closeModal();
     }
-    refresh();
-    setInterval(refresh, 30000);
+    function scheduleRefresh() {
+      refresh();
+      const now = Date.now();
+      const upcoming = [opensAt, closesAt].filter((time): time is number => time !== null && time > now);
+      setTimeout(scheduleRefresh, Math.min(30000, ...upcoming.map(time => time - now)));
+    }
+    scheduleRefresh();
 
     function openModal() { modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden'; }
     function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = ''; }
@@ -110,7 +116,7 @@ const intro = mc?.intro || '';
       e.preventDefault();
       const btn = form.querySelector('button[type=submit]') as HTMLButtonElement;
       btn.disabled = true; status.textContent = status.dataset.sending ?? 'Küldés…'; status.style.color = '';
-      const payload: Record<string, any> = Object.fromEntries(new FormData(form).entries());
+      const payload = { ...Object.fromEntries(new FormData(form).entries()), expectedMonth: root.dataset.month };
       try {
         const res = await fetch('/api/monthly-contest', {
           method: 'POST',

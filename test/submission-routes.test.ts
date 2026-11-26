@@ -56,6 +56,11 @@ describe('durable registration logging',()=>{
   mocks.fetch.mockResolvedValue({enabled:true,closesAt:'2020-01-01'});
   expect((await call(monthly,input)).status).toBe(400);expect(mocks.create).not.toHaveBeenCalled();
  });
+ it('rejects a form left open from the previous monthly club',async()=>{
+  mocks.fetch.mockResolvedValue({enabled:true,monthLabel:'2027. januári klub'});
+  expect((await call(monthly,{...input,expectedMonth:'2026. decemberi klub'})).status).toBe(409);
+  expect(mocks.create).not.toHaveBeenCalled();
+ });
  it('returns an actionable service error when CMS lookup is unavailable',async()=>{
   mocks.fetch.mockRejectedValue(new Error('unavailable'));
   expect((await call(monthly,input)).status).toBe(503);

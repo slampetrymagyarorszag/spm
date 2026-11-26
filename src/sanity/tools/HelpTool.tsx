@@ -74,8 +74,8 @@ const topics = [
     title: 'Havi klub és bajnokság: jelentkezések kezelése', where: 'Tartalom → Versenyjelentkezések',
     steps: [
       'A Jelentkezések beállításai eszközben a havi klub és az országos bajnokság külön vezérelhető. Válaszd a megfelelő részt.',
-      'A havi klubnál ellenőrizd a hónap címkéjét, a gomb szövegét, az engedélyezést, valamint a nyitás és zárás idejét. Új hónapot a következő havi klub előkészítésével is indíthatsz; az előkészítés kikapcsolt állapotot ad.',
-      'Az időzítés mellett az engedélyezés is számít. A módosítás után használd az eszköz mentés gombját, és ellenőrizd a nyilvános oldalon a jelentkezési lehetőséget.',
+      'Az Aktuális havi klub kártyán a Jelentkezés zárása mezőben állítsd be, meddig fogadunk jelentkezéseket, majd ments. A következő klubot a Következő havi klub kártyán külön piszkozatban készítheted elő.',
+      'Az aktuális jelentkezés lezárása után a Váltás a következő klubra gomb teszi közzé a piszkozatot a megadott nyitási és zárási idővel.',
       'A jelentkezők a Tartalom → Versenyjelentkezések alatt találhatók: Jelentkezők és export, valamint a beküldési napló.',
       'A Jelentkezések export eszközben típusra, konkrét klubra/hónapra és beküldési időszakra szűrhetsz, majd CSV-t tölthetsz le.',
     ],

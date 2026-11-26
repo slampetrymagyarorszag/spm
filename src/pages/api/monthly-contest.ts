@@ -32,8 +32,12 @@ export const POST: APIRoute = async ({ request }) => {
   if (mc.opensAt && now < Date.parse(mc.opensAt)) {
     return json({ ok: false, error: 'A jelentkezés még nem nyílt meg.' }, 400);
   }
-  if (mc.closesAt && now > Date.parse(mc.closesAt)) {
+  if (mc.closesAt && now >= Date.parse(mc.closesAt)) {
     return json({ ok: false, error: 'A jelentkezési időszak lezárult.' }, 400);
+  }
+
+  if (data.expectedMonth !== undefined && data.expectedMonth !== (mc.monthLabel ?? '')) {
+    return json({ ok: false, error: 'Időközben másik klub jelentkezése nyílt meg. Frissítsd az oldalt a folytatáshoz.' }, 409);
   }
 
   const emails = await getEmailSettings(sanityClient);

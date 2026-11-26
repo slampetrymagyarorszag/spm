@@ -1,5 +1,13 @@
 import { defineField, defineType } from 'sanity';
 
+const monthlyContestFields = [
+  defineField({ name: 'monthLabel', title: 'Melyik havi klub', type: 'string', description: 'Pl. „2026. júniusi klub". Ez kerül a beérkező emailbe, hogy melyik hónapra jött a jelentkezés.' }),
+  defineField({ name: 'buttonLabel', title: 'Gomb felirata', type: 'string', initialValue: 'Jelentkezem a havi versenyre' }),
+  defineField({ name: 'intro', title: 'Rövid szöveg a felugró ablakban (opcionális)', type: 'text', rows: 2 }),
+  defineField({ name: 'opensAt', title: 'Nyitás — mikor jelenjen meg a gomb', type: 'datetime', description: 'Üresen hagyva azonnal látszik (ha bekapcsolt).' }),
+  defineField({ name: 'closesAt', title: 'Zárás — mikor tűnjön el', type: 'datetime', description: 'Üresen hagyva nincs automatikus zárás.' }),
+];
+
 export const siteSettings = defineType({
   name: 'siteSettings',
   title: 'Oldal beállítások',
@@ -97,7 +105,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'monthlyContest', group: 'advanced', hidden: true, title: 'Havi klub — jelentkezés gomb', type: 'object',
-      description: 'A főoldali hero melletti „Jelentkezem a havi versenyre" gomb (Slam Poetry Budapest havi klub). Kapcsold be, add meg, melyik havi klubról van szó, és állítsd be, mikor nyíljon/záruljon a jelentkezés. Ha vége, egyszerűen kapcsold ki — a következő hónapnál csak átírod a hónapot és a dátumokat.',
+      description: 'A főoldali hero melletti „Jelentkezem a havi versenyre" gomb (Slam Poetry Budapest havi klub). Kapcsold be, add meg, melyik havi klubról van szó, és állítsd be, mikor nyíljon/záruljon a jelentkezés. A következő hónap a Jelentkezések beállításai eszközben külön piszkozatként készíthető elő.',
       options: { collapsible: true, collapsed: true },
       validation: (r) => r.custom((value: any) => {
         if (value?.enabled && !value?.monthLabel?.trim()) return 'A bekapcsolt havi klubhoz add meg, melyik havi klubra jelentkeznek.';
@@ -106,12 +114,12 @@ export const siteSettings = defineType({
       }),
       fields: [
         defineField({ name: 'enabled', title: 'Bekapcsolva', type: 'boolean', initialValue: false }),
-        defineField({ name: 'monthLabel', title: 'Melyik havi klub', type: 'string', description: 'Pl. „2026. júniusi klub". Ez kerül a beérkező emailbe, hogy melyik hónapra jött a jelentkezés.' }),
-        defineField({ name: 'buttonLabel', title: 'Gomb felirata', type: 'string', initialValue: 'Jelentkezem a havi versenyre' }),
-        defineField({ name: 'intro', title: 'Rövid szöveg a felugró ablakban (opcionális)', type: 'text', rows: 2 }),
-        defineField({ name: 'opensAt', title: 'Nyitás — mikor jelenjen meg a gomb', type: 'datetime', description: 'Üresen hagyva azonnal látszik (ha bekapcsolt).' }),
-        defineField({ name: 'closesAt', title: 'Zárás — mikor tűnjön el', type: 'datetime', description: 'Üresen hagyva nincs automatikus zárás.' }),
+        ...monthlyContestFields,
       ],
+    }),
+    defineField({
+      name: 'nextMonthlyContest', group: 'advanced', hidden: true, title: 'Következő havi klub piszkozata', type: 'object',
+      fields: monthlyContestFields,
     }),
     defineField({
       name: 'impressum', group: 'advanced', title: 'Impresszum', type: 'object',
