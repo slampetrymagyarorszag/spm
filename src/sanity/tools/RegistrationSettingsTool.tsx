@@ -34,6 +34,7 @@ const monthNames = ['januári', 'februári', 'márciusi', 'áprilisi', 'májusi'
 export function RegistrationSettingsTool() {
   const client = useClient({ apiVersion: '2024-01-01' });
   const [data, setData] = useState<Settings | null>(null);
+  const [now, setNow] = useState(Date.now);
   const [savedMonthly, setSavedMonthly] = useState<MonthlyContestSettings>();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -47,6 +48,16 @@ export function RegistrationSettingsTool() {
     } catch (e: any) { setError(e?.message || 'Nem sikerült betölteni a beállításokat.'); }
   }, [client]);
   useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const deadlines = [
+      data?.monthlyContest?.opensAt, data?.monthlyContest?.closesAt, savedMonthly?.closesAt,
+      data?.championshipCtaFrom, data?.championshipCtaTo,
+    ].filter((date): date is string => !!date).map(Date.parse);
+    const upcoming = deadlines.filter((time) => time > now);
+    if (!upcoming.length) return;
+    const timer = setTimeout(() => setNow(Date.now()), Math.max(0, Math.min(2147483647, Math.min(...upcoming) - Date.now())));
+    return () => clearTimeout(timer);
+  }, [data, savedMonthly, now]);
 
   const change = (patch: Partial<Settings>) => { setData((old) => ({ ...(old || {}), ...patch })); setMessage(null); };
   const changeMonthly = (patch: Partial<NonNullable<Settings['monthlyContest']>>) => {
@@ -68,7 +79,6 @@ export function RegistrationSettingsTool() {
     <Text size={1} muted>{hint}</Text>
   </Stack>;
   const currentState = (enabled?: boolean, from?: string, to?: string) => {
-    const now = Date.now();
     if (!enabled) return 'Kikapcsolva';
     if (from && new Date(from).getTime() > now) return 'Időzítve — még nem nyílt meg';
     if (to && new Date(to).getTime() <= now) return 'Lezárult';
@@ -78,20 +88,16 @@ export function RegistrationSettingsTool() {
     const monthly = data?.monthlyContest || {};
     const match = monthly.monthLabel?.match(/^(\d{4})\.\s*(.+?)\s+klub$/i);
     const index = match ? monthNames.findIndex((name) => name === match[2].toLowerCase()) : -1;
-    if (!match || index < 0) {
-      setError('A következő hónap előkészítéséhez a megnevezés például „2026. októberi klub” legyen.');
-      return;
-    }
     const nextIndex = (index + 1) % 12;
-    const nextYear = Number(match[1]) + (nextIndex === 0 ? 1 : 0);
+    const nextYear = match ? Number(match[1]) + (nextIndex === 0 ? 1 : 0) : undefined;
     changeNext({
       buttonLabel: monthly.buttonLabel,
-      monthLabel: `${nextYear}. ${monthNames[nextIndex]} klub`,
+      monthLabel: index >= 0 && nextYear ? `${nextYear}. ${monthNames[nextIndex]} klub` : '',
       opensAt: undefined,
       closesAt: undefined,
     });
     setError(null);
-    setMessage('A következő hónap előkészítve. Add meg az időpontjait, majd mentsd a beállításokat.');
+    setMessage('A következő hónap piszkozata elkészült. Ellenőrizd a nevét és az időpontokat, majd mentsd a beállításokat.');
   };
 
   const save = async (activateNext = false) => {

@@ -104,8 +104,21 @@ const intro = mc?.intro || '';
     }
     scheduleRefresh();
 
-    function openModal() { modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden'; }
-    function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = ''; }
+    let previousOverflow = '';
+    function openModal() {
+      if (!inWindow() || !modal.classList.contains('hidden')) return;
+      previousOverflow = document.body.style.overflow;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      if (modal.classList.contains('hidden')) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = previousOverflow;
+      if (inWindow()) openBtn.focus({ preventScroll: true });
+    }
 
     openBtn.addEventListener('click', openModal);
     root.querySelector('.mc-close')?.addEventListener('click', closeModal);

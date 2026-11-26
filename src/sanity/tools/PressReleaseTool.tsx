@@ -16,14 +16,21 @@ export function PressReleaseTool() {
   const [testTo, setTestTo] = useState('');
   const [busy, setBusy] = useState<'' | 'test' | 'send'>('');
   const [confirm, setConfirm] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ tone: 'positive' | 'critical'; text: string } | null>(null);
 
   const load = useCallback(async () => {
     setContacts(null);
-    const data = await client.fetch<Contact[]>(
-      '*[_type == "pressContact"]|order(name asc){_id,name,email,outlet,tags,subscribed}',
-    );
-    setContacts(data || []);
+    setLoadError(null);
+    setConfirm(false);
+    try {
+      const data = await client.fetch<Contact[]>(
+        '*[_type == "pressContact"]|order(name asc){_id,name,email,outlet,tags,subscribed}',
+      );
+      setContacts(data || []);
+    } catch {
+      setLoadError('A sajtólistát nem sikerült betölteni. A Lista frissítése gombbal újrapróbálhatod.');
+    }
   }, [client]);
 
   useEffect(() => { load(); }, [load]);
@@ -59,31 +66,42 @@ export function PressReleaseTool() {
   const sendTest = async () => {
     setBusy('test');
     setMsg(null);
-    const { ok, json } = await post({ testTo });
-    setMsg(ok && json.ok
-      ? { tone: 'positive', text: `Teszt-levél elküldve ide: ${testTo}. Nézd át, mielőtt élesben kiküldöd.` }
-      : { tone: 'critical', text: json.error || 'A teszt-küldés nem sikerült.' });
-    setBusy('');
+    try {
+      const { ok, json } = await post({ testTo });
+      setMsg(ok && json.ok
+        ? { tone: 'positive', text: `Teszt-levél elküldve ide: ${testTo}. Nézd át, mielőtt élesben kiküldöd.` }
+        : { tone: 'critical', text: json.error || 'A teszt-küldés nem sikerült.' });
+    } catch {
+      setMsg({ tone: 'critical', text: 'Megszakadt a kapcsolat. Ellenőrizd, megérkezett-e a tesztlevél, mielőtt újraküldöd.' });
+    } finally {
+      setBusy('');
+    }
   };
 
   const sendReal = async () => {
     setBusy('send');
     setMsg(null);
-    const { ok, json } = await post({ confirmCount: recipients.length });
-    if (ok && json.ok) {
-      const failed = (json.failed || []).length;
-      setMsg({
-        tone: failed ? 'critical' : 'positive',
-        text: failed
-          ? `Kiküldve ${json.sent} címre, ${failed} nem sikerült: ${(json.failed || []).map((f: any) => f.email).join(', ')}`
-          : `Kész — a közlemény kiment ${json.sent} címre.`,
-      });
+    try {
+      const { ok, json } = await post({ confirmCount: recipients.length });
+      if (ok && json.ok) {
+        const failed = (json.failed || []).length;
+        setMsg({
+          tone: failed ? 'critical' : 'positive',
+          text: failed
+            ? `Kiküldve ${json.sent} címre, ${failed} nem sikerült: ${(json.failed || []).map((f: any) => f.email).join(', ')}`
+            : `Kész — a közlemény kiment ${json.sent} címre.`,
+        });
+        setConfirm(false);
+      } else {
+        setMsg({ tone: 'critical', text: json.error || 'A kiküldés nem sikerült.' });
+        if (json.count != null) await load();
+      }
+    } catch {
       setConfirm(false);
-    } else {
-      setMsg({ tone: 'critical', text: json.error || 'A kiküldés nem sikerült.' });
-      if (json.count != null) load();
+      setMsg({ tone: 'critical', text: 'Megszakadt a kapcsolat. A kiküldés állapotát ellenőrizd a levelezőszolgáltatónál, mielőtt újraküldöd.' });
+    } finally {
+      setBusy('');
     }
-    setBusy('');
   };
 
   const canSend = subject.trim().length >= 3 && body.trim().length >= 10 && secret.length > 0;
@@ -103,14 +121,14 @@ export function PressReleaseTool() {
           <Box>
             <Label size={1} muted>Tárgy</Label>
             <Box marginTop={2}>
-              <TextInput value={subject} onChange={(e) => setSubject(e.currentTarget.value)} />
+              <TextInput aria-label="Tárgy" value={subject} onChange={(e) => setSubject(e.currentTarget.value)} />
             </Box>
           </Box>
 
           <Box>
             <Label size={1} muted>A közlemény szövege (üres sor = új bekezdés)</Label>
             <Box marginTop={2}>
-              <TextArea rows={12} value={body} onChange={(e) => setBody(e.currentTarget.value)} />
+              <TextArea aria-label="A közlemény szövege" rows={12} value={body} onChange={(e) => setBody(e.currentTarget.value)} />
             </Box>
           </Box>
         </Stack>
@@ -119,7 +137,7 @@ export function PressReleaseTool() {
           <Box style={{ minWidth: 220 }}>
             <Label size={1} muted>Kiknek</Label>
             <Box marginTop={2}>
-              <Select value={tag} onChange={(e) => setTag(e.currentTarget.value)}>
+              <Select aria-label="Kiknek" value={tag} onChange={(e) => setTag(e.currentTarget.value)}>
                 <option value="">Teljes sajtólista</option>
                 {allTags.map((t) => <option key={t} value={t}>{t}</option>)}
               </Select>
@@ -128,13 +146,15 @@ export function PressReleaseTool() {
           <Box style={{ minWidth: 220 }}>
             <Label size={1} muted>Kiküldési jelszó</Label>
             <Box marginTop={2}>
-              <TextInput type="password" value={secret} onChange={(e) => rememberSecret(e.currentTarget.value)} />
+              <TextInput aria-label="Kiküldési jelszó" type="password" value={secret} onChange={(e) => rememberSecret(e.currentTarget.value)} />
             </Box>
           </Box>
           <Button text="Lista frissítése" mode="ghost" onClick={load} />
         </Flex>
 
-        {contacts === null ? (
+        {loadError ? (
+          <Card padding={3} radius={2} tone="critical"><Text size={1}>{loadError}</Text></Card>
+        ) : contacts === null ? (
           <Flex align="center" gap={2}><Spinner /><Text>Sajtólista betöltése…</Text></Flex>
         ) : (
           <Card padding={3} radius={2} tone="transparent" border>
@@ -150,7 +170,7 @@ export function PressReleaseTool() {
             <Text size={1}><strong>1. lépés — teszt magadnak</strong></Text>
             <Flex gap={2} align="center" wrap="wrap">
               <Box style={{ minWidth: 260 }}>
-                <TextInput type="email" value={testTo} onChange={(e) => setTestTo(e.currentTarget.value)} />
+                <TextInput aria-label="Tesztlevél címzettje" type="email" value={testTo} onChange={(e) => setTestTo(e.currentTarget.value)} />
               </Box>
               <Button text={busy === 'test' ? 'Küldés…' : 'Teszt küldése'} mode="ghost" disabled={!canSend || !testTo || busy !== ''} onClick={sendTest} />
             </Flex>

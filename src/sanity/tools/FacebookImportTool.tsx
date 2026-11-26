@@ -124,7 +124,7 @@ export function FacebookImportTool() {
         <Stack space={3}>
           <Flex align="center" gap={3}>
             <Heading size={1}>Friss posztok</Heading>
-            <Button text="Frissítés" mode="ghost" onClick={loadPosts} disabled={posts === null} />
+            <Button text="Frissítés" mode="ghost" onClick={loadPosts} disabled={posts === null && !listError} />
           </Flex>
 
           {listError && (
@@ -133,6 +133,7 @@ export function FacebookImportTool() {
             </Card>
           )}
 
+          {posts?.length === 0 && <Text size={1} muted>Jelenleg nincs importálható Facebook-poszt.</Text>}
           {posts === null && !listError ? (
             <Flex align="center" gap={2}><Spinner /><Text size={1}>Posztok betöltése…</Text></Flex>
           ) : (

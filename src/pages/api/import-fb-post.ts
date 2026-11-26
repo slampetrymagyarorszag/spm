@@ -51,7 +51,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'Hiányzik a Facebook Page access token. Tedd be az .env-be: FB_PAGE_ACCESS_TOKEN (és FB_PAGE_ID).' }, 503);
   }
 
-  const data = await request.json().catch(() => ({}));
+  const data = await request.json().catch(() => null);
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return json({ ok: false, error: 'Hibás kérés.' }, 400);
+  }
 
   // A listából választott poszt már kész Graph-azonosítót küld; a beillesztett linkből
   // viszont ki kell nyerni.

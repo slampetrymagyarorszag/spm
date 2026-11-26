@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useClient } from 'sanity';
+import { clubFilterKey, csvCell, getClubOptions, submissionDate, submissionMonth } from '../lib/submissionExport';
 import { Card, Stack, Heading, Text, Button, Flex, Box, Spinner, Select } from '@sanity/ui';
 
 type Row = {
@@ -33,11 +34,6 @@ const COLUMNS: { key: keyof Row; label: string }[] = [
 
 const kindLabel = (k?: string) => (k === 'bajnoksag' ? 'Országos bajnokság' : k === 'havi-klub' ? 'Havi klub' : k || '');
 
-function csvCell(v: unknown): string {
-  const s = v == null ? '' : String(v);
-  return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
-
 export function SubmissionsExportTool() {
   const client = useClient({ apiVersion: '2024-01-01' });
   const [rows, setRows] = useState<Row[] | null>(null);
@@ -58,7 +54,7 @@ export function SubmissionsExportTool() {
     setLoadError(null);
     try {
       const data = await client.fetch<Row[]>(
-        '*[_type == "formSubmission"] | order(submittedAt desc){_id,kind,submittedAt,name,email,stageName,entryType,contextLabel,achievements,availableDays,note,unavailableDay}',
+        '*[_type == "formSubmission"] | order(submittedAt desc){_id,kind,submittedAt,name,email,stageName,entryType,contextLabel,achievements,availableDays,note,unavailableDay}', {}, { perspective: 'published' },
       );
       setRows(data || []);
     } catch (e: any) {
@@ -69,15 +65,25 @@ export function SubmissionsExportTool() {
 
   useEffect(() => { load(); }, [load]);
 
-  const clubLabels = [...new Set((rows || []).filter((r) => r.kind === 'havi-klub').map((r) => r.contextLabel?.trim()).filter(Boolean))] as string[];
-  const months = [...new Set((rows || []).map((r) => r.submittedAt?.slice(0, 7)).filter(Boolean))] as string[];
+  const clubs = getClubOptions(rows || []);
+  const selectedClub = clubs.find((option) => option.key === club);
+  const months = [...new Set((rows || []).map((r) => submissionMonth(r.submittedAt)).filter(Boolean))] as string[];
   months.sort().reverse();
   const visible = (rows || []).filter((r) =>
     (filter === 'all' || r.kind === filter) &&
-    (club === 'all' || (r.kind === 'havi-klub' && r.contextLabel?.trim() === club)) &&
-    (submittedMonth === 'all' || r.submittedAt?.slice(0, 7) === submittedMonth),
+    (club === 'all' || (clubFilterKey(r) === club)) &&
+    (submittedMonth === 'all' || submissionMonth(r.submittedAt) === submittedMonth),
   );
-  const changeFilter = (next: typeof filter) => { setFilter(next); setClub('all'); setConfirmDelete(false); };
+  const changeFilter = (next: typeof filter) => {
+    setFilter(next);
+    setClub('all');
+    setConfirmDelete(false);
+  };
+  const changeClub = (next: string) => {
+    setClub(next);
+    if (next !== 'all') setFilter('havi-klub');
+    setConfirmDelete(false);
+  };
 
   // A törlés VÉGLEGES, és pontosan azt a listát törli, ami épp a képernyőn van (a szűrőt
   // is figyelembe véve) — így nem lehet véletlenül mást törölni, mint amit a szerkesztő lát.
@@ -88,7 +94,7 @@ export function SubmissionsExportTool() {
       const ids = confirmedIds;
       for (let i = 0; i < ids.length; i += 50) {
         const tx = ids.slice(i, i + 50).reduce((t, id) => t.delete(id), client.transaction());
-        await tx.commit({ visibility: 'async' });
+        await tx.commit({ visibility: 'sync' });
       }
       setConfirmDelete(false);
       setConfirmedIds([]);
@@ -106,7 +112,7 @@ export function SubmissionsExportTool() {
       COLUMNS.map((c) => {
         let v: any = r[c.key];
         if (c.key === 'kind') v = kindLabel(r.kind);
-        if (c.key === 'submittedAt' && r.submittedAt) v = new Date(r.submittedAt).toLocaleString('hu-HU');
+        if (c.key === 'submittedAt' && r.submittedAt) v = submissionDate(r.submittedAt);
         if (Array.isArray(v)) v = v.join(', ');
         return csvCell(v);
       }).join(';'),
@@ -118,7 +124,7 @@ export function SubmissionsExportTool() {
     const a = document.createElement('a');
     const stamp = new Date().toISOString().slice(0, 10);
     a.href = url;
-    const clubPart = club === 'all' ? '' : `-${club.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').slice(0, 35)}`;
+    const clubPart = selectedClub ? `-${selectedClub.label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').slice(0, 35)}` : '';
     a.download = `jelentkezesek-${filter}${clubPart}-${submittedMonth === 'all' ? 'mind' : submittedMonth}-${stamp}.csv`;
     document.body.appendChild(a);
     a.click();
@@ -137,32 +143,33 @@ export function SubmissionsExportTool() {
           </Text>
         </Stack>
 
-        <Flex gap={3} align="center" wrap="wrap">
-          <Box style={{ minWidth: 220 }}>
+        <Flex gap={3} align="end" wrap="wrap">
+          <Stack space={2} style={{ minWidth: 220 }}>
+            <Text size={1} weight="semibold">Melyik havi klub?</Text>
+            <Select aria-label="Melyik havi klub?" value={club} onChange={(e) => changeClub(e.currentTarget.value)}>
+              <option value="all">{filter === 'havi-klub' ? 'Minden havi klub' : 'Válassz egy havi klubot'}</option>
+              {clubs.map(({ key, label, count }) => <option key={key} value={key}>{label} ({count})</option>)}
+            </Select>
+          </Stack>
+          <Stack space={2} style={{ minWidth: 220 }}>
+            <Text size={1} weight="semibold">Jelentkezés típusa</Text>
             <Select aria-label="Jelentkezés típusa" value={filter} onChange={(e) => changeFilter(e.currentTarget.value as typeof filter)}>
               <option value="all">Összes jelentkezés</option>
               <option value="havi-klub">Csak havi klub</option>
               <option value="bajnoksag">Csak országos bajnokság</option>
             </Select>
-          </Box>
-          {filter === 'havi-klub' && (
-            <Box style={{ minWidth: 220 }}>
-              <Select aria-label="Havi klub" value={club} onChange={(e) => { setClub(e.currentTarget.value); setConfirmDelete(false); }}>
-                <option value="all">Minden havi klub</option>
-                {clubLabels.map((label) => <option key={label} value={label}>{label}</option>)}
-              </Select>
-            </Box>
-          )}
-          <Box style={{ minWidth: 170 }}>
+          </Stack>
+          <Stack space={2} style={{ minWidth: 170 }}>
+            <Text size={1} weight="semibold">Beküldés hónapja</Text>
             <Select aria-label="Beküldés hónapja" value={submittedMonth} onChange={(e) => { setSubmittedMonth(e.currentTarget.value); setConfirmDelete(false); }}>
               <option value="all">Minden beküldési hónap</option>
               {months.map((month) => <option key={month} value={month}>{month}</option>)}
             </Select>
-          </Box>
+          </Stack>
           <Button text="Frissítés" mode="ghost" onClick={load} />
           <Button text={rows === null ? 'Jelentkezők betöltése…' : `CSV letöltése (${visible.length})`} tone="primary" disabled={!rows || visible.length === 0} onClick={downloadCsv} />
         </Flex>
-        <Text size={1} muted hidden={rows === null || !!loadError}>Az export mindig csak a fenti szűrőknek megfelelő {visible.length} jelentkezést tartalmazza. A „Havi klub” szűrő a jelentkezésben mentett klub/hónap megnevezést használja.</Text>
+        <Text size={1} muted hidden={rows === null || !!loadError}>Az export mindig csak a fenti szűrőknek megfelelő {visible.length} jelentkezést tartalmazza. A klub és a beküldés hónapja külön szűrő. A beküldési időpontok a budapesti időzónát követik.</Text>
 
         <Flex gap={3} align="center" wrap="wrap">
           {!confirmDelete ? (
@@ -221,7 +228,7 @@ export function SubmissionsExportTool() {
                 {visible.map((r) => (
                   <tr key={r._id}>
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{kindLabel(r.kind)}</td>
-                    <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)', whiteSpace: 'nowrap' }}>{r.submittedAt ? new Date(r.submittedAt).toLocaleString('hu-HU') : ''}</td>
+                    <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)', whiteSpace: 'nowrap' }}>{r.submittedAt ? submissionDate(r.submittedAt) : ''}</td>
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{r.name}</td>
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{r.email}</td>
                     <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--card-border-color)' }}>{r.stageName}</td>

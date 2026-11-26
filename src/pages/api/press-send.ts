@@ -28,7 +28,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'A kiküldés nincs konfigurálva (PRESS_SEND_SECRET / PRESS_UNSUB_SECRET).' }, 503);
   }
 
-  const data = await request.json().catch(() => ({}));
+  const data = await request.json().catch(() => null);
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return json({ ok: false, error: 'Hibás kérés.' }, 400);
+  }
   if (String(data.secret || '') !== String(authSecret)) {
     return json({ ok: false, error: 'Hibás kiküldési jelszó.' }, 401);
   }

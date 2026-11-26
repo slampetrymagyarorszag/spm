@@ -9,8 +9,22 @@ import {POST as tip} from '../src/pages/api/event-tip';
 import {POST as edit} from '../src/pages/api/slammer-edit';
 import {POST as monthly} from '../src/pages/api/monthly-contest';
 import {POST as registration} from '../src/pages/api/registration';
+import {POST as importPost} from '../src/pages/api/import-fb-post';
+import {POST as pressSend} from '../src/pages/api/press-send';
 const call=(handler:any,data:any)=>handler({request:new Request('http://localhost/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})});
 beforeEach(()=>{vi.clearAllMocks();mocks.create.mockResolvedValue({_id:'test'});mocks.mail.mockResolvedValue({});mocks.fetch.mockResolvedValue([]);});
+afterEach(() => vi.unstubAllEnvs());
+
+it('rejects malformed JSON in editorial endpoints before fetching or sending anything', async () => {
+  vi.stubEnv('FB_PAGE_ACCESS_TOKEN', 'test-token');
+  vi.stubEnv('PRESS_SEND_SECRET', 'test-secret');
+  vi.stubEnv('PRESS_UNSUB_SECRET', 'test-secret');
+  expect((await call(importPost, null)).status).toBe(400);
+  expect((await call(pressSend, null)).status).toBe(400);
+  expect(mocks.fetch).not.toHaveBeenCalled();
+  expect(mocks.mail).not.toHaveBeenCalled();
+});
+
 describe('public submission routes with mocked persistence',()=>{
  it('stores a valid club awaiting moderation',async()=>{
   expect((await call(club,{city:'Szeged',facebookUrl:'https://facebook.com/club'})).status).toBe(200);

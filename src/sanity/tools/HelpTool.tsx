@@ -77,7 +77,7 @@ const topics = [
       'Az Aktuális havi klub kártyán a Jelentkezés zárása mezőben állítsd be, meddig fogadunk jelentkezéseket, majd ments. A következő klubot a Következő havi klub kártyán külön piszkozatban készítheted elő.',
       'Az aktuális jelentkezés lezárása után a Váltás a következő klubra gomb teszi közzé a piszkozatot a megadott nyitási és zárási idővel.',
       'A jelentkezők a Tartalom → Versenyjelentkezések alatt találhatók: Jelentkezők és export, valamint a beküldési napló.',
-      'A Jelentkezések export eszközben típusra, konkrét klubra/hónapra és beküldési időszakra szűrhetsz, majd CSV-t tölthetsz le.',
+      'A Jelentkezések export eszközben a Melyik havi klub? mezőben válaszd ki a hónapot. A CSV csak a szűrt listát tartalmazza. A beküldés hónapja külön szűrő.',
     ],
     tip: 'A napló tényleges beküldéseket tartalmaz. A következő hónap előkészítéséhez nem kell a korábbi jelentkezéseket törölni.',
   },
