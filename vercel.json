@@ -1,5 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/impresszum/", "destination": "/egyesulet", "statusCode": 301 },
+    { "source": "/en/impresszum/", "destination": "/en/egyesulet", "statusCode": 301 }
+  ],
   "headers": [
     {
       "source": "/(.*)",
